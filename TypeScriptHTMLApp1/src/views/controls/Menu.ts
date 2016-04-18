@@ -1,13 +1,13 @@
 ﻿namespace Views.Controls {
-    export interface IListProps {
+    export interface IMenuProps {
         index: number;
         items: Models.IMenuSegment;
     }
-    export class List {
+    export class Menu {
         el: JQuery;
-        props: IListProps;
+        props: IMenuProps;
         controls: Array<MenuItem | any>;
-        constructor(props: IListProps) {
+        constructor(props: IMenuProps) {
             const self = this;
             self.props = props;
             self.controls = [];

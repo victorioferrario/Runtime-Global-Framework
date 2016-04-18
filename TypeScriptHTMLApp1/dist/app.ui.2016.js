@@ -134,6 +134,7 @@ var Views;
         }
         Page.prototype.dataLoaded = function (arg) {
             var self = this;
+            self.topNav = new Views.Controls.Header.TopNav();
             self.sideNav = new Views.Controls.SideNav({ data: self.appContext.data });
             self.init();
         };
@@ -142,7 +143,8 @@ var Views;
             self.search = $("#search-box");
             self.searchButton = $("#trigger-search");
             self.searchButton.on("click", function (evt) {
-                self.search.width("400px");
+                self.search.addClass("active");
+                self.topNav.logoControl.searchControl.triggerEvent();
             });
         };
         return Page;
@@ -156,13 +158,13 @@ var Views;
 (function (Views) {
     var Controls;
     (function (Controls) {
-        var List = (function () {
-            function List(props) {
+        var Menu = (function () {
+            function Menu(props) {
                 var self = this;
                 self.props = props;
                 self.controls = [];
             }
-            List.prototype.render = function () {
+            Menu.prototype.render = function () {
                 var self = this;
                 self.el = $("<div/>", {
                     id: "menu" + self.props.index
@@ -179,9 +181,9 @@ var Views;
                 });
                 return self.el;
             };
-            return List;
+            return Menu;
         }());
-        Controls.List = List;
+        Controls.Menu = Menu;
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
 var Views;
@@ -224,18 +226,14 @@ var Views;
                 self.items = [];
                 self.nav = $("#nav-menu");
                 self.props = props;
-                self.elements
-                    = new SideNavElements();
+                self.elements = new Controls.SideNavElements();
                 self.init();
             }
             SideNav.prototype.init = function () {
                 var self = this;
                 var i = 1;
                 self.props.data.list.forEach(function (segment) {
-                    self.items.push(new Controls.List({
-                        index: i++,
-                        items: segment
-                    }));
+                    self.items.push(new Controls.Menu({ index: i++, items: segment }));
                 });
                 self.items.forEach(function (item) {
                     self.nav.append(item.render());
@@ -248,6 +246,12 @@ var Views;
             return SideNav;
         }());
         Controls.SideNav = SideNav;
+    })(Controls = Views.Controls || (Views.Controls = {}));
+})(Views || (Views = {}));
+var Views;
+(function (Views) {
+    var Controls;
+    (function (Controls) {
         var SideNavElements = (function () {
             function SideNavElements() {
                 var self = this;
@@ -300,8 +304,185 @@ var Views;
             StaticElementBuilder.createMenuSplitter = function () {
                 return $("<div/>", { class: "menu-splitter" });
             };
+            StaticElementBuilder.createImage = function (props) {
+                var image = document.createElement("img");
+                image.src = props.src;
+                image.setAttribute("title", props.alt);
+                image.setAttribute("class", props.className);
+                return image;
+            };
             return StaticElementBuilder;
         }());
         Controls.StaticElementBuilder = StaticElementBuilder;
+    })(Controls = Views.Controls || (Views.Controls = {}));
+})(Views || (Views = {}));
+var Views;
+(function (Views) {
+    var Controls;
+    (function (Controls) {
+        var Header;
+        (function (Header) {
+            var LogoControl = (function () {
+                function LogoControl(props) {
+                    var self = this;
+                    self.el = $("<div/>", {
+                        class: props.className
+                    });
+                    self.lnk = $("<a/>", {
+                        href: "javascript:void(0);",
+                        class: "navbar-brand navbar-blue"
+                    });
+                    self.searchControl = new Views.Controls.Header.SearchControl();
+                    self.smallLogo = Views.Controls.StaticElementBuilder.createImage(props.small);
+                    self.largeLogo = Views.Controls.StaticElementBuilder.createImage(props.large);
+                    self.lnk.append(self.smallLogo);
+                    self.lnk.append(self.largeLogo);
+                }
+                LogoControl.prototype.render = function () {
+                    var self = this;
+                    self.el.append(self.lnk);
+                    self.el.append(Views.Controls.Header.StringTemplates.toggleMenu);
+                    self.el.append(self.searchControl.render());
+                    self.el.append(Views.Controls.Header.StringTemplates.toggleSearch);
+                    return self.el;
+                };
+                return LogoControl;
+            }());
+            Header.LogoControl = LogoControl;
+        })(Header = Controls.Header || (Controls.Header = {}));
+    })(Controls = Views.Controls || (Views.Controls = {}));
+})(Views || (Views = {}));
+var Views;
+(function (Views) {
+    var Controls;
+    (function (Controls) {
+        var Header;
+        (function (Header) {
+            var SearchControl = (function () {
+                function SearchControl() {
+                    var self = this;
+                    self.el = $("<div/>", {
+                        id: "search-box"
+                    });
+                    self.elSearchWrapper = $("<div/>", {
+                        class: "form-group is-empty"
+                    });
+                    self.elSearchInput = $("<input/>", {
+                        id: "search-input",
+                        class: "form-control",
+                        placeholder: "Search...",
+                        attr: {},
+                        blur: function (evt) {
+                            console.log(evt);
+                        }
+                    });
+                    self.elSearchWrapper.append(self.elSearchInput);
+                    self.el.append(self.elSearchWrapper);
+                    $("#button-search-close").click(function (evt) {
+                        console.log("test");
+                        self.el.removeClass("active");
+                        self.elSearchInput.val("");
+                        $('body #topnav').toggleClass('search-active');
+                    });
+                    console.log($("#button-search-close"));
+                }
+                SearchControl.prototype.render = function () {
+                    var self = this;
+                    return self.el;
+                };
+                SearchControl.prototype.triggerEvent = function () {
+                    var self = this;
+                    $("#search-input").focus();
+                    $('body #topnav').toggleClass('search-active');
+                    $("#button-search-close").click(function (evt) {
+                        self.el.removeClass("active");
+                        $('body #topnav').removeClass('search-active');
+                    });
+                };
+                SearchControl.prototype.cleanEvent = function () {
+                    var self = this;
+                    $("#button-search-close").off("click");
+                };
+                return SearchControl;
+            }());
+            Header.SearchControl = SearchControl;
+        })(Header = Controls.Header || (Controls.Header = {}));
+    })(Controls = Views.Controls || (Views.Controls = {}));
+})(Views || (Views = {}));
+var Views;
+(function (Views) {
+    var Controls;
+    (function (Controls) {
+        var Header;
+        (function (Header) {
+            var StringTemplates = (function () {
+                function StringTemplates() {
+                }
+                StringTemplates.toggleMenu = function () {
+                    return '<span id="trigger-sidebar" class="toolbar-trigger toolbar-icon-bg stay-on-search">' +
+                        '<a data-toggle="tooltips" data-placement="right" title="Toggle Sidebar" class="waves-effect waves-light" id="btn-toggle">' +
+                        '   <span class="icon-bg" style="background: transparent !important;"><i class="material-icons">menu</i></span></a></span>';
+                };
+                StringTemplates.toggleSearch = function () {
+                    return '<span id="trigger-search" class="toolbar-trigger toolbar-icon-bg ov-h">' +
+                        '<a data-toggle="tooltips" id="toggle-search" data-placement="right" title="Toggle Sidebar" class="waves-effect waves-light">' +
+                        '    <span class="icon-bg" style="background: transparent !important;"><i class="material-icons">search</i></span></a></span>';
+                };
+                StringTemplates.searchInput = function () {
+                    return '<div id="search-box">' +
+                        '<div class="form-group is-empty"><input class="form-control" type="text" placeholder="Search..." id="search-input" style="background: #fff; opacity: .70; border-radius: 2px;color:#000"><span class="material-input"></span></div>' +
+                        '</div>';
+                };
+                return StringTemplates;
+            }());
+            Header.StringTemplates = StringTemplates;
+        })(Header = Controls.Header || (Controls.Header = {}));
+    })(Controls = Views.Controls || (Views.Controls = {}));
+})(Views || (Views = {}));
+var Views;
+(function (Views) {
+    var Controls;
+    (function (Controls) {
+        var Header;
+        (function (Header) {
+            var TopNav = (function () {
+                function TopNav() {
+                    var self = this;
+                    self.el = $("#topnav");
+                    var logoProps = {
+                        className: "logo-area",
+                        small: {
+                            alt: "Havard",
+                            src: "styles/images/h-mini.png",
+                            className: "show-on-collapse img-logo-white" },
+                        large: {
+                            alt: "Havard",
+                            src: "styles/images/havard-logo.png",
+                            className: "img-white" }
+                    };
+                    self.logoControl = new Header.LogoControl(logoProps);
+                    self.el.append(self.logoControl.render());
+                    self.rightControl = new RightMenu();
+                    self.el.append(self.rightControl.render());
+                }
+                return TopNav;
+            }());
+            Header.TopNav = TopNav;
+            var RightMenu = (function () {
+                function RightMenu() {
+                    var self = this;
+                    self.el = $("<ul/>", {
+                        class: "nav navbar-nav toolbar pull-right"
+                    });
+                    self.el.append('<li class="toolbar-icon-bg appear-on-search ov-h" id="trigger-search-close"><a class="toggle-fullscreen" id="button-search-close"><span class="icon-bg"><i class="material-icons">close</i></span><div class="ripple-container"></div></a> </li>');
+                }
+                RightMenu.prototype.render = function () {
+                    var self = this;
+                    return self.el;
+                };
+                return RightMenu;
+            }());
+            Header.RightMenu = RightMenu;
+        })(Header = Controls.Header || (Controls.Header = {}));
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));

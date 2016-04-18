@@ -16,5 +16,12 @@
         static createMenuSplitter() {
             return $("<div/>", { class: "menu-splitter" });
         }
+        static createImage(props: Header.ILogoProps):HTMLImageElement {
+            const image = document.createElement("img");
+            image.src = props.src;
+            image.setAttribute("title", props.alt);
+            image.setAttribute("class", props.className);           
+            return image;
+        }
     }
 }
