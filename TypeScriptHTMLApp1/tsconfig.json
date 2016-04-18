@@ -1,0 +1,11 @@
+﻿{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "out": "dist/app.js",
+    "sourceRoot": "src",
+    "rootDir": "src",
+    "sourceMap": true,
+    "jsx": "react",
+    "reactNamespace": "UIBuilder"
+  }
+}

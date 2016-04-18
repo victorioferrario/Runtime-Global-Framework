@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ts-Menu", "TypeScriptHTMLApp1\ts-Menu.csproj", "{9CAF9F4A-4AE6-4018-980E-C77434A110F7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9CAF9F4A-4AE6-4018-980E-C77434A110F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CAF9F4A-4AE6-4018-980E-C77434A110F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CAF9F4A-4AE6-4018-980E-C77434A110F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CAF9F4A-4AE6-4018-980E-C77434A110F7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

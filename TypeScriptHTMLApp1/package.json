@@ -1,0 +1,35 @@
+{
+  "name": "ts-layout-2016",
+  "version": "1.0.0",
+  "keywords": [
+    "typescript",
+    "gulpplugin",
+    "incremental compilation",
+    "ts",
+    "tsc",
+    "compile",
+    "compiler",
+    "transpile"
+  ],
+  "main": "release/main.js",
+  "dependencies": {
+    "gulp-util": "~3.0.7",
+    "source-map": "~0.5.3",
+    "through2": "~2.0.0",
+    "typescript": "1.8.7",
+    "vinyl-fs": "~2.2.1"
+  },
+  "devDependencies": {
+    "gulp": "~3.9.0",
+    "gulp-bundle-assets": "^2.23.0",
+    "gulp-concat": "~2.6.0",
+    "gulp-diff": "~1.0.0",
+    "gulp-header": "~1.7.1",
+    "gulp-plumber": "~1.0.1",
+    "gulp-sourcemaps": "~1.6.0",
+    "rimraf": "~2.4.4"
+  },
+  "scripts": {
+    "test": "gulp"
+  }
+}

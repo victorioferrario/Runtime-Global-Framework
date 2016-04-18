@@ -1,0 +1,251 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Menu</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,500,700,500italic,400italic,700italic|Roboto+Condensed:400,700" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <!--<link href="dist/vendor.css" rel="stylesheet"/>-->
+    <link href="styles/layout.css" rel="stylesheet" />
+    <link href="styles/menu.css" rel="stylesheet" />
+    <link href="dist/admin.vendor.css" rel="stylesheet" />
+    <script src="dist/vendor.js"></script>
+    <script src="libs/vendors/waves.js"></script>
+    <script src="libs/materialize/js/materialize.min.js"></script>
+    <script src="dist/app.ui.2016.js"></script>
+</head>
+<body>
+    <header id="topnav" class="navbar navbar-fixed-top navbar-blue" role="banner">
+        <div class="logo-area">
+            <a class="navbar-brand navbar-blue" href="javascript:void(0)">
+                <img class="show-on-collapse img-logo-white" alt="Paper" src="styles/images/h-mini.png">
+                <img class="img-white" alt="Paper" src="styles/images/havard-logo.png">
+            </a>
+            <span id="trigger-sidebar" class="toolbar-trigger toolbar-icon-bg stay-on-search">
+                <a data-toggle="tooltips" data-placement="right" title="Toggle Sidebar" 
+                   class="waves-effect waves-light" id="btn-toggle">
+                    <span class="icon-bg" style="background: transparent !important;">
+                        <i class="material-icons">menu</i>
+                    </span>
+                    <div class="ripple-container"></div>
+                </a>
+            </span>
+            <span id="trigger-search" class="toolbar-trigger toolbar-icon-bg ov-h">
+                <a data-toggle="tooltips" id="toggle-search" data-placement="right" title="Toggle Sidebar">
+                    <span class="icon-bg">
+                        <i class="material-icons">search</i>
+                    </span>
+                    <div class="ripple-container"></div>
+                </a>
+            </span>
+            <div id="search-box">
+                <div class="form-group is-empty"><input class="form-control" type="text" placeholder="Search..." id="search-input" style="background: #fff; opacity: .70; border-radius: 2px;color:#000"><span class="material-input"></span></div>
+            </div>
+        </div>
+        <ul class="nav navbar-nav toolbar pull-right">
+            <li class="toolbar-icon-bg appear-on-search ov-h" id="trigger-search-close">
+                <a class="toggle-fullscreen">
+                    <span class="icon-bg">
+                        <i class="material-icons">close</i>
+                    </span><div class="ripple-container"></div>
+                </a>
+            </li>
+            <li class="toolbar-icon-bg hidden-xs" id="trigger-fullscreen">
+                <a href="#" class="toggle-fullscreen">
+                    <span class="icon-bg">
+                        <i class="material-icons">fullscreen</i>
+                    </span><div class="ripple-container"></div>
+                </a>
+            </li>
+            <li class="dropdown toolbar-icon-bg">
+                <a href="#" class="hasnotifications dropdown-toggle" data-toggle="dropdown"><span class="icon-bg"><i class="material-icons">notifications</i></span><span class="badge badge-info"></span></a>
+                <div class="dropdown-menu animated notifications">
+                    <div class="topnav-dropdown-header">
+                        <span>3 new notifications</span>
+                    </div>
+                    <div class="scroll-pane has-scrollbar">
+                        <ul class="media-list scroll-content" tabindex="0" style="right: -15px;">
+                            <li class="media notification-success">
+                                <a href="#">
+                                    <div class="media-left">
+                                        <span class="notification-icon"><i class="material-icons">lock</i></span>
+                                    </div>
+                                    <div class="media-body">
+                                        <h4 class="notification-heading">Privacy settings have been changed.</h4>
+                                        <span class="notification-time">8 mins ago</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="media notification-info">
+                                <a href="#">
+                                    <div class="media-left">
+                                        <span class="notification-icon"><i class="material-icons">shopping_cart</i></span>
+                                    </div>
+                                    <div class="media-body">
+                                        <h4 class="notification-heading">A new order has been placed.</h4>
+                                        <span class="notification-time">24 mins ago</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="media notification-teal">
+                                <a href="#">
+                                    <div class="media-left">
+                                        <span class="notification-icon"><i class="material-icons">perm_contact_calendar</i></span>
+                                    </div>
+                                    <div class="media-body">
+                                        <h4 class="notification-heading">New event started!</h4>
+                                        <span class="notification-time">16 hours ago</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="media notification-indigo">
+                                <a href="#">
+                                    <div class="media-left">
+                                        <span class="notification-icon"><i class="material-icons">settings</i></span>
+                                    </div>
+                                    <div class="media-body">
+                                        <h4 class="notification-heading">New app settings updated.</h4>
+                                        <span class="notification-time">2 days ago</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="media notification-danger">
+                                <a href="#">
+                                    <div class="media-left">
+                                        <span class="notification-icon"><i class="material-icons">comment</i></span>
+                                    </div>
+                                    <div class="media-body">
+                                        <h4 class="notification-heading">Jessi commented your post.</h4>
+                                        <span class="notification-time">4 days ago</span>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="scroll-track"><div class="scroll-thumb" style="height: 219px; transform: translate(0px, 0px);"></div></div>
+                    </div>
+                    <div class="topnav-dropdown-footer">
+                        <a href="#">See all notifications</a>
+                    </div>
+                </div>
+            </li>
+            <li class="dropdown toolbar-icon-bg hidden-xs">
+                <a href="#" class="hasnotifications dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span class="icon-bg"><i class="material-icons">mail</i></span><span class="badge badge-info"></span><div class="ripple-container"></div></a>
+                <div class="dropdown-menu animated notifications">
+                    <div class="topnav-dropdown-header">
+                        <span>2 new messages</span>
+
+                    </div>
+                    <div class="scroll-pane has-scrollbar">
+                        <ul class="media-list scroll-content" tabindex="0" style="right: -15px;">
+                            <li class="media notification-message">
+                                <a href="#">
+                                    <div class="media-left">
+
+                                    </div>
+                                    <div class="media-body">
+                                        <h4 class="notification-heading"><strong>Amy Green</strong> <span class="text-gray">‒ Integer vitae libero ac risus egestas placerat.</span></h4>
+                                        <span class="notification-time">2 mins ago</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="media notification-message">
+                                <a href="#">
+                                    <div class="media-left">
+
+                                    </div>
+                                    <div class="media-body">
+                                        <h4 class="notification-heading"><strong>Daniel Andrews</strong> <span class="text-gray">‒ Vestibulum commodo felis quis tortor</span></h4>
+                                        <span class="notification-time">40 mins ago</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="media notification-message">
+                                <a href="#">
+                                    <div class="media-left">
+
+                                    </div>
+                                    <div class="media-body">
+                                        <h4 class="notification-heading"><strong>Jane Simpson</strong> <span class="text-gray">‒ Fusce lobortis lorem at ipsum semper sagittis.</span></h4>
+                                        <span class="notification-time">6 hours ago</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="media notification-message">
+                                <a href="#">
+                                    <div class="media-left">
+
+                                    </div>
+                                    <div class="media-body">
+                                        <h4 class="notification-heading"><strong>Harold Hawkins</strong> <span class="text-gray">‒ Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</span></h4>
+                                        <span class="notification-time">8 days ago</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="media notification-message">
+                                <a href="#">
+                                    <div class="media-left">
+
+                                    </div>
+                                    <div class="media-body">
+                                        <h4 class="notification-heading"><strong>Brian Fisher</strong> <span class="text-gray">‒ Praesent dapibus, neque id cursus faucibus.</span></h4>
+                                        <span class="notification-time">16 hours ago</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="media notification-message">
+                                <a href="#">
+                                    <div class="media-left">
+
+                                    </div>
+                                    <div class="media-body">
+                                        <h4 class="notification-heading"><strong>Dylan Black</strong> <span class="text-gray">‒ Pellentesque fermentum dolor. </span></h4>
+                                        <span class="notification-time">2 days ago</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="media notification-message">
+                                <a href="#">
+                                    <div class="media-left">
+
+                                    </div>
+                                    <div class="media-body">
+                                        <h4 class="notification-heading"><strong>Bobby Harper</strong> <span class="text-gray">‒ Sed adipiscing ornare risus. Morbi est est.</span></h4>
+                                        <span class="notification-time">4 days ago</span>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="scroll-track"><div class="scroll-thumb" style="height: 128px; transform: translate(0px, 0px);"></div></div>
+                    </div>
+                    <div class="topnav-dropdown-footer">
+                        <a href="#">See all messages</a>
+                    </div>
+                </div>
+            </li>
+            <li class="toolbar-icon-bg" id="trigger-infobar">
+                <a data-toggle="tooltips" data-placement="right" title="Toggle Sidebar">
+                    <span class="icon-bg">
+                        <i class="material-icons">more_vert</i>
+                    </span>
+                    <div class="ripple-container"></div>
+                </a>
+            </li>
+        </ul>
+    </header>
+    <main id="wrapper">
+        <article id="layout-static">
+            <section class="static-sidebar-wrapper">
+                <nav id="nav-menu" class="menus"></nav>
+            </section>
+            <section class="static-content-wrapper">
+                <div class="static-content">
+                    <div class="page-content">
+                        <h3>This is Main.</h3>
+                    </div>
+                </div>
+            </section>
+        </article>
+    </main>
+</body>
+</html>
