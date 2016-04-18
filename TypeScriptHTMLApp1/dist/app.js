@@ -3,125 +3,6 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var Core;
-(function (Core) {
-    var Event = (function () {
-        function Event(type, targetObj) {
-            this.type = type;
-            this.target = targetObj;
-        }
-        Event.prototype.getTarget = function () {
-            return this.target;
-        };
-        Event.prototype.getType = function () {
-            return this.type;
-        };
-        return Event;
-    }());
-    Core.Event = Event;
-    var EventDispatcher = (function () {
-        function EventDispatcher() {
-            this.listeners = [];
-        }
-        EventDispatcher.prototype.hasEventListener = function (type, listener) {
-            var exists = false;
-            for (var i = 0; i < this.listeners.length; i++) {
-                if (this.listeners[i].type === type && this.listeners[i].listener === listener) {
-                    exists = true;
-                }
-            }
-            return exists;
-        };
-        EventDispatcher.prototype.addEventListener = function (typeStr, listenerFunc) {
-            if (this.hasEventListener(typeStr, listenerFunc)) {
-                return;
-            }
-            this.listeners.push({ type: typeStr, listener: listenerFunc });
-        };
-        EventDispatcher.prototype.removeEventListener = function (typeStr, listenerFunc) {
-            for (var i = 0; i < this.listeners.length; i++) {
-                if (this.listeners[i].type === typeStr && this.listeners[i].listener === listenerFunc) {
-                    this.listeners.splice(i, 1);
-                }
-            }
-        };
-        EventDispatcher.prototype.dispatchEvent = function (evt) {
-            for (var i = 0; i < this.listeners.length; i++) {
-                if (this.listeners[i].type === evt.getType()) {
-                    this.listeners[i].listener.call(this, evt);
-                }
-            }
-        };
-        return EventDispatcher;
-    }());
-    Core.EventDispatcher = EventDispatcher;
-})(Core || (Core = {}));
-var Models;
-(function (Models) {
-    var Events = (function () {
-        function Events() {
-        }
-        Events.dataLoaded = "event:data:loaded";
-        return Events;
-    }());
-    Models.Events = Events;
-})(Models || (Models = {}));
-/// <reference path="../../typings/tsd.d.ts" />
-var Services;
-(function (Services) {
-    var Http = (function () {
-        function Http() {
-        }
-        Http.loadJson = function (url) {
-            return $.getJSON(url !== "" ? url : "data.json");
-        };
-        return Http;
-    }());
-    Services.Http = Http;
-})(Services || (Services = {}));
-var Session;
-(function (Session) {
-    var AppContext = (function (_super) {
-        __extends(AppContext, _super);
-        function AppContext() {
-            _super.call(this);
-            var self = this;
-            self.initialize();
-        }
-        AppContext.getInstance = function () {
-            if (this.instance === null || this.instance === undefined) {
-                this.instance = new Session.AppContext();
-            }
-            return this.instance;
-        };
-        AppContext.prototype.initialize = function () {
-            var self = this;
-            Services.Http.loadJson("data.json").fail(function () {
-                console.warn("Error Loading Data");
-            }).done(function (result) {
-                self.data = result;
-                self.isLoaded = true;
-                self.dispatchEvent(new Core.Event(Models.Events.dataLoaded, self.data));
-            });
-        };
-        return AppContext;
-    }(Core.EventDispatcher));
-    Session.AppContext = AppContext;
-})(Session || (Session = {}));
-var System;
-(function (System) {
-    var Singleton = (function () {
-        function Singleton() {
-        }
-        Singleton.getInstance = function () {
-            if (this.instance === null || this.instance === undefined) {
-                this.instance = new Singleton();
-            }
-            return this.instance;
-        };
-        return Singleton;
-    }());
-})(System || (System = {}));
 var Views;
 (function (Views) {
     var Page = (function () {
@@ -305,4 +186,123 @@ var Views;
         Controls.StaticElementBuilder = StaticElementBuilder;
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
+var System;
+(function (System) {
+    var Singleton = (function () {
+        function Singleton() {
+        }
+        Singleton.getInstance = function () {
+            if (this.instance === null || this.instance === undefined) {
+                this.instance = new Singleton();
+            }
+            return this.instance;
+        };
+        return Singleton;
+    }());
+})(System || (System = {}));
+var Session;
+(function (Session) {
+    var AppContext = (function (_super) {
+        __extends(AppContext, _super);
+        function AppContext() {
+            _super.call(this);
+            var self = this;
+            self.initialize();
+        }
+        AppContext.getInstance = function () {
+            if (this.instance === null || this.instance === undefined) {
+                this.instance = new Session.AppContext();
+            }
+            return this.instance;
+        };
+        AppContext.prototype.initialize = function () {
+            var self = this;
+            Services.Http.loadJson("data.json").fail(function () {
+                console.warn("Error Loading Data");
+            }).done(function (result) {
+                self.data = result;
+                self.isLoaded = true;
+                self.dispatchEvent(new Core.Event(Models.Events.dataLoaded, self.data));
+            });
+        };
+        return AppContext;
+    }(Core.EventDispatcher));
+    Session.AppContext = AppContext;
+})(Session || (Session = {}));
+/// <reference path="../../typings/tsd.d.ts" />
+var Services;
+(function (Services) {
+    var Http = (function () {
+        function Http() {
+        }
+        Http.loadJson = function (url) {
+            return $.getJSON(url !== "" ? url : "data.json");
+        };
+        return Http;
+    }());
+    Services.Http = Http;
+})(Services || (Services = {}));
+var Models;
+(function (Models) {
+    var Events = (function () {
+        function Events() {
+        }
+        Events.dataLoaded = "event:data:loaded";
+        return Events;
+    }());
+    Models.Events = Events;
+})(Models || (Models = {}));
+var Core;
+(function (Core) {
+    var Event = (function () {
+        function Event(type, targetObj) {
+            this.type = type;
+            this.target = targetObj;
+        }
+        Event.prototype.getTarget = function () {
+            return this.target;
+        };
+        Event.prototype.getType = function () {
+            return this.type;
+        };
+        return Event;
+    }());
+    Core.Event = Event;
+    var EventDispatcher = (function () {
+        function EventDispatcher() {
+            this.listeners = [];
+        }
+        EventDispatcher.prototype.hasEventListener = function (type, listener) {
+            var exists = false;
+            for (var i = 0; i < this.listeners.length; i++) {
+                if (this.listeners[i].type === type && this.listeners[i].listener === listener) {
+                    exists = true;
+                }
+            }
+            return exists;
+        };
+        EventDispatcher.prototype.addEventListener = function (typeStr, listenerFunc) {
+            if (this.hasEventListener(typeStr, listenerFunc)) {
+                return;
+            }
+            this.listeners.push({ type: typeStr, listener: listenerFunc });
+        };
+        EventDispatcher.prototype.removeEventListener = function (typeStr, listenerFunc) {
+            for (var i = 0; i < this.listeners.length; i++) {
+                if (this.listeners[i].type === typeStr && this.listeners[i].listener === listenerFunc) {
+                    this.listeners.splice(i, 1);
+                }
+            }
+        };
+        EventDispatcher.prototype.dispatchEvent = function (evt) {
+            for (var i = 0; i < this.listeners.length; i++) {
+                if (this.listeners[i].type === evt.getType()) {
+                    this.listeners[i].listener.call(this, evt);
+                }
+            }
+        };
+        return EventDispatcher;
+    }());
+    Core.EventDispatcher = EventDispatcher;
+})(Core || (Core = {}));
 //# sourceMappingURL=app.js.map

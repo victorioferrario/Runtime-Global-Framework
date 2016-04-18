@@ -2,22 +2,20 @@
     export class Page {
         search: JQuery;
         searchButton: JQuery;
-        sideNav:Views.Controls.SideNav;
+        sideNav: Views.Controls.SideNav;
         appContext: Session.AppContext;
         constructor() {
             const self = this;
             self.appContext = Session.AppContext.getInstance();
-            self.appContext.addEventListener(
-                Models.Events.dataLoaded, (arg: any) => {
-                    self.dataLoaded(arg);
-                });
+            self.appContext.addEventListener(Models.Events.dataLoaded, (arg: any) => {
+                self.dataLoaded(arg);
+            });
         }
         dataLoaded(arg: any) {
             const self = this;
             self.sideNav = new Views.Controls.SideNav({ data: self.appContext.data });
             self.init();
         }
-
         init() {
             const self = this;
             self.search = $("#search-box");
@@ -31,5 +29,5 @@
 
 
 $(document).ready(() => {
-    let app = new Views.Page();
+    const app = new Views.Page();
 });

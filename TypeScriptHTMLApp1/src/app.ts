@@ -6,5 +6,5 @@
     }
 }
 $(document).ready(() => {
-    let app = new App();
+    const app = new App();
 });
