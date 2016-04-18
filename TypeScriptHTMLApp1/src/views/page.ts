@@ -1,4 +1,5 @@
 ﻿namespace Views {
+   
     export class Page {
         search: JQuery;        
         searchButton: JQuery;
@@ -28,9 +29,11 @@
             self.searchButton = $("#trigger-search");
             self.searchButton.on("click", (evt: any) => {          
                 self.search.addClass("active");
+                 console.log(window.innerWidth );              
                 self.topNav.logoControl.searchControl.triggerEvent();
             });
         }
+        
     }
 }
 

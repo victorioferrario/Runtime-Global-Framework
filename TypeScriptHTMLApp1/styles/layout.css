@@ -4,6 +4,7 @@
 body {
 	font-size:1.2rem!important;
 	font-family: 'Roboto', sans-serif!important;
+	font-family: 'Roboto', 'Segoe UI', 'Droid Sans', Tahoma, Arial, sans-serif!important;
 	-webkit-font-smoothing: antialiased!important;
 	-moz-osx-font-smoothing: grayscale!important;
 	text-rendering: auto;
@@ -34,6 +35,7 @@ article.app-sub-bar {
 }
 article.app-sub-bar.icon-state {
 	left:61px;
+	
 }
 
 /* [static-state] */
@@ -407,11 +409,12 @@ i.icon-activator {
 	 padding-left: 5px;
 	 padding-top:5px;
 	 border:solid 0 #fff;
-	 background: #fff!important; 
-	 opacity: .70; 
+	 background: none!important; 
+	 opacity: .90; 
+	 font-weight:500;
+	 font-size:18px;
 	 border-radius: 2px;
-	 color:#000!important;
-	 width:40px;
+	 color:#e3f2fd!important;	 
 	 transition: all cubic-bezier(0.25, 0.46, 0.45, 0.94)300ms;
  }
 

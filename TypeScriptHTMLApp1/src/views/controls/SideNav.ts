@@ -18,6 +18,7 @@
         init() {
             const self = this;
             let i = 1;
+            self.nav.append(Views.Controls.Header.StringTemplates.profileWidget());
             self.props.data.list.forEach((segment: Models.IMenuSegment) => {
                 self.items.push(new Menu({index: i++, items: segment }));
             });
@@ -32,3 +33,6 @@
         }
     }    
 }
+
+            
+          

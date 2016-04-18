@@ -56,6 +56,16 @@ var Core;
     }());
     Core.EventDispatcher = EventDispatcher;
 })(Core || (Core = {}));
+var Models;
+(function (Models) {
+    var Events = (function () {
+        function Events() {
+        }
+        Events.dataLoaded = "event:data:loaded";
+        return Events;
+    }());
+    Models.Events = Events;
+})(Models || (Models = {}));
 /// <reference path="../../typings/tsd.d.ts" />
 var Services;
 (function (Services) {
@@ -69,16 +79,6 @@ var Services;
     }());
     Services.Http = Http;
 })(Services || (Services = {}));
-var Models;
-(function (Models) {
-    var Events = (function () {
-        function Events() {
-        }
-        Events.dataLoaded = "event:data:loaded";
-        return Events;
-    }());
-    Models.Events = Events;
-})(Models || (Models = {}));
 var Session;
 (function (Session) {
     var AppContext = (function (_super) {
@@ -144,6 +144,7 @@ var Views;
             self.searchButton = $("#trigger-search");
             self.searchButton.on("click", function (evt) {
                 self.search.addClass("active");
+                console.log(window.innerWidth);
                 self.topNav.logoControl.searchControl.triggerEvent();
             });
         };
@@ -232,6 +233,7 @@ var Views;
             SideNav.prototype.init = function () {
                 var self = this;
                 var i = 1;
+                self.nav.append(Views.Controls.Header.StringTemplates.profileWidget());
                 self.props.data.list.forEach(function (segment) {
                     self.items.push(new Controls.Menu({ index: i++, items: segment }));
                 });
@@ -384,7 +386,6 @@ var Views;
                         self.elSearchInput.val("");
                         $('body #topnav').toggleClass('search-active');
                     });
-                    console.log($("#button-search-close"));
                 }
                 SearchControl.prototype.render = function () {
                     var self = this;
@@ -433,6 +434,44 @@ var Views;
                         '<div class="form-group is-empty"><input class="form-control" type="text" placeholder="Search..." id="search-input" style="background: #fff; opacity: .70; border-radius: 2px;color:#000"><span class="material-input"></span></div>' +
                         '</div>';
                 };
+                StringTemplates.rightMenuFullScreen = function () {
+                    return '<li class="toolbar-icon-bg hidden-xs" id="trigger-fullscreen">'
+                        + '     <a href="#" class="toggle-fullscreen waves-effect waves-light" id="button-fullscreen">             '
+                        + '         <span class="icon-bg" style="background: transparent !important;">             '
+                        + '             <i class="material-icons">fullscreen</i>               '
+                        + '         </span><div class="ripple-container"></div>                '
+                        + '     </a>               '
+                        + ' </li>';
+                };
+                StringTemplates.notificationMenuItem = function () {
+                    return '<li class="dropdown toolbar-icon-bg"><a href="#" class="hasnotifications dropdown-toggle waves-effect waves-light" data-toggle="dropdown"><span class="icon-bg" style="background: transparent !important;"><i class="material-icons">notifications</i></span><span class="badge badge-info"></span></a></li>';
+                };
+                StringTemplates.profileWidget = function () {
+                    return '<div class="widget" id="widget-profileinfo" style="height:87px; overflow:hidden; background:#666">'
+                        + '    <div class="widget-body">'
+                        + '        <div class="userinfo ">'
+                        + '            <div class="avatar pull-left">'
+                        + '                '
+                        + '            </div>'
+                        + '            <div class="info">'
+                        + '                <span class="username"></span>'
+                        + '                <span class="useremail"></span>'
+                        + '            </div>'
+                        + '            <div class="acct-dropdown clearfix dropdown">'
+                        + '                <span class="pull-left"><span class="online-status online"></span></span>'
+                        + '                <!-- <span class="pull-right dropdown-toggle" data-toggle="dropdown"><a href="javascript:void(0)" '
+                        + '  class="btn btn-fab-caret btn-xs btn-fab"><i class="material-icons">arrow_drop_down</i><div class="ripple-container"></div></a></span>'
+                        + '                <ul class="dropdown-menu">'
+                        + '                    <li><span class="online-status online"></span> Online</li>'
+                        + '                    <li><span class="online-status online"></span> Online</li>'
+                        + '                    <li><span class="online-status online"></span> Online</li>'
+                        + '                    <li><span class="online-status online"></span> Online</li>'
+                        + '                </ul> -->'
+                        + '            </div>'
+                        + '        </div>'
+                        + '    </div>       '
+                        + '</div>';
+                };
                 return StringTemplates;
             }());
             Header.StringTemplates = StringTemplates;
@@ -475,10 +514,26 @@ var Views;
                         class: "nav navbar-nav toolbar pull-right"
                     });
                     self.el.append('<li class="toolbar-icon-bg appear-on-search ov-h" id="trigger-search-close"><a class="toggle-fullscreen" id="button-search-close"><span class="icon-bg"><i class="material-icons">close</i></span><div class="ripple-container"></div></a> </li>');
+                    self.el.append(Views.Controls.Header.StringTemplates.rightMenuFullScreen);
+                    self.el.append(Views.Controls.Header.StringTemplates.notificationMenuItem);
                 }
                 RightMenu.prototype.render = function () {
                     var self = this;
+                    $("#button-fullscreen").on("click", function (evt) {
+                        self.onclickFullScreen(evt);
+                        console.log("full screening");
+                    });
                     return self.el;
+                };
+                RightMenu.prototype.onclickFullScreen = function (event) {
+                    if (screenfull.enabled) {
+                        if (!screenfull.isFullscreen) {
+                            screenfull.request();
+                        }
+                        else {
+                            screenfull.exit();
+                        }
+                    }
                 };
                 return RightMenu;
             }());

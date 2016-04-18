@@ -15,5 +15,48 @@ namespace Views.Controls.Header {
                 '<div class="form-group is-empty"><input class="form-control" type="text" placeholder="Search..." id="search-input" style="background: #fff; opacity: .70; border-radius: 2px;color:#000"><span class="material-input"></span></div>' +
                 '</div>';
         }
+        
+        static rightMenuFullScreen(){
+           return '<li class="toolbar-icon-bg hidden-xs" id="trigger-fullscreen">' 
+          + '     <a href="#" class="toggle-fullscreen waves-effect waves-light" id="button-fullscreen">             '
+          + '         <span class="icon-bg" style="background: transparent !important;">             '
+          + '             <i class="material-icons">fullscreen</i>               '
+          + '         </span><div class="ripple-container"></div>                '
+          + '     </a>               '
+          + ' </li>';
+        }
+        
+        static notificationMenuItem(){
+            return '<li class="dropdown toolbar-icon-bg"><a href="#" class="hasnotifications dropdown-toggle waves-effect waves-light" data-toggle="dropdown"><span class="icon-bg" style="background: transparent !important;"><i class="material-icons">notifications</i></span><span class="badge badge-info"></span></a></li>';
+        }
+        
+        static profileWidget(){
+            return '<div class="widget" id="widget-profileinfo" style="height:87px; overflow:hidden; background:#666">'
+               + '    <div class="widget-body">'
+               + '        <div class="userinfo ">'
+               + '            <div class="avatar pull-left">'
+               + '                '
+               + '            </div>'
+               + '            <div class="info">'
+               + '                <span class="username"></span>'
+               + '                <span class="useremail"></span>'
+               + '            </div>'
+               + '            <div class="acct-dropdown clearfix dropdown">'
+               + '                <span class="pull-left"><span class="online-status online"></span></span>'
+               + '                <!-- <span class="pull-right dropdown-toggle" data-toggle="dropdown"><a href="javascript:void(0)" '
+               + '  class="btn btn-fab-caret btn-xs btn-fab"><i class="material-icons">arrow_drop_down</i><div class="ripple-container"></div></a></span>'
+               + '                <ul class="dropdown-menu">'
+               + '                    <li><span class="online-status online"></span> Online</li>'
+               + '                    <li><span class="online-status online"></span> Online</li>'
+               + '                    <li><span class="online-status online"></span> Online</li>'
+               + '                    <li><span class="online-status online"></span> Online</li>'
+               + '                </ul> -->'
+               + '            </div>'
+               + '        </div>'
+               + '    </div>       '                                                                                                                            
+                                                                                                                                  
+               + '</div>'
+        }
     }
+    
 }

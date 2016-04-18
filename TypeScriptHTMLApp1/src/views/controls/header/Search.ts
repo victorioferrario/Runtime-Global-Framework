@@ -17,8 +17,7 @@ namespace Views.Controls.Header{
                 id: "search-input",
                 class:"form-control",
                 placeholder : "Search...",
-                attr:{
-                    
+                attr:{                    
                 },
                 blur: (evt:any)=> {
                     console.log(evt);                 
@@ -33,7 +32,7 @@ namespace Views.Controls.Header{
                   self.elSearchInput.val("");   
                 $('body #topnav').toggleClass('search-active');      
             }) ;
-             console.log($("#button-search-close"));           
+                  
             
         }     
         render(){

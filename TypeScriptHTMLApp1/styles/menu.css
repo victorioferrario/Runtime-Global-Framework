@@ -154,7 +154,9 @@
     color: #fff !important;
 }
 
-
+ .widget{
+     transition-duration: 300ms;
+ }
 @media (max-width: 640px) {
 
     .menu-text {
@@ -175,6 +177,9 @@
         width: 100%;
         background: #fff;
         padding-left: 64px;
+    }
+    .widget{
+        height:0!important;
     }
 }
 
