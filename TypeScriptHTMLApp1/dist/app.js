@@ -134,7 +134,10 @@ var Views;
         }
         Page.prototype.dataLoaded = function (arg) {
             var self = this;
-            self.sideNav = new Views.Controls.SideNav({ data: self.appContext.data });
+            self.topNav = new Views.Controls.Header.TopNav();
+            self.sideNav = new Views.Controls.SideNav({
+                data: self.appContext.data
+            });
             self.init();
         };
         Page.prototype.init = function () {
@@ -142,13 +145,29 @@ var Views;
             self.search = $("#search-box");
             self.searchButton = $("#trigger-search");
             self.searchButton.on("click", function (evt) {
-                self.search.width("400px");
+                self.search.addClass("active");
+                console.log(window.innerWidth);
+                self.topNav.logoControl.searchControl.triggerEvent();
+            });
+            $("#button-fullscreen").on("click", function (evt) {
+                console.log("hello fullscreen");
             });
         };
         return Page;
     }());
     Views.Page = Page;
 })(Views || (Views = {}));
+var toggleFullScreen = function () {
+    console.log("toooooooooooooooooo");
+    if (screenfull.enabled) {
+        if (!screenfull.isFullscreen) {
+            screenfull.request();
+        }
+        else {
+            screenfull.exit();
+        }
+    }
+};
 $(document).ready(function () {
     var app = new Views.Page();
 });
@@ -156,13 +175,13 @@ var Views;
 (function (Views) {
     var Controls;
     (function (Controls) {
-        var List = (function () {
-            function List(props) {
+        var Menu = (function () {
+            function Menu(props) {
                 var self = this;
                 self.props = props;
                 self.controls = [];
             }
-            List.prototype.render = function () {
+            Menu.prototype.render = function () {
                 var self = this;
                 self.el = $("<div/>", {
                     id: "menu" + self.props.index
@@ -179,9 +198,9 @@ var Views;
                 });
                 return self.el;
             };
-            return List;
+            return Menu;
         }());
-        Controls.List = List;
+        Controls.Menu = Menu;
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
 var Views;
@@ -198,7 +217,7 @@ var Views;
                     id: props.menu + "_link" + props.index,
                     class: "menu-item waves-effect waves-light",
                     click: function (evt) {
-                        console.log('this', _this);
+                        console.log("this", _this);
                     }
                 });
                 self.control
@@ -224,18 +243,15 @@ var Views;
                 self.items = [];
                 self.nav = $("#nav-menu");
                 self.props = props;
-                self.elements
-                    = new SideNavElements();
+                self.elements = new Controls.SideNavElements();
                 self.init();
             }
             SideNav.prototype.init = function () {
                 var self = this;
                 var i = 1;
+                self.nav.append(Views.Controls.Header.StringTemplates.profileWidget());
                 self.props.data.list.forEach(function (segment) {
-                    self.items.push(new Controls.List({
-                        index: i++,
-                        items: segment
-                    }));
+                    self.items.push(new Controls.Menu({ index: i++, items: segment }));
                 });
                 self.items.forEach(function (item) {
                     self.nav.append(item.render());
@@ -248,6 +264,12 @@ var Views;
             return SideNav;
         }());
         Controls.SideNav = SideNav;
+    })(Controls = Views.Controls || (Views.Controls = {}));
+})(Views || (Views = {}));
+var Views;
+(function (Views) {
+    var Controls;
+    (function (Controls) {
         var SideNavElements = (function () {
             function SideNavElements() {
                 var self = this;
@@ -298,11 +320,248 @@ var Views;
                 return label;
             };
             StaticElementBuilder.createMenuSplitter = function () {
-                return $("<div/>", { class: "menu-splitter" });
+                return $("<div/>", {
+                    class: "menu-splitter"
+                });
+            };
+            StaticElementBuilder.createImage = function (props) {
+                var image = document.createElement("img");
+                image.src = props.src;
+                image.setAttribute("title", props.alt);
+                image.setAttribute("class", props.className);
+                return image;
             };
             return StaticElementBuilder;
         }());
         Controls.StaticElementBuilder = StaticElementBuilder;
+    })(Controls = Views.Controls || (Views.Controls = {}));
+})(Views || (Views = {}));
+var Views;
+(function (Views) {
+    var Controls;
+    (function (Controls) {
+        var Header;
+        (function (Header) {
+            var LogoControl = (function () {
+                function LogoControl(props) {
+                    var self = this;
+                    self.el = $("<div/>", {
+                        class: props.className
+                    });
+                    self.lnk = $("<a/>", {
+                        href: "javascript:void(0);",
+                        class: "navbar-brand navbar-blue"
+                    });
+                    self.searchControl = new Views.Controls.Header.SearchControl();
+                    self.smallLogo = Views.Controls.StaticElementBuilder.createImage(props.small);
+                    self.largeLogo = Views.Controls.StaticElementBuilder.createImage(props.large);
+                    self.lnk.append(self.smallLogo);
+                    self.lnk.append(self.largeLogo);
+                }
+                LogoControl.prototype.render = function () {
+                    var self = this;
+                    self.el.append(self.lnk);
+                    self.el.append(Views.Controls.Header.StringTemplates.toggleMenu);
+                    self.el.append(self.searchControl.render());
+                    self.el.append(Views.Controls.Header.StringTemplates.toggleSearch);
+                    return self.el;
+                };
+                return LogoControl;
+            }());
+            Header.LogoControl = LogoControl;
+        })(Header = Controls.Header || (Controls.Header = {}));
+    })(Controls = Views.Controls || (Views.Controls = {}));
+})(Views || (Views = {}));
+var Views;
+(function (Views) {
+    var Controls;
+    (function (Controls) {
+        var Header;
+        (function (Header) {
+            var SearchControl = (function () {
+                function SearchControl() {
+                    var self = this;
+                    self.el = $("<div/>", {
+                        id: "search-box"
+                    });
+                    self.elSearchWrapper = $("<div/>", {
+                        class: "form-group is-empty"
+                    });
+                    self.elSearchInput = $("<input/>", {
+                        id: "search-input",
+                        class: "form-control",
+                        placeholder: "Search...",
+                        attr: {},
+                        blur: function (evt) {
+                            console.log(evt);
+                        }
+                    });
+                    self.elSearchWrapper.append(self.elSearchInput);
+                    self.el.append(self.elSearchWrapper);
+                    $("#button-search-close").click(function (evt) {
+                        console.log("test");
+                        self.el.removeClass("active");
+                        self.elSearchInput.val("");
+                        $("body #topnav").toggleClass("search-active");
+                    });
+                }
+                SearchControl.prototype.render = function () {
+                    var self = this;
+                    return self.el;
+                };
+                SearchControl.prototype.triggerEvent = function () {
+                    var self = this;
+                    $("#search-input").focus();
+                    $("body #topnav").toggleClass("search-active");
+                    $("#button-search-close").click(function (evt) {
+                        self.el.removeClass("active");
+                        $("body #topnav").removeClass("search-active");
+                    });
+                };
+                SearchControl.prototype.cleanEvent = function () {
+                    var self = this;
+                    $("#button-search-close").off("click");
+                };
+                return SearchControl;
+            }());
+            Header.SearchControl = SearchControl;
+        })(Header = Controls.Header || (Controls.Header = {}));
+    })(Controls = Views.Controls || (Views.Controls = {}));
+})(Views || (Views = {}));
+var Views;
+(function (Views) {
+    var Controls;
+    (function (Controls) {
+        var Header;
+        (function (Header) {
+            var StringTemplates = (function () {
+                function StringTemplates() {
+                }
+                StringTemplates.toggleMenu = function () {
+                    return '<span id="trigger-sidebar" class="toolbar-trigger toolbar-icon-bg stay-on-search">' +
+                        '<a data-toggle="tooltips" data-placement="right" title="Toggle Sidebar" class="waves-effect waves-light" id="btn-toggle">' +
+                        '   <span class="icon-bg" style="background: transparent !important;"><i class="material-icons">menu</i></span></a></span>';
+                };
+                StringTemplates.toggleSearch = function () {
+                    return '<span id="trigger-search" class="toolbar-trigger toolbar-icon-bg ov-h">' +
+                        '<a data-toggle="tooltips" id="toggle-search" data-placement="right" title="Toggle Sidebar" class="waves-effect waves-light">' +
+                        '    <span class="icon-bg" style="background: transparent !important;"><i class="material-icons">search</i></span></a></span>';
+                };
+                StringTemplates.searchInput = function () {
+                    return '<div id="search-box">' +
+                        '<div class="form-group is-empty"><input class="form-control" type="text" placeholder="Search..." id="search-input" style="background: #fff; opacity: .70; border-radius: 2px;color:#000"><span class="material-input"></span></div>' +
+                        '</div>';
+                };
+                StringTemplates.rightMenuFullScreen = function () {
+                    return '<li class="toolbar-icon-bg hidden-xs" id="trigger-fullscreen">'
+                        + '     <a href="#" class="toggle-fullscreen waves-effect waves-light" id="button-toggle-fullscreen" onclick="window.toggleFullScreen();">             '
+                        + '         <span class="icon-bg" style="background: transparent !important;">             '
+                        + '             <i class="material-icons">fullscreen</i>               '
+                        + '         </span><div class="ripple-container"></div>                '
+                        + "     </a>               "
+                        + " </li>";
+                };
+                StringTemplates.otherMenuItem = function () {
+                    return '<li class="dropdown toolbar-icon-bg"><a href="#" class="hasnotifications dropdown-toggle waves-effect waves-light" data-toggle="dropdown"><span class="icon-bg" style="background: transparent !important;"><i class="material-icons">playlist_play</i></span><span class="badge badge-info"></span></a></li>';
+                };
+                StringTemplates.notificationMenuItem = function () {
+                    return '<li class="dropdown toolbar-icon-bg"><a href="#" class="hasnotifications dropdown-toggle waves-effect waves-light" data-toggle="dropdown"><span class="icon-bg" style="background: transparent !important;"><i class="material-icons">notifications</i></span><span class="badge badge-info"></span></a></li>';
+                };
+                StringTemplates.profileWidget = function () {
+                    return '<div class="widget" id="widget-profileinfo" style="height:87px; overflow:hidden; background:#666">'
+                        + '    <div class="widget-body">'
+                        + '        <div class="userinfo ">'
+                        + '            <div class="avatar pull-left">'
+                        + '                '
+                        + '            </div>'
+                        + '            <div class="info">'
+                        + '                <span class="username"></span>'
+                        + '                <span class="useremail"></span>'
+                        + '            </div>'
+                        + '            <div class="acct-dropdown clearfix dropdown">'
+                        + '                <span class="pull-left"><span class="online-status online"></span></span>'
+                        + '                <!-- <span class="pull-right dropdown-toggle" data-toggle="dropdown"><a href="javascript:void(0)" '
+                        + '  class="btn btn-fab-caret btn-xs btn-fab"><i class="material-icons">arrow_drop_down</i><div class="ripple-container"></div></a></span>'
+                        + '                <ul class="dropdown-menu">'
+                        + '                    <li><span class="online-status online"></span> Online</li>'
+                        + '                    <li><span class="online-status online"></span> Online</li>'
+                        + '                    <li><span class="online-status online"></span> Online</li>'
+                        + '                    <li><span class="online-status online"></span> Online</li>'
+                        + '                </ul> -->'
+                        + '            </div>'
+                        + '        </div>'
+                        + '    </div>       '
+                        + '</div>';
+                };
+                return StringTemplates;
+            }());
+            Header.StringTemplates = StringTemplates;
+        })(Header = Controls.Header || (Controls.Header = {}));
+    })(Controls = Views.Controls || (Views.Controls = {}));
+})(Views || (Views = {}));
+var Views;
+(function (Views) {
+    var Controls;
+    (function (Controls) {
+        var Header;
+        (function (Header) {
+            var TopNav = (function () {
+                function TopNav() {
+                    var self = this;
+                    self.el = $("#topnav");
+                    var logoProps = {
+                        className: "logo-area",
+                        small: {
+                            alt: "Harvard",
+                            src: "styles/images/h-mini.png",
+                            className: "show-on-collapse img-logo-white"
+                        },
+                        large: {
+                            alt: "Harvard",
+                            src: "styles/images/havard-logo.png",
+                            className: "img-white"
+                        }
+                    };
+                    self.logoControl = new Header.LogoControl(logoProps);
+                    self.el.append(self.logoControl.render());
+                    self.rightControl = new RightMenu();
+                    self.el.append(self.rightControl.render());
+                }
+                return TopNav;
+            }());
+            Header.TopNav = TopNav;
+            var RightMenu = (function () {
+                function RightMenu() {
+                    var self = this;
+                    self.el = $("<ul/>", {
+                        class: "nav navbar-nav toolbar pull-right"
+                    });
+                    self.el.append('<li class="toolbar-icon-bg appear-on-search ov-h" id="trigger-search-close"><a class="toggle-fullscreen" id="button-search-close"><span class="icon-bg"><i class="material-icons">close</i></span><div class="ripple-container"></div></a> </li>');
+                    self.el.append(Views.Controls.Header.StringTemplates.rightMenuFullScreen);
+                    self.el.append(Views.Controls.Header.StringTemplates.otherMenuItem);
+                    self.el.append(Views.Controls.Header.StringTemplates.notificationMenuItem);
+                }
+                RightMenu.prototype.render = function () {
+                    var self = this;
+                    $("#button-toggle-fullscreen").on("click", function (event) {
+                        console.log("this");
+                    });
+                    return self.el;
+                };
+                RightMenu.prototype.onclickFullScreen = function (event) {
+                    if (screenfull.enabled) {
+                        if (!screenfull.isFullscreen) {
+                            screenfull.request();
+                        }
+                        else {
+                            screenfull.exit();
+                        }
+                    }
+                };
+                return RightMenu;
+            }());
+            Header.RightMenu = RightMenu;
+        })(Header = Controls.Header || (Controls.Header = {}));
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
 //# sourceMappingURL=app.js.map

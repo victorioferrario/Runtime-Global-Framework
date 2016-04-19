@@ -18,14 +18,16 @@ namespace Views.Controls.Header {
         
         static rightMenuFullScreen(){
            return '<li class="toolbar-icon-bg hidden-xs" id="trigger-fullscreen">' 
-          + '     <a href="#" class="toggle-fullscreen waves-effect waves-light" id="button-fullscreen">             '
+          + '     <a href="#" class="toggle-fullscreen waves-effect waves-light" id="button-toggle-fullscreen" onclick="window.toggleFullScreen();">             '
           + '         <span class="icon-bg" style="background: transparent !important;">             '
           + '             <i class="material-icons">fullscreen</i>               '
           + '         </span><div class="ripple-container"></div>                '
-          + '     </a>               '
-          + ' </li>';
+          + "     </a>               "
+          + " </li>";
         }
-        
+        static otherMenuItem(){
+            return '<li class="dropdown toolbar-icon-bg"><a href="#" class="hasnotifications dropdown-toggle waves-effect waves-light" data-toggle="dropdown"><span class="icon-bg" style="background: transparent !important;"><i class="material-icons">playlist_play</i></span><span class="badge badge-info"></span></a></li>';
+        }
         static notificationMenuItem(){
             return '<li class="dropdown toolbar-icon-bg"><a href="#" class="hasnotifications dropdown-toggle waves-effect waves-light" data-toggle="dropdown"><span class="icon-bg" style="background: transparent !important;"><i class="material-icons">notifications</i></span><span class="badge badge-info"></span></a></li>';
         }

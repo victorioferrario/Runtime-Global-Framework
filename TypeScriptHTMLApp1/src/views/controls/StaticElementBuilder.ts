@@ -14,7 +14,9 @@
             return label;
         }
         static createMenuSplitter() {
-            return $("<div/>", { class: "menu-splitter" });
+            return $("<div/>", {
+                 class: "menu-splitter"
+            });
         }
         static createImage(props: Header.ILogoProps):HTMLImageElement {
             const image = document.createElement("img");

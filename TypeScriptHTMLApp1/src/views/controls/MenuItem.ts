@@ -18,7 +18,7 @@
                 id: props.menu + "_link" + props.index,
                 class: "menu-item waves-effect waves-light",
                 click: (evt: any) => {
-                    console.log('this', this);
+                    console.log("this", this);
                 }
             });
             self.control

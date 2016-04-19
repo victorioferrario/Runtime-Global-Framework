@@ -32,6 +32,7 @@
     <Content Include="libs\materialize\font\material-design-icons\Material-Design-Icons.svg" />
     <Content Include="libs\materialize\js\materialize.js" />
     <Content Include="libs\materialize\js\materialize.min.js" />
+    <Content Include="libs\vendors\fullscreen.js" />
     <Content Include="libs\vendors\jquery-2.2.3.min.js" />
     <Content Include="libs\vendors\jquery.nanoscroller.min.js" />
     <Content Include="libs\vendors\knockout-3.4.0.js" />
@@ -41,6 +42,7 @@
     <Content Include="libs\vendors\velocity.min.js" />
     <Content Include="libs\vendors\waves.css" />
     <Content Include="libs\vendors\waves.js" />
+    <Content Include="snippets.txt" />
     <Content Include="styles\images\h-mini.png" />
     <Content Include="styles\images\harvard.png" />
     <Content Include="styles\images\havard-logo.png" />
@@ -113,9 +115,15 @@
     <TypeScriptCompile Include="src\services\http.ts" />
     <TypeScriptCompile Include="src\core\eventDispatcher.ts" />
     <TypeScriptCompile Include="src\system\singleton.ts" />
-    <TypeScriptCompile Include="src\views\controls\List.ts" />
-    <TypeScriptCompile Include="src\views\controls\ListItem.ts" />
+    <TypeScriptCompile Include="src\views\controls\header\Buttons.ts" />
+    <TypeScriptCompile Include="src\views\controls\header\Logo.ts" />
+    <TypeScriptCompile Include="src\views\controls\header\Search.ts" />
+    <TypeScriptCompile Include="src\views\controls\header\StringTemplates.ts" />
+    <TypeScriptCompile Include="src\views\controls\header\TopNav.ts" />
+    <TypeScriptCompile Include="src\views\controls\Menu.ts" />
+    <TypeScriptCompile Include="src\views\controls\MenuItem.ts" />
     <TypeScriptCompile Include="src\views\controls\SideNav.ts" />
+    <TypeScriptCompile Include="src\views\controls\SideNavElements.ts" />
     <TypeScriptCompile Include="src\views\controls\StaticElementBuilder.ts" />
     <TypeScriptCompile Include="src\views\page.ts" />
     <TypeScriptCompile Include="typings\jquery\jquery.d.ts" />

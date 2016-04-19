@@ -135,7 +135,9 @@ var Views;
         Page.prototype.dataLoaded = function (arg) {
             var self = this;
             self.topNav = new Views.Controls.Header.TopNav();
-            self.sideNav = new Views.Controls.SideNav({ data: self.appContext.data });
+            self.sideNav = new Views.Controls.SideNav({
+                data: self.appContext.data
+            });
             self.init();
         };
         Page.prototype.init = function () {
@@ -147,11 +149,25 @@ var Views;
                 console.log(window.innerWidth);
                 self.topNav.logoControl.searchControl.triggerEvent();
             });
+            $("#button-fullscreen").on("click", function (evt) {
+                console.log("hello fullscreen");
+            });
         };
         return Page;
     }());
     Views.Page = Page;
 })(Views || (Views = {}));
+window["toggleFullScreen"] = function () {
+    console.log("toooooooooooooooooo");
+    if (screenfull.enabled) {
+        if (!screenfull.isFullscreen) {
+            screenfull.request();
+        }
+        else {
+            screenfull.exit();
+        }
+    }
+};
 $(document).ready(function () {
     var app = new Views.Page();
 });
@@ -201,7 +217,7 @@ var Views;
                     id: props.menu + "_link" + props.index,
                     class: "menu-item waves-effect waves-light",
                     click: function (evt) {
-                        console.log('this', _this);
+                        console.log("this", _this);
                     }
                 });
                 self.control
@@ -304,7 +320,9 @@ var Views;
                 return label;
             };
             StaticElementBuilder.createMenuSplitter = function () {
-                return $("<div/>", { class: "menu-splitter" });
+                return $("<div/>", {
+                    class: "menu-splitter"
+                });
             };
             StaticElementBuilder.createImage = function (props) {
                 var image = document.createElement("img");
@@ -384,7 +402,7 @@ var Views;
                         console.log("test");
                         self.el.removeClass("active");
                         self.elSearchInput.val("");
-                        $('body #topnav').toggleClass('search-active');
+                        $("body #topnav").toggleClass("search-active");
                     });
                 }
                 SearchControl.prototype.render = function () {
@@ -394,10 +412,10 @@ var Views;
                 SearchControl.prototype.triggerEvent = function () {
                     var self = this;
                     $("#search-input").focus();
-                    $('body #topnav').toggleClass('search-active');
+                    $("body #topnav").toggleClass("search-active");
                     $("#button-search-close").click(function (evt) {
                         self.el.removeClass("active");
-                        $('body #topnav').removeClass('search-active');
+                        $("body #topnav").removeClass("search-active");
                     });
                 };
                 SearchControl.prototype.cleanEvent = function () {
@@ -436,12 +454,15 @@ var Views;
                 };
                 StringTemplates.rightMenuFullScreen = function () {
                     return '<li class="toolbar-icon-bg hidden-xs" id="trigger-fullscreen">'
-                        + '     <a href="#" class="toggle-fullscreen waves-effect waves-light" id="button-fullscreen">             '
+                        + '     <a href="#" class="toggle-fullscreen waves-effect waves-light" id="button-toggle-fullscreen" onclick="window.toggleFullScreen();">             '
                         + '         <span class="icon-bg" style="background: transparent !important;">             '
                         + '             <i class="material-icons">fullscreen</i>               '
                         + '         </span><div class="ripple-container"></div>                '
-                        + '     </a>               '
-                        + ' </li>';
+                        + "     </a>               "
+                        + " </li>";
+                };
+                StringTemplates.otherMenuItem = function () {
+                    return '<li class="dropdown toolbar-icon-bg"><a href="#" class="hasnotifications dropdown-toggle waves-effect waves-light" data-toggle="dropdown"><span class="icon-bg" style="background: transparent !important;"><i class="material-icons">playlist_play</i></span><span class="badge badge-info"></span></a></li>';
                 };
                 StringTemplates.notificationMenuItem = function () {
                     return '<li class="dropdown toolbar-icon-bg"><a href="#" class="hasnotifications dropdown-toggle waves-effect waves-light" data-toggle="dropdown"><span class="icon-bg" style="background: transparent !important;"><i class="material-icons">notifications</i></span><span class="badge badge-info"></span></a></li>';
@@ -491,13 +512,15 @@ var Views;
                     var logoProps = {
                         className: "logo-area",
                         small: {
-                            alt: "Havard",
+                            alt: "Harvard",
                             src: "styles/images/h-mini.png",
-                            className: "show-on-collapse img-logo-white" },
+                            className: "show-on-collapse img-logo-white"
+                        },
                         large: {
-                            alt: "Havard",
+                            alt: "Harvard",
                             src: "styles/images/havard-logo.png",
-                            className: "img-white" }
+                            className: "img-white"
+                        }
                     };
                     self.logoControl = new Header.LogoControl(logoProps);
                     self.el.append(self.logoControl.render());
@@ -515,13 +538,13 @@ var Views;
                     });
                     self.el.append('<li class="toolbar-icon-bg appear-on-search ov-h" id="trigger-search-close"><a class="toggle-fullscreen" id="button-search-close"><span class="icon-bg"><i class="material-icons">close</i></span><div class="ripple-container"></div></a> </li>');
                     self.el.append(Views.Controls.Header.StringTemplates.rightMenuFullScreen);
+                    self.el.append(Views.Controls.Header.StringTemplates.otherMenuItem);
                     self.el.append(Views.Controls.Header.StringTemplates.notificationMenuItem);
                 }
                 RightMenu.prototype.render = function () {
                     var self = this;
-                    $("#button-fullscreen").on("click", function (evt) {
-                        self.onclickFullScreen(evt);
-                        console.log("full screening");
+                    $("#button-toggle-fullscreen").on("click", function (event) {
+                        console.log("this");
                     });
                     return self.el;
                 };

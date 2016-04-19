@@ -8,10 +8,10 @@ namespace Views.Controls.Header{
             self.el = $("<div/>",
             {
                 id: "search-box"
-            });     
-            self.elSearchWrapper = $("<div/>",{
-                class:"form-group is-empty"
-            })       
+            });
+            self.elSearchWrapper = $("<div/>", {
+                class: "form-group is-empty"
+            });
             self.elSearchInput = $("<input/>",
             {
                 id: "search-input",
@@ -23,17 +23,14 @@ namespace Views.Controls.Header{
                     console.log(evt);                 
                 }
             });            
-           
             self.elSearchWrapper.append(self.elSearchInput);
             self.el.append(self.elSearchWrapper);      
             $("#button-search-close").click((evt)=>{
                 console.log("test");
-                self.el.removeClass("active");
+                self.el.removeClass("active"); 
                   self.elSearchInput.val("");   
-                $('body #topnav').toggleClass('search-active');      
+                $("body #topnav").toggleClass("search-active");      
             }) ;
-                  
-            
         }     
         render(){
             const self =this;
@@ -42,10 +39,10 @@ namespace Views.Controls.Header{
         triggerEvent(){  
             const self = this;          
             $("#search-input").focus();         
-            $('body #topnav').toggleClass('search-active');                          
+            $("body #topnav").toggleClass("search-active");                          
             $("#button-search-close").click((evt)=> {            
                 self.el.removeClass("active");
-                $('body #topnav').removeClass('search-active');                
+                $("body #topnav").removeClass("search-active");                
             }) ;
         }
         cleanEvent(){
