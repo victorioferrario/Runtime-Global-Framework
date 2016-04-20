@@ -17,6 +17,8 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
@@ -24,6 +26,11 @@
   <ItemGroup>
     <Content Include="bundle.config.js" />
     <Content Include="dist\admin.vendor.css" />
+    <Content Include="dist\app.ui.2016.js" />
+    <Content Include="dist\vendor.bundle.js" />
+    <Content Include="dist\vendor.bundle.min.js">
+      <DependentUpon>vendor.bundle.js</DependentUpon>
+    </Content>
     <Content Include="gulpfile.js" />
     <Content Include="index.html" />
     <Content Include="libs\materialize\css\materialize.css" />
@@ -38,6 +45,10 @@
     <Content Include="libs\vendors\knockout-3.4.0.js" />
     <Content Include="libs\vendors\knockout-postbox.js" />
     <Content Include="libs\vendors\knockout.mapping.js" />
+    <Content Include="libs\vendors\tipped-4.5.6-light\css\tipped\tipped.css" />
+    <Content Include="libs\vendors\tipped-4.5.6-light\example\css\style.css" />
+    <Content Include="libs\vendors\tipped-4.5.6-light\example\index.html" />
+    <Content Include="libs\vendors\tipped-4.5.6-light\js\tipped\tipped.js" />
     <Content Include="libs\vendors\uibuilder-1.2.js" />
     <Content Include="libs\vendors\velocity.min.js" />
     <Content Include="libs\vendors\waves.css" />
@@ -97,6 +108,7 @@
     <Content Include="libs\materialize\font\roboto\Roboto-Thin.woff2" />
     <Content Include="data.json" />
     <Content Include="tsconfig.json" />
+    <None Include="bundleconfig.json" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -107,6 +119,7 @@
   <ItemGroup />
   <ItemGroup>
     <TypeScriptCompile Include="src\app.ts" />
+    <TypeScriptCompile Include="src\models\IEntity.ts" />
     <TypeScriptCompile Include="src\models\IEvents.ts" />
     <TypeScriptCompile Include="src\session\appContext.ts" />
     <TypeScriptCompile Include="src\models\IMenu.ts" />
@@ -115,17 +128,25 @@
     <TypeScriptCompile Include="src\services\http.ts" />
     <TypeScriptCompile Include="src\core\eventDispatcher.ts" />
     <TypeScriptCompile Include="src\system\singleton.ts" />
-    <TypeScriptCompile Include="src\views\controls\header\Buttons.ts" />
-    <TypeScriptCompile Include="src\views\controls\header\Logo.ts" />
-    <TypeScriptCompile Include="src\views\controls\header\Search.ts" />
-    <TypeScriptCompile Include="src\views\controls\header\StringTemplates.ts" />
-    <TypeScriptCompile Include="src\views\controls\header\TopNav.ts" />
-    <TypeScriptCompile Include="src\views\controls\Menu.ts" />
-    <TypeScriptCompile Include="src\views\controls\MenuItem.ts" />
-    <TypeScriptCompile Include="src\views\controls\SideNav.ts" />
-    <TypeScriptCompile Include="src\views\controls\SideNavElements.ts" />
-    <TypeScriptCompile Include="src\views\controls\StaticElementBuilder.ts" />
-    <TypeScriptCompile Include="src\views\page.ts" />
+    <TypeScriptCompile Include="src\views\controls\base.ts" />
+    <TypeScriptCompile Include="src\views\controls\head.ts" />
+    <TypeScriptCompile Include="src\views\controls\components\Logo.ts" />
+    <TypeScriptCompile Include="src\views\controls\components\Search.ts" />
+    <TypeScriptCompile Include="src\views\controls\components\utilities\StringTemplates.ts" />
+    <TypeScriptCompile Include="src\views\controls\components\TopNav.ts" />
+    <TypeScriptCompile Include="src\views\controls\index.ts" />
+    <TypeScriptCompile Include="src\views\controls\master.ts" />
+    <TypeScriptCompile Include="src\views\controls\navigation\Menu.ts" />
+    <TypeScriptCompile Include="src\views\controls\navigation\MenuItem.ts">
+      <DependentUpon>Menu.ts</DependentUpon>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\views\controls\aSideNav.ts" />
+    <TypeScriptCompile Include="src\views\controls\SideNavElements.ts">
+      <DependentUpon>aSideNav.ts</DependentUpon>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\views\controls\navigation\utilities\StaticElementBuilder.ts" />
+    <TypeScriptCompile Include="src\views\controls\main.ts" />
+    <TypeScriptCompile Include="src\views\controls\page.ts" />
     <TypeScriptCompile Include="typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="typings\knockout.mapping\knockout.mapping.d.ts" />
     <TypeScriptCompile Include="typings\knockout.postbox\knockout-postbox.d.ts" />

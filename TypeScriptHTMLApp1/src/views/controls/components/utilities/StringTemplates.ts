@@ -1,4 +1,4 @@
-namespace Views.Controls.Header {
+namespace Views.Controls.Components.Utilities {
     export class StringTemplates{
         static toggleMenu(){
              return '<span id="trigger-sidebar" class="toolbar-trigger toolbar-icon-bg stay-on-search">' +

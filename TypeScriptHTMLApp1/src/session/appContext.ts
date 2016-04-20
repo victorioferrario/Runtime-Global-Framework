@@ -1,6 +1,6 @@
 ﻿namespace Session {
     export class AppContext extends Core.EventDispatcher {
-        data: Models.IMenu;
+        payload: Models.IPayload;
         private isLoaded: boolean;
         private static instance: Session.AppContext;
         constructor() {
@@ -18,10 +18,10 @@
             const self = this;
             Services.Http.loadJson("data.json").fail(() => {
                 console.warn("Error Loading Data");
-            }).done((result: Models.IMenu) => {
-                self.data = result;
+            }).done((result: Models.IPayload) => {
+                self.payload = result;
                 self.isLoaded = true;
-                self.dispatchEvent(new Core.Event(Models.Events.dataLoaded, self.data));
+                self.dispatchEvent(new Core.Event(Models.Events.dataLoaded, self.payload));
             });
         }
     }

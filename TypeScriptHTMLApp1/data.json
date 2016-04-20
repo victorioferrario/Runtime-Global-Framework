@@ -1,4 +1,21 @@
 ﻿{
+  "entity": {
+    "name": "Harvard Business School",
+    "logos": [
+      {
+        "type": "small",
+        "alt": "Harvard Business School",
+        "src": "styles/images/h-mini.png",
+        "className": "show-on-collapse img-logo-white"
+      },
+      {
+        "type": "large",
+        "alt": "Harvard Business School",
+        "src": "styles/images/havard-logo.png",
+        "className": "img-white"
+      }
+    ]
+  },
   "list": [
     {
       "data": [

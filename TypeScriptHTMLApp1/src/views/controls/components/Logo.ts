@@ -1,11 +1,11 @@
-namespace Views.Controls.Header {    
+namespace Views.Controls.Components {    
     export interface ILogoProps{
         alt:string;
         src:string;
         className:string;        
     }    
     export interface ILogoControlProps{                
-        className:string;
+        className?:string;
         small?:ILogoProps;
         large?:ILogoProps;        
     }
@@ -14,7 +14,7 @@ namespace Views.Controls.Header {
         lnk:JQuery;
         smallLogo:HTMLImageElement;
         largeLogo:HTMLImageElement;      
-        searchControl:Views.Controls.Header.SearchControl;  
+        searchControl:Views.Controls.Components.SearchControl;  
         constructor(props:ILogoControlProps){  
             const self = this;
             self.el = $("<div/>", {              
@@ -24,18 +24,25 @@ namespace Views.Controls.Header {
                href:"javascript:void(0);",
                class:"navbar-brand navbar-blue"               
             });   
-            self.searchControl = new Views.Controls.Header.SearchControl();
+
+            self.searchControl = new Views.Controls.Components.SearchControl();
+
             self.smallLogo = Views.Controls.StaticElementBuilder.createImage(props.small);
-            self.largeLogo = Views.Controls.StaticElementBuilder.createImage(props.large);              
+            self.largeLogo = Views.Controls.StaticElementBuilder.createImage(props.large);    
+                      
             self.lnk.append(self.smallLogo);
             self.lnk.append(self.largeLogo);     
+
         }
-        render(){
+        render() {
+
             const self = this;
             self.el.append(self.lnk); 
-            self.el.append(Views.Controls.Header.StringTemplates.toggleMenu);
-            self.el.append(self.searchControl.render());            
-            self.el.append(Views.Controls.Header.StringTemplates.toggleSearch);
+            self.el.append(Components.Utilities.StringTemplates.toggleMenu);
+
+            self.el.append(self.searchControl.render());       
+            self.el.append(Components.Utilities.StringTemplates.toggleSearch);
+
             return self.el;
         }
     }    

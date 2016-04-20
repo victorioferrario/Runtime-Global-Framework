@@ -1,4 +1,5 @@
-﻿export class App {
+﻿
+export class App {
     appContext:Session.AppContext;
     constructor() {
         const self = this;
@@ -6,7 +7,6 @@
         $("#layout-static .static-content-wrapper").append(
             "<div class='extrabar-underlay'></div>");
     }
-    
 }
 $(document).ready(() => {
     const app = new App();

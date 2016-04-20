@@ -1,4 +1,4 @@
-﻿namespace Views.Controls {
+﻿namespace Views.Controls.Navigation {
     export interface IMenuProps {
         index: number;
         items: Models.IMenuSegment;

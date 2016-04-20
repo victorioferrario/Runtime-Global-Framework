@@ -1,8 +1,8 @@
-namespace Views.Controls.Header{
+namespace Views.Controls.Components{
     export class SearchControl {        
-        el:JQuery;
-        elSearchWrapper:JQuery;
+        el: JQuery;
         elSearchInput:JQuery;
+        elSearchWrapper:JQuery;
         constructor(){
             const self = this;
             self.el = $("<div/>",

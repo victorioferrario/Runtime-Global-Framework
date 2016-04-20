@@ -18,7 +18,7 @@
                  class: "menu-splitter"
             });
         }
-        static createImage(props: Header.ILogoProps):HTMLImageElement {
+        static createImage(props: Components.ILogoProps):HTMLImageElement {
             const image = document.createElement("img");
             image.src = props.src;
             image.setAttribute("title", props.alt);

@@ -1,3 +1,0 @@
-namespace Views.Controls.Header{
-       
-}
