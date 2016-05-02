@@ -62,6 +62,7 @@ var Models;
         function Events() {
         }
         Events.dataLoaded = "event:data:loaded";
+        Events.userLoaded = "event:user:loaded";
         Events.notificationsLoaded = "event:data:notifications";
         return Events;
     }());
@@ -80,87 +81,6 @@ var Services;
     }());
     Services.Http = Http;
 })(Services || (Services = {}));
-/// <reference path="../../typings/tsd.d.ts" />
-var Session;
-(function (Session) {
-    var AppContext = (function (_super) {
-        __extends(AppContext, _super);
-        function AppContext() {
-            _super.call(this);
-            this.isLoaded = false;
-            var self = this;
-            self.initializeQ();
-        }
-        AppContext.getInstance = function () {
-            if (this.instance === null || this.instance === undefined) {
-                this.instance = new Session.AppContext();
-            }
-            return this.instance;
-        };
-        AppContext.prototype.initializeQ = function () {
-            var self = this;
-            Q.all([self.loadMenu()]).then(function () {
-            });
-        };
-        AppContext.prototype.initialize = function () {
-            var self = this;
-            Services.Http.loadJson(AppContextSettings.menuUrl).fail(function () {
-                console.warn("Error Loading Data");
-            }).done(function (result) {
-                self.payloadMenu = result;
-                self.isLoadedMenu = true;
-                self.initializeNotifications();
-                self.dispatchEvent(new Core.Event(Models.Events.dataLoaded, self.payloadMenu));
-            });
-        };
-        AppContext.prototype.initializeNotifications = function () {
-            var self = this;
-            Services.Http.loadJson("data-notifications.json").fail(function () {
-                console.warn("Error Loading Data");
-            }).done(function (result) {
-                self.payloadNotifications = result;
-                self.isLoaded = true;
-                self.dispatchEvent(new Core.Event(Models.Events.notificationsLoaded, self.payloadNotifications));
-            });
-        };
-        return AppContext;
-    }(DataContext));
-    Session.AppContext = AppContext;
-    var DataContext = (function (_super) {
-        __extends(DataContext, _super);
-        function DataContext() {
-            _super.call(this);
-            this.isLoadedMenu = false;
-            this.isLoadedEntity = false;
-            this.isLoadedNotifications = false;
-        }
-        DataContext.prototype.loadMenu = function () {
-            var self = this;
-            Services.Http.loadJson(AppContextSettings.menuUrl).fail(function () {
-                Q.reject("Error Loading Data");
-            }).done(function (result) {
-                self.isLoadedMenu = true;
-                self.payloadMenu = result;
-                Q.resolve(result);
-            }).always(function () {
-                return Q.resolve(self.payloadMenu);
-            });
-            return null;
-        };
-        return DataContext;
-    }(Core.EventDispatcher));
-    Session.DataContext = DataContext;
-    var AppContextSettings = (function () {
-        function AppContextSettings() {
-        }
-        AppContextSettings.isDebug = true;
-        AppContextSettings.menuUrl = AppContextSettings.isDebug ? "data.json" : "/navbar_builder";
-        AppContextSettings.userSessionUrl = "/user_builder";
-        AppContextSettings.notificationUrl = "/dashboard_notification_builder";
-        return AppContextSettings;
-    }());
-    Session.AppContextSettings = AppContextSettings;
-})(Session || (Session = {}));
 var System;
 (function (System) {
     var Singleton = (function () {
@@ -175,6 +95,134 @@ var System;
         return Singleton;
     }());
 })(System || (System = {}));
+/// <reference path="../../typings/tsd.d.ts" />
+var Session;
+(function (Session) {
+    var DataContext = (function (_super) {
+        __extends(DataContext, _super);
+        function DataContext() {
+            _super.call(this);
+            this.isLoadedMenu = false;
+            this.isLoadedUser = false;
+            this.isLoadedNotifications = false;
+            var self = this;
+            self.payloadMenu = {
+                entity: null,
+                list: null
+            };
+        }
+        DataContext.prototype.loadMenu = function () {
+            var self = this;
+            Services.Http.loadJson(AppContextSettings.menuUrl).fail(function () {
+                Q.reject("Error Loading Data");
+            }).done(function (result) {
+                self.isLoadedMenu = true;
+                self.payloadMenu = result;
+                Q.resolve(result);
+            }).always(function () {
+                return Q.resolve(self.payloadMenu);
+            });
+            return null;
+        };
+        DataContext.prototype.loadUser = function () {
+            var self = this;
+            Services.Http.loadJson(AppContextSettings.userUrl).fail(function () {
+                Q.reject("Error Loading Data");
+            }).done(function (result) {
+                self.isLoadedUser = true;
+                self.payloadUser = result;
+                self.payloadMenu.entity = result.entity;
+                Q.resolve(result);
+            }).always(function () {
+                return Q.resolve(self.payloadUser);
+            });
+            return null;
+        };
+        DataContext.prototype.loadNotifications = function () {
+            var self = this;
+            Services.Http.loadJson(AppContextSettings.notificationUrl).fail(function () {
+                Q.reject("Error Loading Notifications");
+            }).done(function (result) {
+                self.isLoadedNotifications = true;
+                self.payloadNotifications = result;
+                console.info(result);
+                Q.resolve(result);
+            }).always(function () {
+                return Q.resolve(self.payloadNotifications);
+            });
+            return null;
+        };
+        DataContext.prototype.initialize = function () {
+            var self = this;
+            Q.all([self.loadMenu(), self.loadUser()]).then(function () {
+                if (self.isLoadedMenu) {
+                    console.log("isLoadedMenu");
+                    self.dispatchEvent(new Core.Event(Models.Events.dataLoaded, self.payloadMenu));
+                }
+                if (self.isLoadedUser) {
+                    self.dispatchEvent(new Core.Event(Models.Events.userLoaded, self.payloadUser));
+                }
+            });
+            Q.all([self.loadNotifications()]).then(function () {
+                if (self.isLoadedNotifications) {
+                    self.dispatchEvent(new Core.Event(Models.Events.notificationsLoaded, self.payloadNotifications));
+                }
+            });
+        };
+        return DataContext;
+    }(Core.EventDispatcher));
+    Session.DataContext = DataContext;
+    var Trace = (function () {
+        function Trace() {
+        }
+        Trace.log = function () {
+            var value = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                value[_i - 0] = arguments[_i];
+            }
+            if (AppContextSettings.isDebugConsoleWrite) {
+                if (value.length > 0 && value.length < 2) {
+                    console.log(value);
+                }
+                else {
+                    console.group("Writter");
+                    for (var item in value) {
+                    }
+                }
+            }
+        };
+        return Trace;
+    }());
+    Session.Trace = Trace;
+    var AppContextSettings = (function () {
+        function AppContextSettings() {
+        }
+        AppContextSettings.isDebug = true;
+        AppContextSettings.isDebugConsoleWrite = true;
+        AppContextSettings.menuUrl = AppContextSettings.isDebug ? "data.json" : "/navbar_builder";
+        AppContextSettings.userUrl = AppContextSettings.isDebug ? "data-user.json" : "/user_profile_information_builder";
+        AppContextSettings.notificationUrl = AppContextSettings.isDebug ? "data-notifications.json" : "/dashboard_notification_builder";
+        return AppContextSettings;
+    }());
+    Session.AppContextSettings = AppContextSettings;
+    var AppContext = (function (_super) {
+        __extends(AppContext, _super);
+        function AppContext() {
+            _super.call(this);
+            this.isLoaded = false;
+            var self = this;
+            self.initialize();
+        }
+        AppContext.getInstance = function () {
+            if (this.instance === null || this.instance === undefined) {
+                this.instance = new Session.AppContext();
+            }
+            return this.instance;
+        };
+        return AppContext;
+    }(DataContext));
+    Session.AppContext = AppContext;
+})(Session || (Session = {}));
 var Views;
 (function (Views) {
     var SideNavBase = (function () {
@@ -216,8 +264,8 @@ var Views;
             var self = this;
             self.props = { data: props };
             var i = 1;
-            console.info(props.entity.user);
-            self.nav.append(Views.Controls.Components.Utilities.StringTemplates.profileWidget2(props.entity.user));
+            // self.nav.append(
+            //     Views.Controls.Components.Utilities.StringTemplates.profileWidget2(props.entity.user));
             // build menu
             self.props.data.list.forEach(function (segment) {
                 self.items.push(new Views.Controls.Navigation.Menu({ index: i++, items: segment }));
@@ -260,14 +308,14 @@ var Views;
                 var logoProps = {
                     className: "logo-area",
                     small: {
-                        alt: data.payload.logos[0].alt,
-                        src: data.payload.logos[0].src,
-                        className: data.payload.logos[0].className
+                        alt: data.payload.entity.logos[0].alt,
+                        src: data.payload.entity.logos[0].src,
+                        className: data.payload.entity.logos[0].className
                     },
                     large: {
-                        alt: data.payload.logos[1].alt,
-                        src: data.payload.logos[1].src,
-                        className: data.payload.logos[1].className
+                        alt: data.payload.entity.logos[1].alt,
+                        src: data.payload.entity.logos[1].src,
+                        className: data.payload.entity.logos[1].className
                     }
                 };
                 self.rightControl = new Views.Controls.Components.RightMenu();
@@ -310,6 +358,7 @@ var Views;
             Main.prototype.databind = function (value) {
                 var self = this;
                 self.sideNav = new Views.SideNav();
+                console.log(value);
                 self.sideNav.init(value);
             };
             return Main;
@@ -335,10 +384,60 @@ var Views;
 })(Views || (Views = {}));
 var Views;
 (function (Views) {
+    var PageButtons = (function () {
+        function PageButtons() {
+            var self = this;
+            self.aside1 = $(".user-aside-1");
+            self.aside2 = $(".user-aside-2");
+            self.init();
+        }
+        PageButtons.prototype.init = function () {
+            var self = this;
+            console.log(self);
+        };
+        PageButtons.prototype.toggle = function (isAlerts) {
+            var self = this;
+            console.log(isAlerts);
+            self.elUnderlay = $(".extrabar-underlay");
+            switch (isAlerts) {
+                case true:
+                    if (!self.aside2.hasClass("toggle-aside")) {
+                        self.aside1.removeClass("toggle-aside");
+                        self.aside2.addClass("toggle-aside");
+                        self.elUnderlay.addClass("toggle-aside");
+                    }
+                    else {
+                        self.aside2.removeClass("toggle-aside");
+                        self.elUnderlay.removeClass("toggle-aside");
+                    }
+                    break;
+                case false:
+                    if (!self.aside1.hasClass("toggle-aside")) {
+                        self.aside2.removeClass("toggle-aside");
+                        self.aside1.addClass("toggle-aside");
+                        self.elUnderlay.addClass("toggle-aside");
+                    }
+                    else {
+                        self.aside1.removeClass("toggle-aside");
+                        self.elUnderlay.removeClass("toggle-aside");
+                    }
+                    break;
+            }
+        };
+        PageButtons.prototype.hide = function () {
+            var self = this;
+            self.aside1.removeClass("toggle-aside");
+            self.aside2.removeClass("toggle-aside");
+            self.elUnderlay.removeClass("toggle-aside");
+        };
+        return PageButtons;
+    }());
+    Views.PageButtons = PageButtons;
     var Page = (function () {
         function Page() {
             var self = this;
             self.layout = new Views.Controls.MasterLayout();
+            self.notificationPanel = new PageButtons();
             self.appContext = Session.AppContext.getInstance();
             self.appContext.addEventListener(Models.Events.dataLoaded, function (arg) {
                 self.dataLoaded();
@@ -349,16 +448,16 @@ var Views;
         }
         Page.prototype.dataLoaded = function () {
             var self = this;
-            self.layout.main.databind(self.appContext.payload);
+            console.log("dataLoaded");
+            self.layout.main.databind(self.appContext.payloadMenu);
             self.layout.header.databind({
-                payload: self.appContext.payload.entity
+                payload: self.appContext.payloadUser
             });
             self.init();
         };
         Page.prototype.dataLoaded2 = function () {
             var self = this;
-            console.log(self.appContext.notifications);
-            self.progressReports = new Views.Controls.Components.ProgressReports(self.appContext.notifications);
+            self.progressReports = new Views.Controls.Components.ProgressReports(self.appContext.payloadNotifications);
         };
         Page.prototype.init = function () {
             var self = this;
@@ -372,32 +471,44 @@ var Views;
                 self.search.addClass("active");
                 self.layout.header.logoControl.searchControl.triggerEvent();
             });
+            //buttonCloseProgressReports|buttonCloseAlerts
+            $("#button-toggle-aside_Notifications").on("click", function (evt) {
+                console.log(self);
+                self.notificationPanel.toggle(true);
+            });
             $("#button-toggle-aside_ProgressReports").on("click", function (evt) {
-                var temp = $(".user-aside-1");
-                var temp2 = $(".user-aside-2");
-                var extra = $(".extrabar-underlay");
-                if (!temp.hasClass("toggle-aside")) {
-                    temp.addClass("toggle-aside");
-                    extra.addClass("toggle-aside");
-                    temp2.removeClass("toggle-aside");
+                self.notificationPanel.toggle(false);
+            });
+            $("#buttonCloseProgressReports").on("click", function (evt) {
+                self.notificationPanel.hide();
+            });
+            $("#buttonCloseAlerts").on("click", function (evt) {
+                self.notificationPanel.hide();
+            });
+            $("#user-menu-expand").on("click", function (evt) {
+                var userMenu = $(".user-menu");
+                if (!userMenu.hasClass("expanded")) {
+                    userMenu.addClass("expanded");
+                    $("#user-menu-collapse").removeClass("m-hide-opacity");
+                    $("#user-menu-expand").addClass("m-hide-opacity");
                 }
                 else {
-                    temp.removeClass("toggle-aside");
-                    extra.removeClass("toggle-aside");
+                    userMenu.removeClass("expanded");
+                    $("#user-menu-collapse").addClass("m-hide-opacity");
+                    $("#user-menu-expand").removeClass("m-hide-opacity");
                 }
             });
-            $("#button-toggle-aside_Notifications").on("click", function (evt) {
-                var temp2 = $(".user-aside-1");
-                var temp = $(".user-aside-2");
-                var extra = $(".extrabar-underlay");
-                if (!temp.hasClass("toggle-aside")) {
-                    temp.addClass("toggle-aside");
-                    extra.addClass("toggle-aside");
-                    temp2.removeClass("toggle-aside");
+            $("#user-menu-collapse").on("click", function (evt) {
+                var userMenu = $(".user-menu");
+                if (!userMenu.hasClass("expanded")) {
+                    userMenu.addClass("expanded");
+                    $("#user-menu-collapse").removeClass("m-hide-opacity");
+                    $("#user-menu-expand").addClass("m-hide-opacity");
                 }
                 else {
-                    temp.removeClass("toggle-aside");
-                    extra.removeClass("toggle-aside");
+                    userMenu.removeClass("expanded");
+                    $("#user-menu-collapse").addClass("m-hide-opacity");
+                    $("#user-menu-expand").removeClass("m-hide-opacity");
                 }
             });
         };
@@ -476,10 +587,16 @@ var Views;
             var Alerts = (function () {
                 function Alerts(data) {
                     var self = this;
-                    self.el = $("#alerts");
-                    data.notifications.alerts.forEach(function (item) {
-                        self.el.append(new AlertItem(item).render());
-                    });
+                    self.el = $("#notifications_alerts");
+                    if (data.notifications.alerts !== undefined && data.notifications.alerts.length > 0) {
+                        $('#message_no_alerts').hide();
+                        data.notifications.alerts.forEach(function (item) {
+                            self.el.append(new AlertItem(item).render());
+                        });
+                    }
+                    // data.notifications.alerts.forEach((item:Models.IAlert)=>{
+                    //     self.el.append(new AlertItem(item).render());
+                    // });
                 }
                 return Alerts;
             }());
@@ -509,13 +626,13 @@ var Views;
                     var self = this;
                     self.data = data;
                     self.el = $("<article>", {
-                        class: "progress-report-wrapper"
+                        class: "progress_report__item"
                     });
                     self.el.append(self.populateControl());
                 }
                 ProgressReportItem.prototype.populateControl = function () {
                     var self = this;
-                    return "<h5>" + self.data.date + "</h5>\n                    <div class=\"progress-report-item\">" + self.data.message + "</div>\n                        <table class=\"progress-report-item\">\n                        <tr><td style=\"width:70px;\">&nbsp;</td>\n                        <td><a href=\"javascript:void(0)\" class=\"btn btn-success waves-effect waves-light\"><i class=\"material-icons\">check_circle</i></a></td>\n                        <td><a href=\"javascript:void(0)\" class=\"btn btn-danger waves-effect waves-light\"><i class=\"material-icons\">highlight_off</i></a></td></tr></table>";
+                    return "<h5 class=\"progress_report__date\">" + self.data.date + "</h5>\n                <div class=\"progress_report__message\">" + self.data.message + "</div>\n                <div class=\"progress_report__buttons\">\n                  <a href=\"javascript:void(0);\" class=\"btn waves-effect waves-light progress_check\"><i class=\"material-icons\">check_circle</i></a>\n                  <a href=\"javascript:void(0);\" class=\"btn waves-effect waves-light progress_x\"><i class=\"material-icons\">highlight_off</i></a>\n                </div>";
                 };
                 ProgressReportItem.prototype.render = function () {
                     var self = this;
@@ -595,8 +712,11 @@ var Views;
                     self.el = $("<ul/>", { class: "nav navbar-nav toolbar pull-right" });
                     self.el.append('<li class="toolbar-icon-bg appear-on-search ov-h" id="trigger-search-close"><a class="toggle-fullscreen" id="button-search-close"><span class="icon-bg"><i class="material-icons">close</i></span><div class="ripple-container"></div></a> </li>');
                     self.el.append(Components.Utilities.StringTemplates.rightMenuFullScreen);
-                    self.el.append(Components.Utilities.StringTemplates.otherMenuItem);
-                    self.el.append(Components.Utilities.StringTemplates.notificationMenuItem);
+                    self.appContext = Session.AppContext.getInstance();
+                    console.warn(self.appContext.payloadNotifications.notifications.progress_reports.length);
+                    //<span class="badge badge-success">4</span>
+                    self.el.append(Components.Utilities.StringTemplates.otherMenuItem(self.appContext.payloadNotifications.notifications.alerts.length));
+                    self.el.append(Components.Utilities.StringTemplates.notificationMenuItem(self.appContext.payloadNotifications.notifications.progress_reports.length));
                 }
                 RightMenu.prototype.render = function () {
                     var self = this;
@@ -721,14 +841,14 @@ var Views;
                             + "     </a>               "
                             + " </li>";
                     };
-                    StringTemplates.otherMenuItem = function () {
-                        return '<li class="dropdown toolbar-icon-bg"><a href="#" class="hasnotifications dropdown-toggle waves-effect waves-light" data-toggle="dropdown" id="button-toggle-aside_ProgressReports"><span class="icon-bg" style="background: transparent !important;"><i class="material-icons">playlist_play</i></span><span class="badge badge-info"></span></a></li>';
+                    StringTemplates.otherMenuItem = function (count) {
+                        return "<li class=\"dropdown toolbar-icon-bg\"><a href=\"#\" class=\"hasnotifications dropdown-toggle waves-effect waves-light\" data-toggle=\"dropdown\" id=\"button-toggle-aside_ProgressReports\">\n            <span class=\"badge badge-custom\">" + count + "</span><span class=\"icon-bg\" style=\"background: transparent !important;\"><i class=\"material-icons\">playlist_play</i></span><span class=\"badge badge-info\"></span></a></li>";
                     };
-                    StringTemplates.notificationMenuItem = function () {
-                        return '<li class="dropdown toolbar-icon-bg"><a href="#" class="hasnotifications dropdown-toggle waves-effect waves-light" data-toggle="dropdown" id="button-toggle-aside_Notifications"><span class="icon-bg" style="background: transparent !important;"><i class="material-icons">notifications</i></span><span class="badge badge-info"></span></a></li>';
+                    StringTemplates.notificationMenuItem = function (count) {
+                        return "<li class=\"dropdown toolbar-icon-bg\"><a href=\"#\" class=\"hasnotifications dropdown-toggle waves-effect waves-light\" data-toggle=\"dropdown\" id=\"button-toggle-aside_Notifications\">\n            <span class=\"badge badge-custom\">" + count + "</span><span class=\"icon-bg\" style=\"background: transparent !important;\"><i class=\"material-icons\">notifications</i></span><span class=\"badge badge-info\"></span></a></li>";
                     };
                     StringTemplates.profileWidget2 = function (data) {
-                        return "<div class=\"user-widget\"> \n                <div class=\"user-avatar\"><img src=\"" + data.avatar + "\" /></div>\n                <div class=\"user-info\">" + data.name + "</div>\n            </div>";
+                        return "<div class=\"user-widget\">\n                <div class=\"user-avatar\"><img src=\"" + data.avatar + "\" /></div>\n                <div class=\"user-info\">" + data.name + "</div>\n            </div>";
                     };
                     StringTemplates.profileWidget = function () {
                         return '<div class="widget" id="widget-profileinfo" style="height:87px; overflow:hidden; background:#666">'

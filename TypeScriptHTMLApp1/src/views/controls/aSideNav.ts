@@ -27,7 +27,7 @@
                 self.sideBarWrapper.removeClass(self.toggleCss);
             }
         }
-    }   
+    }
     export interface ISideNavProps {
         data: Models.IMenu;
     }
@@ -41,13 +41,12 @@
             self.items = [];
             self.nav = $("#nav-menu");
         }
-        init(props: Models.IMenu) {
+        init(props: Models.IMenuPayload) {
             const self = this;
             self.props = { data: props };
             let i = 1;
-
-            self.nav.append(
-                Views.Controls.Components.Utilities.StringTemplates.profileWidget());
+            // self.nav.append(
+            //     Views.Controls.Components.Utilities.StringTemplates.profileWidget2(props.entity.user));
             // build menu
             self.props.data.list.forEach((segment: Models.IMenuSegment) => {
                 self.items.push(new  Views.Controls.Navigation.Menu({index: i++, items: segment }));
@@ -57,8 +56,5 @@
                 self.nav.append( Views.Controls.StaticElementBuilder.createMenuSplitter());
             });
         }
-    } 
+    }
 }
-
-            
-          

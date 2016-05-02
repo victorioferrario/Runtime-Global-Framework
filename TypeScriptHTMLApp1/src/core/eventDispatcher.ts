@@ -1,4 +1,6 @@
 ﻿namespace Core {
+
+    
     export class Event {
         private type: string;
         private target: any;

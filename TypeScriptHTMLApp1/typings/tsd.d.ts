@@ -4,3 +4,4 @@
 /// <reference path="knockout.postbox/knockout-postbox.d.ts" />
 /// <reference path="materialize-css/materialize-css.d.ts" />
 /// <reference path="uibuilder/uibuilder-1.2.d.ts" />
+/// <reference path="q/q.d.ts" />

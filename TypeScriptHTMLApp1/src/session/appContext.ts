@@ -1,7 +1,114 @@
-﻿namespace Session {
-    export class AppContext extends Core.EventDispatcher {
-        payload: Models.IPayload;
-        private isLoaded: boolean;
+/// <reference path="../../typings/tsd.d.ts" />
+namespace Session {
+    export class DataContext extends Core.EventDispatcher {
+
+      isLoadedMenu: boolean = false;
+      isLoadedUser: boolean = false;
+      isLoadedNotifications: boolean = false;
+
+      payload: Models.IMenuPayload;
+      payloadMenu:Models.IMenuPayload;
+      payloadUser: Models.IUserPayload;
+      payloadNotifications: Models.INotificationsPayload;
+
+      constructor() {
+          super();
+          const self = this;
+          self.payloadMenu = {
+            entity:null,
+            list : null
+          };
+      }
+      loadMenu() : Q.Promise<any>{
+          const self = this;
+          Services.Http.loadJson(AppContextSettings.menuUrl).fail(() => {
+              Q.reject("Error Loading Data");
+          }).done((result: Models.IMenuPayload) => {
+              self.isLoadedMenu = true;
+              self.payloadMenu = result;
+              Q.resolve(result);
+          }).always(()=>{
+            return Q.resolve(self.payloadMenu);
+          });
+          return null;
+      }
+      loadUser() : Q.Promise<any>{
+          const self = this;
+          Services.Http.loadJson(AppContextSettings.userUrl).fail(() => {
+              Q.reject("Error Loading Data");
+          }).done((result: Models.IUserPayload) => {
+              self.isLoadedUser = true;
+              self.payloadUser = result;
+              self.payloadMenu.entity = result.entity;
+              Q.resolve(result);
+          }).always(()=>{
+            return Q.resolve(self.payloadUser);
+          });
+          return null;
+      }
+      loadNotifications() : Q.Promise<any>{
+          const self = this;
+          Services.Http.loadJson(AppContextSettings.notificationUrl).fail(() => {
+              Q.reject("Error Loading Notifications");
+          }).done((result: Models.INotificationsPayload) => {
+              self.isLoadedNotifications = true;
+              self.payloadNotifications = result;
+              console.info(result);
+              Q.resolve(result);
+
+          }).always(()=>{
+            return Q.resolve(self.payloadNotifications);
+          });
+          return null;
+      }
+
+      initialize() {
+          const self = this;
+          Q.all([self.loadMenu(), self.loadUser()]).then(() => {
+              if(self.isLoadedMenu){
+                console.log("isLoadedMenu")
+                self.dispatchEvent(
+                  new Core.Event(Models.Events.dataLoaded, self.payloadMenu));
+              }
+              if(self.isLoadedUser){
+                self.dispatchEvent(
+                  new Core.Event(Models.Events.userLoaded, self.payloadUser));
+              }
+          });
+          Q.all([self.loadNotifications()]).then(() => {
+            if(self.isLoadedNotifications){
+              self.dispatchEvent(
+                new Core.Event(
+                  Models.Events.notificationsLoaded,
+                  self.payloadNotifications));
+            }
+          });
+      }
+   }
+   export class Trace{
+     static log(...value:Array<any>){
+       if(AppContextSettings.isDebugConsoleWrite){
+         if(value.length > 0 && value.length < 2){
+           console.log(value);
+         }else{
+           console.group("Writter")
+           for(var item in value){
+
+           }
+         }
+       }
+
+     }
+   }
+    export class AppContextSettings {
+      static isDebug:boolean = true;
+      static isDebugConsoleWrite:boolean = true;
+      static menuUrl:string = AppContextSettings.isDebug ? "data.json" : "/navbar_builder";
+      static userUrl:string = AppContextSettings.isDebug ? "data-user.json" :  "/user_profile_information_builder";
+      static notificationUrl:string = AppContextSettings.isDebug ? "data-notifications.json" : "/dashboard_notification_builder";
+    }
+    export class AppContext extends DataContext {
+        private isLoaded: boolean = false;
         private static instance: Session.AppContext;
         constructor() {
             super();
@@ -13,16 +120,6 @@
                 this.instance = new Session.AppContext();
             }
             return this.instance;
-        }
-        initialize() {
-            const self = this;
-            Services.Http.loadJson("data.json").fail(() => {
-                console.warn("Error Loading Data");
-            }).done((result: Models.IPayload) => {
-                self.payload = result;
-                self.isLoaded = true;
-                self.dispatchEvent(new Core.Event(Models.Events.dataLoaded, self.payload));
-            });
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿namespace Views.Controls {
     import LogoControlProps = Views.Controls.Components.ILogoControlProps;
     export interface IHeadProps {
-        payload:Models.IEntity;
+        payload:Models.IUserPayload;
     }
     export class Head extends Base {
         rightControl: Views.Controls.Components.RightMenu;
@@ -14,14 +14,14 @@
             const logoProps: LogoControlProps = {
                 className: "logo-area",
                 small: {
-                    alt: data.payload.logos[0].alt,
-                    src: data.payload.logos[0].src,
-                    className: data.payload.logos[0].className
+                    alt: data.payload.entity.logos[0].alt,
+                    src: data.payload.entity.logos[0].src,
+                    className: data.payload.entity.logos[0].className
                 },
                 large: {
-                    alt: data.payload.logos[1].alt,
-                    src: data.payload.logos[1].src,
-                    className: data.payload.logos[1].className
+                    alt: data.payload.entity.logos[1].alt,
+                    src: data.payload.entity.logos[1].src,
+                    className: data.payload.entity.logos[1].className
                 }
             };
             self.rightControl = new Views.Controls.Components.RightMenu();

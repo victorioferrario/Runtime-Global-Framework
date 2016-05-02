@@ -6,7 +6,7 @@ var tsProject = ts.createProject({
     declaration: true,
     noExternalResolve: false,
     noImplicitAny: true,
-    out: "app.ui.2016.js"
+    out: "application.2016.js"
 });
 gulp.task("scripts", function() {
     var tsResult = gulp.src(["src/**/*.ts", "src/**/*.tsx"])

@@ -1,17 +1,17 @@
 ﻿namespace Views.Controls {
     export interface IMainProps {
-        payload:Models.IMenu;
+        payload:Models.IMenuPayload;
     }
     export class Main extends Base {
         sideNav:Views.SideNav;
         constructor() {
             super("wrapper");
         }
-        databind(value:Models.IPayload) {
+        databind(value:Models.IMenuPayload) {
             const self = this;
             self.sideNav = new SideNav();
-            self.sideNav.init(
-                value);
+            console.log(value);
+            self.sideNav.init(value);
         }
     }
 }

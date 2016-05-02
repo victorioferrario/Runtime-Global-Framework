@@ -1,21 +1,4 @@
-﻿{
-  "entity": {
-    "name": "Harvard Business School",
-    "logos": [
-      {
-        "type": "small",
-        "alt": "Harvard Business School",
-        "src": "styles/images/h-mini.png",
-        "className": "show-on-collapse img-logo-white"
-      },
-      {
-        "type": "large",
-        "alt": "Harvard Business School",
-        "src": "styles/images/havard-logo.png",
-        "className": "img-white"
-      }
-    ]
-  },
+﻿{  
   "list": [
     {
       "data": [
@@ -23,31 +6,31 @@
           "icon": "dashboard",
           "label": "Dashboard",
           "route": "#dashoard",
-          "tooltip": "My Tooltip data."
+          "tooltip": "Dashboard is your home screen. Navigate to your calendar, see notifications & the status of your students/advisees and Search to locate any student or colleague."
         },
         {
           "icon": "school",
           "label": "Courses",
           "route": "#courses",
-          "tooltip": "My Tooltip data."
+          "tooltip": "Find all the courses where you have students in."
         },
         {
           "icon": "group",
           "label": "Cohorts",
           "route": "#cohorts",
-          "tooltip": "My Tooltip data."
+          "tooltip": "Cohorts create and hold groups of students defined by you. Run reports on cohorts and view the individual status of each student within a cohort."
         },
         {
           "icon": "assessment",
           "label": "Reports",
           "route": "#reports",
-          "tooltip": "My Tooltip data."
+          "tooltip": "Reports set parameters on any cohort group you create by date range, department, warning flags and/or declared major."
         },
         {
           "icon": "rate_review",
           "label": "Surveys",
           "route": "#surveys",
-          "tooltip": "My Tooltip data."
+          "tooltip": "Here you can send out custom surveys for individual students or groups of students."
         }
       ]
     },
@@ -57,25 +40,25 @@
           "icon": "settings_applications",
           "label": "Department Settings",
           "route": "#department_settings",
-          "tooltip": "My Tooltip data."
+          "tooltip": "Department Settings allow department heads to set thresholds for the number of flags that group students into On Path, At Risk and Off Path status."
         },
         {
           "icon": "event",
           "label": "Calendar",
           "route": "#calendar",
-          "tooltip": "My Tooltip data."
+          "tooltip": "Use Calendar to indicate your open times for meeting students so that they can schedule meetings with you. Set meetings and invite attendees with RSVP."
         },
         {
           "icon": "folder",
           "label": "Documents",
           "route": "#documents",
-          "tooltip": "My Tooltip data."
+          "tooltip": "Upload your latest documents."
         },
         {
           "icon": "forum",
           "label": "Rooms",
           "route": "#rooms",
-          "tooltip": "My Tooltip data."
+          "tooltip": "A place to store shared resources."
         }
       ]
     },
@@ -85,7 +68,7 @@
           "icon": "reply_all",
           "label": "Logout",
           "route": "#logout",
-          "tooltip": "My Tooltip data."
+          "tooltip": "Logout"
         }
       ]
     }

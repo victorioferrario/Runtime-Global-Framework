@@ -1,6 +1,8 @@
 namespace Views.Controls.Components{
     export class SearchControl {        
         el: JQuery;
+        search:JQuery;
+        searchButton:JQuery;
         elSearchInput:JQuery;
         elSearchWrapper:JQuery;
         constructor(){

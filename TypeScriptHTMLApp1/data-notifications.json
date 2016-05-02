@@ -1,0 +1,21 @@
+{
+  "notifications": {
+    "alerts":[
+      {
+        "type":"Case",
+        "count":3
+      },
+      {
+        "type":"Deadline",
+        "count":2
+      }
+    ],
+    "progress_reports":[
+      {
+        "id" : 5,
+        "date":"03/29/2016 12:00:00",
+        "message":"Did Oral Hettinger complete your deadline to Tutoring Meeting?"
+      }
+    ]
+  }
+}

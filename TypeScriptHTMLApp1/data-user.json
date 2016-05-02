@@ -1,0 +1,26 @@
+{
+  "entity": {
+    "name": "Harvard Business School",
+    "logos": [
+      {
+        "type": "small",
+        "alt": "Harvard Business School",
+        "src": "styles/images/h-mini.png",
+        "className": "show-on-collapse img-logo-white"
+      },
+      {
+        "type": "large",
+        "alt": "Harvard Business School",
+        "src": "styles/images/havard-logo.png",
+        "className": "img-white"
+      }
+    ],
+    "user": {
+      "id" : 2,
+      "name":"Henry Smith",
+      "type": "Advisor",
+      "avatar" :"http://copley-staging.herokuapp.com/assets/profile_pictures/thumb/male-3-697a43d70eccc44d3cac898cd3302598.jpg",
+      "email": "henry.advisor@gmail.com"
+    }
+  }
+}
