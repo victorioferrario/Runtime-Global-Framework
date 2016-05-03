@@ -927,10 +927,6 @@ var Views;
                     id: props.menu + "_link" + props.index,
                     class: "menu-item waves-effect waves-light",
                     title: props.tooltip,
-                    attr: {
-                        "data-toggle": "tooltip",
-                        "data-placement": "bottom"
-                    },
                     click: function (evt) {
                         console.log("this", _this);
                     }
