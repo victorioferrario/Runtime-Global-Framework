@@ -11,9 +11,11 @@
     <link href="libs/bootstrap/bootstrap-3.3.6-dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="dist/admin.vendor.css" rel="stylesheet" />
     <link href="styles/refactor.css" rel="stylesheet" />
+      <link href="styles/animate.css" rel="stylesheet" />
+    <link href="styles/google-loader.css" rel="stylesheet" />
     <script src="dist/vendor.js"></script>
     <script src="libs/bootstrap/bootstrap-3.3.6-dist/js/bootstrap.js"></script>
-    <!--<script src="libs/materialize/js/materialize.js"></script>-->
+    <script src="libs/materialize/js/materialize.js"></script>
     <script src="dist/application.2016.js"></script>
     <style>
         .static-tooltip-gutter {
@@ -26,49 +28,42 @@
             border-left: solid 1px #ccc;
             background: #f5f5f5!important;
         }
+
+        .page-content{
+          opacity: 1;
+          transition-duration: 300ms;
+        }
+        .page-loader{
+          opacity: 1;
+          transition-duration: 300ms;
+        }
+        .m-hide{
+          display:none;
+        }
     </style>
 </head>
 <body>
     <header id="topnav"
             class="navbar navbar-fixed-top navbar-blue" role="banner"></header>
-    <aside class="user-aside-1">
-        <!--<header>Alerts</header>
-        <a href="javascript:void(0);" class="waves-effect waves-light close" id="buttonCloseAlerts">X</a>
-        <section id="alerts_wrapper">
-            <div id="message_no_alerts">No Alerts available.</div>
-        </section>-->
-    </aside>
-    <aside class="user-aside-2">
-        <!--<header>Progress Reports</header>
-        <a href="javascript:void(0);" class="waves-effect waves-light close" id="buttonCloseProgressReports">X</a>
-        <section id="progress_reports">
-            <div id="message_no_progress_reports">No Progress Reports available.</div>
-        </section>-->
-    </aside>
+    <aside class="user-aside-1"></aside>
+    <aside class="user-aside-2"></aside>
     <main id="wrapper">
         <article id="layout-static">
             <section class="static-sidebar-wrapper">
-                <div class="user-widget">
-                    <div class="user-avatar"><img alt="" src="http://copley-staging.herokuapp.com/assets/profile_pictures/thumb/male-3-697a43d70eccc44d3cac898cd3302598.jpg">
-                    </div>
-                    <div class="user-info">Henry Smith</div>
-                    <div class="menu_user__more">
-                        <a href="javascript:void(0)" class="more_info_menu__link waves-effect waves-light" id="user-menu-expand">
-                            <i class="material-icons">keyboard_arrow_down</i>
-                        </a>
-                        <a href="javascript:void(0)" class="more_info_menu__link  m-hide-opacity waves-effect waves-light" id="user-menu-collapse">
-                            <i class="material-icons">keyboard_arrow_up</i>
-                        </a>
-                    </div>
-                </div>
                 <div class="user-menu"></div>
                 <nav id="nav-menu" class="menus"></nav>
             </section>
             <section class="static-content-wrapper">
-                <div class="static-content">
-                    <div class="page-content">
+                <div class="static-content" >
+                   <div class="page-loader ">
+                     <div class="cw-loader-control fadeIn animated-300" id="searchLoadIndicatorControl">
+                       <div class="anim">
+                         <div class="colored"></div></div>
+                     </div>
+                   </div>
+                  <div class="page-content fadeInUp animated-300 m-hide">
                         <h3>This is Main.</h3>
-                    </div>
+                  </div>
                 </div>
             </section>
         </article>

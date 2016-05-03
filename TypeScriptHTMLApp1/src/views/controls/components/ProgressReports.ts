@@ -1,3 +1,4 @@
+/// <reference path="../../../../typings/tsd.d.ts" />
 namespace Views.Controls.Components {
     export class ProgressReports {
         el: JQuery;

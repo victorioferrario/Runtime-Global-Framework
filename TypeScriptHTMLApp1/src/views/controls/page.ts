@@ -1,4 +1,5 @@
-﻿namespace Views {
+/// <reference path="../../../typings/tsd.d.ts" />
+namespace Views {
     export class AsideButtons {
         parent: AsideControl;
         buttonCloseAlerts: JQuery;
@@ -8,12 +9,13 @@
         constructor(ref: AsideControl) {
             const self = this;
             self.parent = ref;
-            // Alerts   
+            // Alerts
             self.buttonCloseAlerts = $("#buttonCloseAlerts");
             self.buttonToggleAlerts = $("#button-toggle-aside_Notifications");
             // Progress Reports
             self.buttonCloseReports = $("#buttonCloseProgressReports");
             self.buttonToggleReports = $("#button-toggle-aside_ProgressReports");
+            // 
             self.init();
         }
         init() {
@@ -53,15 +55,15 @@
         render() {
             const self = this;
             const result1 = `<header>Alerts</header>
-        <a href="javascript:void(0);" class="waves-effect waves-light close" id="buttonCloseAlerts">X</a>
-        <section id="alerts_wrapper">
-            <div id="message_no_alerts">No Alerts available.</div>
-        </section>`;
-            const result2 = ` <header>Progress Reports</header>
-        <a href="javascript:void(0);" class="waves-effect waves-light close" id="buttonCloseProgressReports">X</a>
-        <section id="progress_reports">
-            <div id="message_no_progress_reports">No Progress Reports available.</div>
-        </section>`;
+                <a href="javascript:void(0);" class="waves-effect waves-light close" id="buttonCloseAlerts">X</a>
+                <section id="alerts_wrapper">
+                    <div id="message_no_alerts">No Alerts available.</div>
+                </section>`;
+                    const result2 = ` <header>Progress Reports</header>
+                <a href="javascript:void(0);" class="waves-effect waves-light close" id="buttonCloseProgressReports">X</a>
+                <section id="progress_reports">
+                    <div id="message_no_progress_reports">No Progress Reports available.</div>
+                </section>`;
             self.aside1.append(result1);
             self.aside2.append(result2);
             return true;
@@ -100,7 +102,6 @@
             }
         }
     }
-
     export class Page {
         asideControl: AsideControl;
         layout: Controls.MasterLayout;
@@ -111,8 +112,7 @@
         progressReports: Controls.Components.ProgressReports;
         constructor() {
             const self = this;
-            self.layout = new Controls.MasterLayout();
-            // AppContext Init
+            self.layout = new Controls.MasterLayout();           
             self.appContext = Session.AppContext.getInstance();
             self.appContext.addEventListener(Models.Events.dataLoaded, (arg: any) => {
                 self.dataLoaded();
@@ -123,35 +123,40 @@
         }
         dataLoaded() {
             const self = this;
+            console.log("dataloaded you.",self.appContext.payloadUser);
+            
             self.layout.main.databind(
                 self.appContext.payloadMenu);
+                
             self.layout.header.databind({
                 payload: self.appContext.payloadUser
             });
+            
             self.init();
+            
         }
         dataLoaded2() {
             const self = this;
-
             self.asideControl = new AsideControl();
-            self.alerts = new Views.Controls.Components.Alerts(self.appContext.payloadNotifications);
-            self.progressReports = new Views.Controls.Components.ProgressReports(self.appContext.payloadNotifications);
+            self.alerts = new Views.Controls.Components.Alerts(
+                self.appContext.payloadNotifications);
+            self.progressReports = new Views.Controls.Components.ProgressReports(
+                self.appContext.payloadNotifications);
         }
         init() {
             const self = this;
             self.pageButtons = new PageButtons(self);
             self.userMenuControl = new Views.Controls.Components.UserMenu();
-            setTimeout(() => {
-                $('[data-toggle="tooltip"]').tooltip();
-                console.log("set bootstrap tooltip")
-            }, 2000);
         }
     }
     export class PageButtons {
+        
+        parent: Page;
         search: JQuery;
+        
         searchButton: JQuery;
         buttonToggle: JQuery;
-        parent: Page;
+        
         constructor(ref: Page) {
             const self = this;
             self.parent = ref;
@@ -183,10 +188,42 @@ var toggleFullScreen = () => {
         }
     }
 }
-
+// Create loader
 $(document).ready(() => {
+  console.warn("ready");
     const app = new Views.Page();
     $("#layout-static .static-content-wrapper").append(
         "<div class='extrabar-underlay'></div>");
-
+});
+// Clean up loader
+$(window).load(() => {
+  console.warn("load");
+  setTimeout(()=> {
+      $(".page-loader").addClass("m-hide");
+  },1900);
+  setTimeout(()=> {
+      $(".page-content").removeClass("m-hide");
+  },2000);
+  let options = {
+    html: true
+  }
+  for(let i = 1; i < 4 ; i++) {
+    switch(i){
+      case 1:
+        for(let k = 0; k < 5; k++){
+          $(`#menu${i}_link${k}`).popover(options);
+        }
+        break;
+      case 2:
+        for(let k = 0; k < 4; k++){
+          $(`#menu${i}_link${k}`).popover(options);
+        }
+        break;
+      case 3:
+        for(let k = 0; k < 1; k++){
+          $(`#menu${i}_link${k}`).popover(options);
+        }
+        break;
+    }
+  }
 });

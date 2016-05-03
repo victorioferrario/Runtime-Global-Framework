@@ -33,39 +33,51 @@ namespace Views.Controls.Components.Utilities {
             return `<li class="dropdown toolbar-icon-bg"><a href="#" class="hasnotifications dropdown-toggle waves-effect waves-light" data-toggle="dropdown" id="button-toggle-aside_Notifications">
             <span class="badge badge-custom">${ count }</span><span class="icon-bg" style="background: transparent !important;"><i class="material-icons">notifications</i></span><span class="badge badge-info"></span></a></li>`;
         }
+        static moreMenuItem(){
+            return `<li class="dropdown toolbar-icon-bg"><a href="#" class="hasnotifications dropdown-toggle waves-effect waves-light" data-toggle="dropdown" id="button-Trigger">
+           <span class="icon-bg" style="background: transparent !important;"><i class="material-icons">layers</i></span></a></li>`;
+        }
 
-        static profileWidget2(data:Models.IUser){
+        static profileWidget(data:Models.IUser){
+            let menu_more = StringTemplates.profileMenuExpandable();
             return `<div class="user-widget">
                 <div class="user-avatar"><img src="${ data.avatar }" /></div>
                 <div class="user-info">${ data.name }</div>
+                ${ menu_more }
             </div>`;
         }
-        static profileWidget(){
-            return '<div class="widget" id="widget-profileinfo" style="height:87px; overflow:hidden; background:#666">'
-               + '    <div class="widget-body">'
-               + '        <div class="userinfo ">'
-               + '            <div class="avatar pull-left">'
-               + '                '
-               + '            </div>'
-               + '            <div class="info">'
-               + '                <span class="username"></span>'
-               + '                <span class="useremail"></span>'
-               + '            </div>'
-               + '            <div class="acct-dropdown clearfix dropdown">'
-               + '                <span class="pull-left"><span class="online-status online"></span></span>'
-               + '                <!-- <span class="pull-right dropdown-toggle" data-toggle="dropdown"><a href="javascript:void(0)" '
-               + '  class="btn btn-fab-caret btn-xs btn-fab"><i class="material-icons">arrow_drop_down</i><div class="ripple-container"></div></a></span>'
-               + '                <ul class="dropdown-menu">'
-               + '                    <li><span class="online-status online"></span> Online</li>'
-               + '                    <li><span class="online-status online"></span> Online</li>'
-               + '                    <li><span class="online-status online"></span> Online</li>'
-               + '                    <li><span class="online-status online"></span> Online</li>'
-               + '                </ul> -->'
-               + '            </div>'
-               + '        </div>'
-               + '    </div>       '
-
-               + '</div>'
+        static profileMenuExpandable(){
+          return `<div class="menu_user__more">
+              <a href="javascript:void(0)" class="more_info_menu__link waves-effect waves-light" id="user-menu-expand">
+                  <i class="material-icons">keyboard_arrow_down</i>
+              </a>
+              <a href="javascript:void(0)" class="more_info_menu__link  m-hide-opacity waves-effect waves-light" id="user-menu-collapse">
+                  <i class="material-icons">keyboard_arrow_up</i>
+              </a>
+          </div>`;
+        }
+        static dropdownMenuComponent(){
+           return `<section class="dropdown-menu-container">
+        <div class="dropdown-wrapper">
+            <ul id="dropdown" class="material-menu">
+                <li>
+                    <a href="javascript:void(0);">
+                        <span>History Department</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);">
+                        <span>Physics Department</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);">
+                        <span>Information Technology</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </section>`;
         }
     }
 

@@ -17,16 +17,22 @@
                 href: "javascript:void(0)",
                 id: props.menu + "_link" + props.index,
                 class: "menu-item waves-effect waves-light",
-                title: props.tooltip,
+                title: props.label,
+                rel:"popover",
+                attr: {
+                  "data-toggle": "popover",
+                  "data-placement": "right",
+                  "data-content":`<div style="width:250px!important">${props.tooltip}</div>` ,
+                  "data-trigger":"hover"
+                },
                 click: (evt: any) => {
                     console.log("this", this);
                 }
             });
-            //self.control.attr("data-toggle", "tooltip");
-            //self.control.attr("data-placement", "right");
             self.control
                 .append(StaticElementBuilder.createIcon(props))
                 .append(StaticElementBuilder.createText(props));
+
         }
         render() {
             const self = this;

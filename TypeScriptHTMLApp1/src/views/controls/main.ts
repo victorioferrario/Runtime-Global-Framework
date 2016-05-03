@@ -9,9 +9,7 @@
         }
         databind(value:Models.IMenuPayload) {
             const self = this;
-            self.sideNav = new SideNav();
-            console.log(value);
-            self.sideNav.init(value);
+            self.sideNav = new SideNav(value);         
         }
     }
 }

@@ -1,12 +1,13 @@
-﻿namespace Views.Controls.Components {
+﻿/// <reference path="../../../../typings/tsd.d.ts" />
+namespace Views.Controls.Components {
     export class Alerts {
         el: JQuery;
         constructor(data: Models.INotificationsPayload) {
             const self = this;
             self.el = $("#alerts_wrapper");
             console.log("is alerts");
-            if (data.notifications.alerts !== undefined && data.notifications.alerts.length > 0) {
-                console.log("bind alerts");
+            if (data.notifications.alerts !== undefined 
+                && data.notifications.alerts.length > 0) {                
                 $("#message_no_alerts").hide();
                 data.notifications.alerts.forEach(item => {
                     this.el.append(new AlertItem(item).render());
@@ -23,11 +24,12 @@
             self.el = $("<article>", {
                 class: "alert-item-wrapper"
             });
-            self.el.append(self.populateControl());
+            self.el.append(
+                self.populateControl());
         }
         populateControl() {
             const self = this;
-            return `You have ${self.data.count} ${self.data.type}s available.`
+            return `You have ${self.data.count} ${self.data.type}s available.`;
         }
         render() {
             const self = this;

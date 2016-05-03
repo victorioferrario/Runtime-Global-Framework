@@ -5,7 +5,6 @@
     "sourceRoot": "src",
     "rootDir": "src",
     "sourceMap": true,
-    "jsx": "react",
-    "reactNamespace": "UIBuilder"
+    "filesGlob" : "*"
   }
 }

@@ -1,3 +1,4 @@
+/// <reference path="../../../../typings/tsd.d.ts" />
 namespace Views.Controls.Components{
     export class SearchControl {        
         el: JQuery;
@@ -27,8 +28,7 @@ namespace Views.Controls.Components{
             });            
             self.elSearchWrapper.append(self.elSearchInput);
             self.el.append(self.elSearchWrapper);      
-            $("#button-search-close").click((evt)=>{
-                console.log("test");
+            $("#button-search-close").click((evt)=>{                
                 self.el.removeClass("active"); 
                   self.elSearchInput.val("");   
                 $("body #topnav").toggleClass("search-active");      

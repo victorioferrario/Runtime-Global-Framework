@@ -1,4 +1,4 @@
-/// <reference path="../../typings/tsd.d.ts" />
+/// <reference path="../ref.d.ts" />
 namespace Session {
     export class DataContext extends Core.EventDispatcher {
 

@@ -81,7 +81,7 @@ var Services;
     }());
     Services.Http = Http;
 })(Services || (Services = {}));
-/// <reference path="../../typings/tsd.d.ts" />
+/// <reference path="../ref.d.ts" />
 var Session;
 (function (Session) {
     var DataContext = (function (_super) {
@@ -209,342 +209,68 @@ var Session;
     }(DataContext));
     Session.AppContext = AppContext;
 })(Session || (Session = {}));
-var System;
-(function (System) {
-    var Singleton = (function () {
-        function Singleton() {
-        }
-        Singleton.getInstance = function () {
-            if (this.instance === null || this.instance === undefined) {
-                this.instance = new Singleton();
-            }
-            return this.instance;
-        };
-        return Singleton;
-    }());
-})(System || (System = {}));
-var Views;
-(function (Views) {
-    var SideNavBase = (function () {
-        function SideNavBase() {
-            var self = this;
-            self.toggleCss = "toggle-icon";
-            self.topBar = $(".navbar-brand");
-            self.menusWrapper = $(".menus");
-            self.contentWrapper = $(".static-content-wrapper");
-            self.sideBarWrapper = $(".static-sidebar-wrapper");
-        }
-        SideNavBase.prototype.toggle = function () {
-            var self = this;
-            if (!self.sideBarWrapper.hasClass(self.toggleCss)) {
-                self.topBar.addClass(self.toggleCss);
-                self.menusWrapper.addClass(self.toggleCss);
-                self.contentWrapper.addClass(self.toggleCss);
-                self.sideBarWrapper.addClass(self.toggleCss);
-            }
-            else {
-                self.topBar.removeClass(self.toggleCss);
-                self.menusWrapper.removeClass(self.toggleCss);
-                self.contentWrapper.removeClass(self.toggleCss);
-                self.sideBarWrapper.removeClass(self.toggleCss);
-            }
-        };
-        return SideNavBase;
-    }());
-    Views.SideNavBase = SideNavBase;
-    var SideNav = (function (_super) {
-        __extends(SideNav, _super);
-        function SideNav() {
-            _super.call(this);
-            var self = this;
-            self.items = [];
-            self.nav = $("#nav-menu");
-        }
-        SideNav.prototype.init = function (props) {
-            var self = this;
-            self.props = { data: props };
-            var i = 1;
-            // self.nav.append(
-            //     Views.Controls.Components.Utilities.StringTemplates.profileWidget2(props.entity.user));
-            // build menu
-            self.props.data.list.forEach(function (segment) {
-                self.items.push(new Views.Controls.Navigation.Menu({ index: i++, items: segment }));
-            });
-            self.items.forEach(function (item) {
-                self.nav.append(item.render());
-                self.nav.append(Views.Controls.StaticElementBuilder.createMenuSplitter());
-            });
-        };
-        return SideNav;
-    }(SideNavBase));
-    Views.SideNav = SideNav;
-})(Views || (Views = {}));
 var Views;
 (function (Views) {
     var Controls;
     (function (Controls) {
-        var Base = (function () {
-            function Base(id) {
-                var self = this;
-                self.el = $("#" + id);
-                self.appContext = Session.AppContext.getInstance();
-            }
-            return Base;
-        }());
-        Controls.Base = Base;
-    })(Controls = Views.Controls || (Views.Controls = {}));
-})(Views || (Views = {}));
-var Views;
-(function (Views) {
-    var Controls;
-    (function (Controls) {
-        var Head = (function (_super) {
-            __extends(Head, _super);
-            function Head() {
-                _super.call(this, "topnav");
-            }
-            Head.prototype.databind = function (data) {
-                var self = this;
-                var logoProps = {
-                    className: "logo-area",
-                    small: {
-                        alt: data.payload.entity.logos[0].alt,
-                        src: data.payload.entity.logos[0].src,
-                        className: data.payload.entity.logos[0].className
-                    },
-                    large: {
-                        alt: data.payload.entity.logos[1].alt,
-                        src: data.payload.entity.logos[1].src,
-                        className: data.payload.entity.logos[1].className
+        var Components;
+        (function (Components) {
+            var Utilities;
+            (function (Utilities) {
+                var StringTemplates = (function () {
+                    function StringTemplates() {
                     }
-                };
-                self.rightControl = new Views.Controls.Components.RightMenu();
-                self.logoControl = new Views.Controls.Components.LogoControl(logoProps);
-                self.render();
-            };
-            Head.prototype.render = function () {
-                var self = this;
-                self.el.append(self.logoControl.render());
-                self.el.append(self.rightControl.render());
-            };
-            Head.prototype.toggle = function () {
-                var self = this;
-                var topBar = $(".navbar-brand"), toggleCss = "toggle-icon";
-                if (!topBar.hasClass(toggleCss)) {
-                    topBar.addClass(toggleCss);
-                }
-                else {
-                    topBar.removeClass(toggleCss);
-                }
-            };
-            return Head;
-        }(Controls.Base));
-        Controls.Head = Head;
+                    StringTemplates.toggleMenu = function () {
+                        return '<span id="trigger-sidebar" class="toolbar-trigger toolbar-icon-bg stay-on-search">' +
+                            '<a data-toggle="tooltips" data-placement="right" title="Toggle Sidebar" class="waves-effect waves-light" id="btn-toggle">' +
+                            '   <span class="icon-bg" style="background: transparent !important;"><i class="material-icons">menu</i></span></a></span>';
+                    };
+                    StringTemplates.toggleSearch = function () {
+                        return '<span id="trigger-search" class="toolbar-trigger toolbar-icon-bg ov-h">' +
+                            '<a data-toggle="tooltips" id="toggle-search" data-placement="right" title="Toggle Sidebar" class="waves-effect waves-light">' +
+                            '    <span class="icon-bg" style="background: transparent !important;"><i class="material-icons">search</i></span></a></span>';
+                    };
+                    StringTemplates.searchInput = function () {
+                        return '<div id="search-box">' +
+                            '<div class="form-group is-empty"><input class="form-control" type="text" placeholder="Search..." id="search-input" style="background: #fff; opacity: .70; border-radius: 2px;color:#000"><span class="material-input"></span></div>' +
+                            '</div>';
+                    };
+                    StringTemplates.rightMenuFullScreen = function () {
+                        return '<li class="toolbar-icon-bg hidden-xs" id="trigger-fullscreen">'
+                            + '     <a href="#" class="toggle-fullscreen waves-effect waves-light" id="button-toggle-fullscreen" onclick="window.toggleFullScreen();">             '
+                            + '         <span class="icon-bg" style="background: transparent !important;">             '
+                            + '             <i class="material-icons">fullscreen</i>               '
+                            + '         </span><div class="ripple-container"></div>                '
+                            + "     </a>               "
+                            + " </li>";
+                    };
+                    StringTemplates.otherMenuItem = function (count) {
+                        return "<li class=\"dropdown toolbar-icon-bg\"><a href=\"#\" class=\"hasnotifications dropdown-toggle waves-effect waves-light\" data-toggle=\"dropdown\" id=\"button-toggle-aside_ProgressReports\">\n            <span class=\"badge badge-custom\">" + count + "</span><span class=\"icon-bg\" style=\"background: transparent !important;\"><i class=\"material-icons\">playlist_play</i></span><span class=\"badge badge-info\"></span></a></li>";
+                    };
+                    StringTemplates.notificationMenuItem = function (count) {
+                        return "<li class=\"dropdown toolbar-icon-bg\"><a href=\"#\" class=\"hasnotifications dropdown-toggle waves-effect waves-light\" data-toggle=\"dropdown\" id=\"button-toggle-aside_Notifications\">\n            <span class=\"badge badge-custom\">" + count + "</span><span class=\"icon-bg\" style=\"background: transparent !important;\"><i class=\"material-icons\">notifications</i></span><span class=\"badge badge-info\"></span></a></li>";
+                    };
+                    StringTemplates.moreMenuItem = function () {
+                        return "<li class=\"dropdown toolbar-icon-bg\"><a href=\"#\" class=\"hasnotifications dropdown-toggle waves-effect waves-light\" data-toggle=\"dropdown\" id=\"button-Trigger\">\n           <span class=\"icon-bg\" style=\"background: transparent !important;\"><i class=\"material-icons\">layers</i></span></a></li>";
+                    };
+                    StringTemplates.profileWidget = function (data) {
+                        var menu_more = StringTemplates.profileMenuExpandable();
+                        return "<div class=\"user-widget\">\n                <div class=\"user-avatar\"><img src=\"" + data.avatar + "\" /></div>\n                <div class=\"user-info\">" + data.name + "</div>\n                " + menu_more + "\n            </div>";
+                    };
+                    StringTemplates.profileMenuExpandable = function () {
+                        return "<div class=\"menu_user__more\">\n              <a href=\"javascript:void(0)\" class=\"more_info_menu__link waves-effect waves-light\" id=\"user-menu-expand\">\n                  <i class=\"material-icons\">keyboard_arrow_down</i>\n              </a>\n              <a href=\"javascript:void(0)\" class=\"more_info_menu__link  m-hide-opacity waves-effect waves-light\" id=\"user-menu-collapse\">\n                  <i class=\"material-icons\">keyboard_arrow_up</i>\n              </a>\n          </div>";
+                    };
+                    StringTemplates.dropdownMenuComponent = function () {
+                        return "<section class=\"dropdown-menu-container\">\n        <div class=\"dropdown-wrapper\">\n            <ul id=\"dropdown\" class=\"material-menu\">\n                <li>\n                    <a href=\"javascript:void(0);\">\n                        <span>History Department</span>\n                    </a>\n                </li>\n                <li>\n                    <a href=\"javascript:void(0);\">\n                        <span>Physics Department</span>\n                    </a>\n                </li>\n                <li>\n                    <a href=\"javascript:void(0);\">\n                        <span>Information Technology</span>\n                    </a>\n                </li>\n            </ul>\n        </div>\n    </section>";
+                    };
+                    return StringTemplates;
+                }());
+                Utilities.StringTemplates = StringTemplates;
+            })(Utilities = Components.Utilities || (Components.Utilities = {}));
+        })(Components = Controls.Components || (Controls.Components = {}));
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
-var Base = Views.Controls.Base;
-var Head = Views.Controls.Head;
-// import Main = Views.Controls.Main;
-var SideNav = Views.SideNav;
-var Views;
-(function (Views) {
-    var Controls;
-    (function (Controls) {
-        var Main = (function (_super) {
-            __extends(Main, _super);
-            function Main() {
-                _super.call(this, "wrapper");
-            }
-            Main.prototype.databind = function (value) {
-                var self = this;
-                self.sideNav = new Views.SideNav();
-                console.log(value);
-                self.sideNav.init(value);
-            };
-            return Main;
-        }(Controls.Base));
-        Controls.Main = Main;
-    })(Controls = Views.Controls || (Views.Controls = {}));
-})(Views || (Views = {}));
-var Main = Views.Controls.Main;
-var Views;
-(function (Views) {
-    var Controls;
-    (function (Controls) {
-        var MasterLayout = (function () {
-            function MasterLayout() {
-                var self = this;
-                self.main = new Views.Controls.Main();
-                self.header = new Views.Controls.Head();
-            }
-            return MasterLayout;
-        }());
-        Controls.MasterLayout = MasterLayout;
-    })(Controls = Views.Controls || (Views.Controls = {}));
-})(Views || (Views = {}));
-var Views;
-(function (Views) {
-    var AsideButtons = (function () {
-        function AsideButtons(ref) {
-            var self = this;
-            self.parent = ref;
-            // Alerts   
-            self.buttonCloseAlerts = $("#buttonCloseAlerts");
-            self.buttonToggleAlerts = $("#button-toggle-aside_Notifications");
-            // Progress Reports
-            self.buttonCloseReports = $("#buttonCloseProgressReports");
-            self.buttonToggleReports = $("#button-toggle-aside_ProgressReports");
-            self.init();
-        }
-        AsideButtons.prototype.init = function () {
-            var self = this;
-            self.buttonCloseAlerts.on("click", function (evt) {
-                self.parent.hide();
-            });
-            self.buttonCloseReports.on("click", function (evt) {
-                self.parent.hide();
-            });
-            self.buttonToggleAlerts.on("click", function (evt) {
-                self.parent.toggle(false);
-            });
-            self.buttonToggleReports.on("click", function (evt) {
-                self.parent.toggle(true);
-            });
-        };
-        return AsideButtons;
-    }());
-    Views.AsideButtons = AsideButtons;
-    var AsideControl = (function () {
-        function AsideControl() {
-            var self = this;
-            self.aside1 = $(".user-aside-1");
-            self.aside2 = $(".user-aside-2");
-            if (self.render()) {
-                self.init();
-            }
-        }
-        AsideControl.prototype.render = function () {
-            var self = this;
-            var result1 = "<header>Alerts</header>\n        <a href=\"javascript:void(0);\" class=\"waves-effect waves-light close\" id=\"buttonCloseAlerts\">X</a>\n        <section id=\"alerts_wrapper\">\n            <div id=\"message_no_alerts\">No Alerts available.</div>\n        </section>";
-            var result2 = " <header>Progress Reports</header>\n        <a href=\"javascript:void(0);\" class=\"waves-effect waves-light close\" id=\"buttonCloseProgressReports\">X</a>\n        <section id=\"progress_reports\">\n            <div id=\"message_no_progress_reports\">No Progress Reports available.</div>\n        </section>";
-            self.aside1.append(result1);
-            self.aside2.append(result2);
-            return true;
-        };
-        AsideControl.prototype.init = function () {
-            var self = this;
-            self.buttons = new AsideButtons(self);
-            self.elUnderlay = $(".extrabar-underlay");
-        };
-        AsideControl.prototype.hide = function () {
-            var self = this;
-            self.aside1.removeClass(AsideControl.cssToggle);
-            self.aside2.removeClass(AsideControl.cssToggle);
-            self.elUnderlay.removeClass(AsideControl.cssToggle);
-        };
-        AsideControl.prototype.toggle = function (isAlerts) {
-            var self = this;
-            switch (isAlerts) {
-                case true:
-                    self.toggleStatic(self.aside2, self.aside1, self.elUnderlay);
-                    break;
-                case false:
-                    self.toggleStatic(self.aside1, self.aside2, self.elUnderlay);
-                    break;
-            }
-        };
-        AsideControl.prototype.toggleStatic = function (asideToShow, asideToHide, asideUnderlay) {
-            if (!asideToShow.hasClass(AsideControl.cssToggle)) {
-                asideToShow.addClass(AsideControl.cssToggle);
-                asideUnderlay.addClass(AsideControl.cssToggle);
-                asideToHide.removeClass(AsideControl.cssToggle);
-            }
-            else {
-                asideToShow.removeClass(AsideControl.cssToggle);
-                asideUnderlay.removeClass(AsideControl.cssToggle);
-            }
-        };
-        AsideControl.cssToggle = "toggle-aside";
-        return AsideControl;
-    }());
-    Views.AsideControl = AsideControl;
-    var Page = (function () {
-        function Page() {
-            var self = this;
-            self.layout = new Views.Controls.MasterLayout();
-            // AppContext Init
-            self.appContext = Session.AppContext.getInstance();
-            self.appContext.addEventListener(Models.Events.dataLoaded, function (arg) {
-                self.dataLoaded();
-            });
-            self.appContext.addEventListener(Models.Events.notificationsLoaded, function (arg) {
-                self.dataLoaded2();
-            });
-        }
-        Page.prototype.dataLoaded = function () {
-            var self = this;
-            self.layout.main.databind(self.appContext.payloadMenu);
-            self.layout.header.databind({
-                payload: self.appContext.payloadUser
-            });
-            self.init();
-        };
-        Page.prototype.dataLoaded2 = function () {
-            var self = this;
-            self.asideControl = new AsideControl();
-            self.alerts = new Views.Controls.Components.Alerts(self.appContext.payloadNotifications);
-            self.progressReports = new Views.Controls.Components.ProgressReports(self.appContext.payloadNotifications);
-        };
-        Page.prototype.init = function () {
-            var self = this;
-            self.pageButtons = new PageButtons(self);
-            self.userMenuControl = new Views.Controls.Components.UserMenu();
-            setTimeout(function () {
-                $('[data-toggle="tooltip"]').tooltip();
-                console.log("set bootstrap tooltip");
-            }, 2000);
-        };
-        return Page;
-    }());
-    Views.Page = Page;
-    var PageButtons = (function () {
-        function PageButtons(ref) {
-            var self = this;
-            self.parent = ref;
-            self.search = $("#search-box");
-            self.searchButton = $("#trigger-search");
-            self.buttonToggle = $("#btn-toggle");
-            self.init();
-        }
-        PageButtons.prototype.init = function () {
-            var self = this;
-            self.buttonToggle.on("click", function (evt) {
-                self.parent.layout.header.toggle();
-                self.parent.layout.main.sideNav.toggle();
-            });
-            self.searchButton.on("click", function (evt) {
-                self.search.addClass("active");
-                self.parent.layout.header.logoControl.searchControl.triggerEvent();
-            });
-        };
-        return PageButtons;
-    }());
-    Views.PageButtons = PageButtons;
-})(Views || (Views = {}));
-var toggleFullScreen = function () {
-    if (screenfull.enabled) {
-        if (!screenfull.isFullscreen) {
-            screenfull.request();
-        }
-        else {
-            screenfull.exit();
-        }
-    }
-};
-$(document).ready(function () {
-    var app = new Views.Page();
-    $("#layout-static .static-content-wrapper").append("<div class='extrabar-underlay'></div>");
-});
+/// <reference path="../../../../typings/tsd.d.ts" />
 var Views;
 (function (Views) {
     var Controls;
@@ -557,8 +283,8 @@ var Views;
                     var self = this;
                     self.el = $("#alerts_wrapper");
                     console.log("is alerts");
-                    if (data.notifications.alerts !== undefined && data.notifications.alerts.length > 0) {
-                        console.log("bind alerts");
+                    if (data.notifications.alerts !== undefined
+                        && data.notifications.alerts.length > 0) {
                         $("#message_no_alerts").hide();
                         data.notifications.alerts.forEach(function (item) {
                             _this.el.append(new AlertItem(item).render());
@@ -591,6 +317,103 @@ var Views;
         })(Components = Controls.Components || (Controls.Components = {}));
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
+/// <reference path="../../../../typings/tsd.d.ts" />
+var Views;
+(function (Views) {
+    var Controls;
+    (function (Controls) {
+        var Components;
+        (function (Components) {
+            var SearchControl = (function () {
+                function SearchControl() {
+                    var self = this;
+                    self.el = $("<div/>", {
+                        id: "search-box"
+                    });
+                    self.elSearchWrapper = $("<div/>", {
+                        class: "form-group is-empty"
+                    });
+                    self.elSearchInput = $("<input/>", {
+                        id: "search-input",
+                        class: "form-control",
+                        placeholder: "Search...",
+                        attr: {},
+                        blur: function (evt) {
+                            console.log(evt);
+                        }
+                    });
+                    self.elSearchWrapper.append(self.elSearchInput);
+                    self.el.append(self.elSearchWrapper);
+                    $("#button-search-close").click(function (evt) {
+                        self.el.removeClass("active");
+                        self.elSearchInput.val("");
+                        $("body #topnav").toggleClass("search-active");
+                    });
+                }
+                SearchControl.prototype.render = function () {
+                    var self = this;
+                    return self.el;
+                };
+                SearchControl.prototype.triggerEvent = function () {
+                    var self = this;
+                    $("#search-input").focus();
+                    $("body #topnav").toggleClass("search-active");
+                    $("#button-search-close").click(function (evt) {
+                        self.el.removeClass("active");
+                        $("body #topnav").removeClass("search-active");
+                    });
+                };
+                SearchControl.prototype.cleanEvent = function () {
+                    var self = this;
+                    $("#button-search-close").off("click");
+                };
+                return SearchControl;
+            }());
+            Components.SearchControl = SearchControl;
+        })(Components = Controls.Components || (Controls.Components = {}));
+    })(Controls = Views.Controls || (Views.Controls = {}));
+})(Views || (Views = {}));
+var Views;
+(function (Views) {
+    var Controls;
+    (function (Controls) {
+        var StaticElementBuilder = (function () {
+            function StaticElementBuilder() {
+            }
+            StaticElementBuilder.createIcon = function (props) {
+                var icon = document.createElement("i");
+                icon.setAttribute("class", "material-icons menu-icon");
+                icon.innerText = props.icon;
+                return icon;
+            };
+            StaticElementBuilder.createText = function (props) {
+                var label = document.createElement("span");
+                label.setAttribute("class", "menu-text");
+                label.setAttribute("title", props.label);
+                label.innerText = props.label;
+                return label;
+            };
+            StaticElementBuilder.createMenuSplitter = function () {
+                return $("<div/>", {
+                    class: "menu-splitter"
+                });
+            };
+            StaticElementBuilder.createImage = function (props) {
+                var image = document.createElement("img");
+                image.src = props.src;
+                image.setAttribute("title", props.alt);
+                image.setAttribute("class", props.className);
+                return image;
+            };
+            return StaticElementBuilder;
+        }());
+        Controls.StaticElementBuilder = StaticElementBuilder;
+    })(Controls = Views.Controls || (Views.Controls = {}));
+})(Views || (Views = {}));
+/// <reference path="Search.ts" />
+/// <reference path="utilities/StringTemplates.ts" />
+/// <reference path="../navigation/utilities/StaticElementBuilder.ts" />
+/// <reference path="../../../../typings/tsd.d.ts" />
 var Views;
 (function (Views) {
     var Controls;
@@ -627,6 +450,109 @@ var Views;
         })(Components = Controls.Components || (Controls.Components = {}));
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
+/// <reference path="../../../../typings/tsd.d.ts" />
+/// <reference path="../../../session/AppContext.ts" />
+/// <reference path="utilities/StringTemplates.ts" />
+var Views;
+(function (Views) {
+    var Controls;
+    (function (Controls) {
+        var Components;
+        (function (Components) {
+            var RightMenu = (function () {
+                function RightMenu() {
+                    var self = this;
+                    var total = self.appContext.payloadNotifications.notifications.alerts[0].count
+                        + self.appContext.payloadNotifications.notifications.alerts[1].count;
+                    self.appContext = Session.AppContext.getInstance();
+                    self.el = $("<ul/>", { class: "nav navbar-nav toolbar pull-right" });
+                    self.el.append('<li class="toolbar-icon-bg appear-on-search ov-h" id="trigger-search-close"><a class="toggle-fullscreen" id="button-search-close"><span class="icon-bg"><i class="material-icons">close</i></span><div class="ripple-container"></div></a> </li>');
+                    self.el.append(Components.Utilities.StringTemplates.rightMenuFullScreen);
+                    self.el.append(Components.Utilities.StringTemplates.otherMenuItem(self.appContext.payloadNotifications.notifications.progress_reports.length));
+                    self.el.append(Components.Utilities.StringTemplates.notificationMenuItem(total));
+                    self.el.append(Components.Utilities.StringTemplates.moreMenuItem());
+                }
+                RightMenu.prototype.render = function () {
+                    var self = this;
+                    $("#button-toggle-fullscreen").on("click", function (event) {
+                        console.log("this");
+                    });
+                    return self.el;
+                };
+                RightMenu.prototype.onclickFullScreen = function (event) {
+                    if (screenfull.enabled) {
+                        if (!screenfull.isFullscreen) {
+                            screenfull.request();
+                        }
+                        else {
+                            screenfull.exit();
+                        }
+                    }
+                };
+                return RightMenu;
+            }());
+            Components.RightMenu = RightMenu;
+        })(Components = Controls.Components || (Controls.Components = {}));
+    })(Controls = Views.Controls || (Views.Controls = {}));
+})(Views || (Views = {}));
+var Views;
+(function (Views) {
+    var Controls;
+    (function (Controls) {
+        var Components;
+        (function (Components) {
+            var UserMenu = (function () {
+                function UserMenu() {
+                    var self = this;
+                    self.menu = $(".user-menu");
+                    self.menuOpen = $("#user-menu-expand");
+                    self.menuClose = $("#user-menu-collapse");
+                    self.init();
+                }
+                UserMenu.prototype.init = function () {
+                    var _this = this;
+                    var self = this;
+                    self.menu;
+                    self.menuOpen.on("click", function (evt) {
+                        console.log(_this);
+                        UserMenu.toggleState(self.menuClose, self.menuOpen, self.menu);
+                    });
+                    self.menuClose.on("click", function (evt) {
+                        console.log("menuClose", _this);
+                        UserMenu.toggleHide(self.menuOpen, self.menuClose, self.menu);
+                    });
+                    self.render();
+                };
+                UserMenu.prototype.render = function () {
+                    var result = "<a href=\"javascript:void(0)\" id=\"menu0_link0\"\n                       class=\"menu-item waves-effect waves-light\"><i class=\"material-icons menu-icon\">account_box</i><span class=\"menu-text\" title=\"Dashboard\">My Profile</span></a>\n                    <a href=\"javascript:void(0)\" id=\"menu0_link1\"\n                       class=\"menu-item waves-effect waves-light\"><i class=\"material-icons menu-icon\">edit</i><span class=\"menu-text\" title=\"Dashboard\">Edit Profile</span></a>\n                    <a href=\"javascript:void(0)\" id=\"menu0_link2\"\n                       class=\"menu-item waves-effect waves-light\"><i class=\"material-icons menu-icon\">phone_iphone</i><span class=\"menu-text\" title=\"Dashboard\">Update Phone</span></a>";
+                    this.menu.append(result);
+                };
+                UserMenu.toggleState = function (linkToShow, linkToHide, menu) {
+                    if (!menu.hasClass(UserMenu.cssExp)) {
+                        menu.addClass(UserMenu.cssExp);
+                        linkToHide.addClass(UserMenu.cssHide);
+                        linkToShow.removeClass(UserMenu.cssHide);
+                    }
+                    else {
+                        menu.removeClass(UserMenu.cssExp);
+                        linkToHide.removeClass(UserMenu.cssHide);
+                        linkToShow.addClass(UserMenu.cssHide);
+                    }
+                };
+                UserMenu.toggleHide = function (linkToShow, linkToHide, menu) {
+                    menu.removeClass(UserMenu.cssExp);
+                    linkToShow.removeClass(UserMenu.cssHide);
+                    linkToHide.addClass(UserMenu.cssHide);
+                };
+                UserMenu.cssExp = "expanded";
+                UserMenu.cssHide = "m-hide-opacity";
+                return UserMenu;
+            }());
+            Components.UserMenu = UserMenu;
+        })(Components = Controls.Components || (Controls.Components = {}));
+    })(Controls = Views.Controls || (Views.Controls = {}));
+})(Views || (Views = {}));
+/// <reference path="../../../../typings/tsd.d.ts" />
 var Views;
 (function (Views) {
     var Controls;
@@ -667,152 +593,6 @@ var Views;
                 return ProgressReportItem;
             }());
             Components.ProgressReportItem = ProgressReportItem;
-        })(Components = Controls.Components || (Controls.Components = {}));
-    })(Controls = Views.Controls || (Views.Controls = {}));
-})(Views || (Views = {}));
-var Views;
-(function (Views) {
-    var Controls;
-    (function (Controls) {
-        var Components;
-        (function (Components) {
-            var SearchControl = (function () {
-                function SearchControl() {
-                    var self = this;
-                    self.el = $("<div/>", {
-                        id: "search-box"
-                    });
-                    self.elSearchWrapper = $("<div/>", {
-                        class: "form-group is-empty"
-                    });
-                    self.elSearchInput = $("<input/>", {
-                        id: "search-input",
-                        class: "form-control",
-                        placeholder: "Search...",
-                        attr: {},
-                        blur: function (evt) {
-                            console.log(evt);
-                        }
-                    });
-                    self.elSearchWrapper.append(self.elSearchInput);
-                    self.el.append(self.elSearchWrapper);
-                    $("#button-search-close").click(function (evt) {
-                        console.log("test");
-                        self.el.removeClass("active");
-                        self.elSearchInput.val("");
-                        $("body #topnav").toggleClass("search-active");
-                    });
-                }
-                SearchControl.prototype.render = function () {
-                    var self = this;
-                    return self.el;
-                };
-                SearchControl.prototype.triggerEvent = function () {
-                    var self = this;
-                    $("#search-input").focus();
-                    $("body #topnav").toggleClass("search-active");
-                    $("#button-search-close").click(function (evt) {
-                        self.el.removeClass("active");
-                        $("body #topnav").removeClass("search-active");
-                    });
-                };
-                SearchControl.prototype.cleanEvent = function () {
-                    var self = this;
-                    $("#button-search-close").off("click");
-                };
-                return SearchControl;
-            }());
-            Components.SearchControl = SearchControl;
-        })(Components = Controls.Components || (Controls.Components = {}));
-    })(Controls = Views.Controls || (Views.Controls = {}));
-})(Views || (Views = {}));
-var Views;
-(function (Views) {
-    var Controls;
-    (function (Controls) {
-        var Components;
-        (function (Components) {
-            var RightMenu = (function () {
-                function RightMenu() {
-                    var self = this;
-                    self.el = $("<ul/>", { class: "nav navbar-nav toolbar pull-right" });
-                    self.el.append('<li class="toolbar-icon-bg appear-on-search ov-h" id="trigger-search-close"><a class="toggle-fullscreen" id="button-search-close"><span class="icon-bg"><i class="material-icons">close</i></span><div class="ripple-container"></div></a> </li>');
-                    self.el.append(Components.Utilities.StringTemplates.rightMenuFullScreen);
-                    self.appContext = Session.AppContext.getInstance();
-                    self.el.append(Components.Utilities.StringTemplates.otherMenuItem(self.appContext.payloadNotifications.notifications.progress_reports.length));
-                    self.el.append(Components.Utilities.StringTemplates.notificationMenuItem(self.appContext.payloadNotifications.notifications.alerts.length));
-                }
-                RightMenu.prototype.render = function () {
-                    var self = this;
-                    $("#button-toggle-fullscreen").on("click", function (event) {
-                        console.log("this");
-                    });
-                    return self.el;
-                };
-                RightMenu.prototype.onclickFullScreen = function (event) {
-                    if (screenfull.enabled) {
-                        if (!screenfull.isFullscreen) {
-                            screenfull.request();
-                        }
-                        else {
-                            screenfull.exit();
-                        }
-                    }
-                };
-                return RightMenu;
-            }());
-            Components.RightMenu = RightMenu;
-        })(Components = Controls.Components || (Controls.Components = {}));
-    })(Controls = Views.Controls || (Views.Controls = {}));
-})(Views || (Views = {}));
-var Views;
-(function (Views) {
-    var Controls;
-    (function (Controls) {
-        var Components;
-        (function (Components) {
-            var UserMenu = (function () {
-                function UserMenu() {
-                    this.menu = $(".user-menu");
-                    var self = this;
-                    self.menuOpen = $("#user-menu-expand");
-                    self.menuClose = $("#user-menu-collapse");
-                    self.init();
-                }
-                UserMenu.prototype.init = function () {
-                    var _this = this;
-                    var self = this;
-                    self.menuOpen.on("click", function (evt) {
-                        console.log(_this);
-                        UserMenu.toggleState(self.menuClose, self.menuOpen, self.menu);
-                    });
-                    self.menuClose.on("click", function (evt) {
-                        console.log(_this);
-                        UserMenu.toggleState(self.menuOpen, self.menuClose, self.menu);
-                    });
-                    self.render();
-                };
-                UserMenu.prototype.render = function () {
-                    var result = "<a href=\"javascript:void(0)\" id=\"menu0_link0\"\n                       class=\"menu-item waves-effect waves-light\"><i class=\"material-icons menu-icon\">account_box</i><span class=\"menu-text\" title=\"Dashboard\">My Profile</span></a>\n                    <a href=\"javascript:void(0)\" id=\"menu0_link1\"\n                       class=\"menu-item waves-effect waves-light\"><i class=\"material-icons menu-icon\">edit</i><span class=\"menu-text\" title=\"Dashboard\">Edit Profile</span></a>\n                    <a href=\"javascript:void(0)\" id=\"menu0_link2\"\n                       class=\"menu-item waves-effect waves-light\"><i class=\"material-icons menu-icon\">phone_iphone</i><span class=\"menu-text\" title=\"Dashboard\">Update Phone</span></a>";
-                    this.menu.append(result);
-                };
-                UserMenu.toggleState = function (linkToShow, linkToHide, menu) {
-                    if (!menu.hasClass(UserMenu.cssExp)) {
-                        menu.addClass(UserMenu.cssExp);
-                        linkToHide.addClass(UserMenu.cssHide);
-                        linkToShow.removeClass(UserMenu.cssHide);
-                    }
-                    else {
-                        menu.removeClass(UserMenu.cssExp);
-                        linkToHide.removeClass(UserMenu.cssHide);
-                        linkToShow.addClass(UserMenu.cssHide);
-                    }
-                };
-                UserMenu.cssExp = "expanded";
-                UserMenu.cssHide = "m-hide-opacity";
-                return UserMenu;
-            }());
-            Components.UserMenu = UserMenu;
         })(Components = Controls.Components || (Controls.Components = {}));
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
@@ -864,13 +644,18 @@ var Views;
                     href: "javascript:void(0)",
                     id: props.menu + "_link" + props.index,
                     class: "menu-item waves-effect waves-light",
-                    title: props.tooltip,
+                    title: props.label,
+                    rel: "popover",
+                    attr: {
+                        "data-toggle": "popover",
+                        "data-placement": "right",
+                        "data-content": "<div style=\"width:250px!important\">" + props.tooltip + "</div>",
+                        "data-trigger": "hover"
+                    },
                     click: function (evt) {
                         console.log("this", _this);
                     }
                 });
-                //self.control.attr("data-toggle", "tooltip");
-                //self.control.attr("data-placement", "right");
                 self.control
                     .append(Controls.StaticElementBuilder.createIcon(props))
                     .append(Controls.StaticElementBuilder.createText(props));
@@ -884,117 +669,393 @@ var Views;
         Controls.MenuItem = MenuItem;
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
+/// <reference path="../../ref.d.ts" />
 var Views;
 (function (Views) {
-    var Controls;
-    (function (Controls) {
-        var Components;
-        (function (Components) {
-            var Utilities;
-            (function (Utilities) {
-                var StringTemplates = (function () {
-                    function StringTemplates() {
-                    }
-                    StringTemplates.toggleMenu = function () {
-                        return '<span id="trigger-sidebar" class="toolbar-trigger toolbar-icon-bg stay-on-search">' +
-                            '<a data-toggle="tooltips" data-placement="right" title="Toggle Sidebar" class="waves-effect waves-light" id="btn-toggle">' +
-                            '   <span class="icon-bg" style="background: transparent !important;"><i class="material-icons">menu</i></span></a></span>';
-                    };
-                    StringTemplates.toggleSearch = function () {
-                        return '<span id="trigger-search" class="toolbar-trigger toolbar-icon-bg ov-h">' +
-                            '<a data-toggle="tooltips" id="toggle-search" data-placement="right" title="Toggle Sidebar" class="waves-effect waves-light">' +
-                            '    <span class="icon-bg" style="background: transparent !important;"><i class="material-icons">search</i></span></a></span>';
-                    };
-                    StringTemplates.searchInput = function () {
-                        return '<div id="search-box">' +
-                            '<div class="form-group is-empty"><input class="form-control" type="text" placeholder="Search..." id="search-input" style="background: #fff; opacity: .70; border-radius: 2px;color:#000"><span class="material-input"></span></div>' +
-                            '</div>';
-                    };
-                    StringTemplates.rightMenuFullScreen = function () {
-                        return '<li class="toolbar-icon-bg hidden-xs" id="trigger-fullscreen">'
-                            + '     <a href="#" class="toggle-fullscreen waves-effect waves-light" id="button-toggle-fullscreen" onclick="window.toggleFullScreen();">             '
-                            + '         <span class="icon-bg" style="background: transparent !important;">             '
-                            + '             <i class="material-icons">fullscreen</i>               '
-                            + '         </span><div class="ripple-container"></div>                '
-                            + "     </a>               "
-                            + " </li>";
-                    };
-                    StringTemplates.otherMenuItem = function (count) {
-                        return "<li class=\"dropdown toolbar-icon-bg\"><a href=\"#\" class=\"hasnotifications dropdown-toggle waves-effect waves-light\" data-toggle=\"dropdown\" id=\"button-toggle-aside_ProgressReports\">\n            <span class=\"badge badge-custom\">" + count + "</span><span class=\"icon-bg\" style=\"background: transparent !important;\"><i class=\"material-icons\">playlist_play</i></span><span class=\"badge badge-info\"></span></a></li>";
-                    };
-                    StringTemplates.notificationMenuItem = function (count) {
-                        return "<li class=\"dropdown toolbar-icon-bg\"><a href=\"#\" class=\"hasnotifications dropdown-toggle waves-effect waves-light\" data-toggle=\"dropdown\" id=\"button-toggle-aside_Notifications\">\n            <span class=\"badge badge-custom\">" + count + "</span><span class=\"icon-bg\" style=\"background: transparent !important;\"><i class=\"material-icons\">notifications</i></span><span class=\"badge badge-info\"></span></a></li>";
-                    };
-                    StringTemplates.profileWidget2 = function (data) {
-                        return "<div class=\"user-widget\">\n                <div class=\"user-avatar\"><img src=\"" + data.avatar + "\" /></div>\n                <div class=\"user-info\">" + data.name + "</div>\n            </div>";
-                    };
-                    StringTemplates.profileWidget = function () {
-                        return '<div class="widget" id="widget-profileinfo" style="height:87px; overflow:hidden; background:#666">'
-                            + '    <div class="widget-body">'
-                            + '        <div class="userinfo ">'
-                            + '            <div class="avatar pull-left">'
-                            + '                '
-                            + '            </div>'
-                            + '            <div class="info">'
-                            + '                <span class="username"></span>'
-                            + '                <span class="useremail"></span>'
-                            + '            </div>'
-                            + '            <div class="acct-dropdown clearfix dropdown">'
-                            + '                <span class="pull-left"><span class="online-status online"></span></span>'
-                            + '                <!-- <span class="pull-right dropdown-toggle" data-toggle="dropdown"><a href="javascript:void(0)" '
-                            + '  class="btn btn-fab-caret btn-xs btn-fab"><i class="material-icons">arrow_drop_down</i><div class="ripple-container"></div></a></span>'
-                            + '                <ul class="dropdown-menu">'
-                            + '                    <li><span class="online-status online"></span> Online</li>'
-                            + '                    <li><span class="online-status online"></span> Online</li>'
-                            + '                    <li><span class="online-status online"></span> Online</li>'
-                            + '                    <li><span class="online-status online"></span> Online</li>'
-                            + '                </ul> -->'
-                            + '            </div>'
-                            + '        </div>'
-                            + '    </div>       '
-                            + '</div>';
-                    };
-                    return StringTemplates;
-                }());
-                Utilities.StringTemplates = StringTemplates;
-            })(Utilities = Components.Utilities || (Components.Utilities = {}));
-        })(Components = Controls.Components || (Controls.Components = {}));
-    })(Controls = Views.Controls || (Views.Controls = {}));
+    var SideNavBase = (function () {
+        function SideNavBase() {
+            var self = this;
+            self.toggleCss = "toggle-icon";
+            self.topBar = $(".navbar-brand");
+            self.menusWrapper = $(".menus");
+            self.contentWrapper = $(".static-content-wrapper");
+            self.sideBarWrapper = $(".static-sidebar-wrapper");
+        }
+        SideNavBase.prototype.toggle = function () {
+            var self = this;
+            if (!self.sideBarWrapper.hasClass(self.toggleCss)) {
+                self.topBar.addClass(self.toggleCss);
+                self.menusWrapper.addClass(self.toggleCss);
+                self.contentWrapper.addClass(self.toggleCss);
+                self.sideBarWrapper.addClass(self.toggleCss);
+            }
+            else {
+                self.topBar.removeClass(self.toggleCss);
+                self.menusWrapper.removeClass(self.toggleCss);
+                self.contentWrapper.removeClass(self.toggleCss);
+                self.sideBarWrapper.removeClass(self.toggleCss);
+            }
+        };
+        return SideNavBase;
+    }());
+    Views.SideNavBase = SideNavBase;
+    var SideNav = (function (_super) {
+        __extends(SideNav, _super);
+        function SideNav(props) {
+            _super.call(this);
+            var self = this;
+            self.items = [];
+            self.props = { data: props };
+            self.nav = $("#nav-menu");
+            self.staticColumn = $(".static-sidebar-wrapper");
+            self.init();
+        }
+        SideNav.prototype.init = function () {
+            var self = this;
+            var i = 1;
+            self.staticColumn.prepend(Views.Controls.Components.Utilities.StringTemplates.profileWidget(self.props.data.entity.user));
+            self.props.data.list.forEach(function (segment) {
+                self.items.push(new Views.Controls.Navigation.Menu({
+                    index: i++, items: segment }));
+            });
+            self.items.forEach(function (item) {
+                self.nav.append(item.render());
+                self.nav.append(Views.Controls.StaticElementBuilder.createMenuSplitter());
+            });
+        };
+        return SideNav;
+    }(SideNavBase));
+    Views.SideNav = SideNav;
 })(Views || (Views = {}));
 var Views;
 (function (Views) {
     var Controls;
     (function (Controls) {
-        var StaticElementBuilder = (function () {
-            function StaticElementBuilder() {
+        var Base = (function () {
+            function Base(id) {
+                var self = this;
+                self.el = $("#" + id);
+                self.appContext = Session.AppContext.getInstance();
             }
-            StaticElementBuilder.createIcon = function (props) {
-                var icon = document.createElement("i");
-                icon.setAttribute("class", "material-icons menu-icon");
-                icon.innerText = props.icon;
-                return icon;
+            return Base;
+        }());
+        Controls.Base = Base;
+    })(Controls = Views.Controls || (Views.Controls = {}));
+})(Views || (Views = {}));
+/// <reference path="../../../typings/tsd.d.ts" />
+/// <reference path="Components/Logo.ts" />
+/// <reference path="Components/TopNav.ts" />
+/// <reference path="base.ts" />
+/// <reference path="../../models/IMenu.ts" />
+var Views;
+(function (Views) {
+    var Controls;
+    (function (Controls) {
+        var Head = (function (_super) {
+            __extends(Head, _super);
+            function Head() {
+                _super.call(this, "topnav");
+            }
+            Head.prototype.databind = function (data) {
+                var self = this;
+                var logoProps = {
+                    className: "logo-area",
+                    small: {
+                        alt: data.payload.entity.logos[0].alt,
+                        src: data.payload.entity.logos[0].src,
+                        className: data.payload.entity.logos[0].className
+                    },
+                    large: {
+                        alt: data.payload.entity.logos[1].alt,
+                        src: data.payload.entity.logos[1].src,
+                        className: data.payload.entity.logos[1].className
+                    }
+                };
+                self.rightControl = new Views.Controls.Components.RightMenu();
+                self.logoControl = new Views.Controls.Components.LogoControl(logoProps);
+                console.log("IHEADProps:", data);
+                console.log("YOoooooooooooo");
+                console.log("YOoooooooooooo");
+                self.el.append(self.logoControl.render());
+                self.el.append(self.rightControl.render());
+                self.el.prepend(Controls.Components.Utilities.StringTemplates.dropdownMenuComponent());
+                self.initTrigger();
             };
-            StaticElementBuilder.createText = function (props) {
-                var label = document.createElement("span");
-                label.setAttribute("class", "menu-text");
-                label.setAttribute("title", props.label);
-                label.innerText = props.label;
-                return label;
+            Head.prototype.render = function () {
+                var self = this;
             };
-            StaticElementBuilder.createMenuSplitter = function () {
-                return $("<div/>", {
-                    class: "menu-splitter"
+            Head.prototype.initTrigger = function () {
+                console.log("trigger set");
+                $("#button-Trigger").on("click", function (event) {
+                    var ddMenu = $("#dropdown");
+                    if (!ddMenu.hasClass("open")) {
+                        ddMenu.addClass("open");
+                    }
+                    else {
+                        ddMenu.removeClass("open");
+                    }
                 });
             };
-            StaticElementBuilder.createImage = function (props) {
-                var image = document.createElement("img");
-                image.src = props.src;
-                image.setAttribute("title", props.alt);
-                image.setAttribute("class", props.className);
-                return image;
+            Head.prototype.toggle = function () {
+                var self = this;
+                var topBar = $(".navbar-brand"), toggleCss = "toggle-icon";
+                if (!topBar.hasClass(toggleCss)) {
+                    topBar.addClass(toggleCss);
+                }
+                else {
+                    topBar.removeClass(toggleCss);
+                }
             };
-            return StaticElementBuilder;
-        }());
-        Controls.StaticElementBuilder = StaticElementBuilder;
+            return Head;
+        }(Controls.Base));
+        Controls.Head = Head;
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
+var Views;
+(function (Views) {
+    var Controls;
+    (function (Controls) {
+        var Main = (function (_super) {
+            __extends(Main, _super);
+            function Main() {
+                _super.call(this, "wrapper");
+            }
+            Main.prototype.databind = function (value) {
+                var self = this;
+                self.sideNav = new Views.SideNav(value);
+            };
+            return Main;
+        }(Controls.Base));
+        Controls.Main = Main;
+    })(Controls = Views.Controls || (Views.Controls = {}));
+})(Views || (Views = {}));
+var Main = Views.Controls.Main;
+var Views;
+(function (Views) {
+    var Controls;
+    (function (Controls) {
+        var MasterLayout = (function () {
+            function MasterLayout() {
+                var self = this;
+                self.main = new Views.Controls.Main();
+                self.header = new Views.Controls.Head();
+            }
+            return MasterLayout;
+        }());
+        Controls.MasterLayout = MasterLayout;
+    })(Controls = Views.Controls || (Views.Controls = {}));
+})(Views || (Views = {}));
+/// <reference path="../../../typings/tsd.d.ts" />
+var Views;
+(function (Views) {
+    var AsideButtons = (function () {
+        function AsideButtons(ref) {
+            var self = this;
+            self.parent = ref;
+            // Alerts
+            self.buttonCloseAlerts = $("#buttonCloseAlerts");
+            self.buttonToggleAlerts = $("#button-toggle-aside_Notifications");
+            // Progress Reports
+            self.buttonCloseReports = $("#buttonCloseProgressReports");
+            self.buttonToggleReports = $("#button-toggle-aside_ProgressReports");
+            // 
+            self.init();
+        }
+        AsideButtons.prototype.init = function () {
+            var self = this;
+            self.buttonCloseAlerts.on("click", function (evt) {
+                self.parent.hide();
+            });
+            self.buttonCloseReports.on("click", function (evt) {
+                self.parent.hide();
+            });
+            self.buttonToggleAlerts.on("click", function (evt) {
+                self.parent.toggle(false);
+            });
+            self.buttonToggleReports.on("click", function (evt) {
+                self.parent.toggle(true);
+            });
+        };
+        return AsideButtons;
+    }());
+    Views.AsideButtons = AsideButtons;
+    var AsideControl = (function () {
+        function AsideControl() {
+            var self = this;
+            self.aside1 = $(".user-aside-1");
+            self.aside2 = $(".user-aside-2");
+            if (self.render()) {
+                self.init();
+            }
+        }
+        AsideControl.prototype.render = function () {
+            var self = this;
+            var result1 = "<header>Alerts</header>\n                <a href=\"javascript:void(0);\" class=\"waves-effect waves-light close\" id=\"buttonCloseAlerts\">X</a>\n                <section id=\"alerts_wrapper\">\n                    <div id=\"message_no_alerts\">No Alerts available.</div>\n                </section>";
+            var result2 = " <header>Progress Reports</header>\n                <a href=\"javascript:void(0);\" class=\"waves-effect waves-light close\" id=\"buttonCloseProgressReports\">X</a>\n                <section id=\"progress_reports\">\n                    <div id=\"message_no_progress_reports\">No Progress Reports available.</div>\n                </section>";
+            self.aside1.append(result1);
+            self.aside2.append(result2);
+            return true;
+        };
+        AsideControl.prototype.init = function () {
+            var self = this;
+            self.buttons = new AsideButtons(self);
+            self.elUnderlay = $(".extrabar-underlay");
+        };
+        AsideControl.prototype.hide = function () {
+            var self = this;
+            self.aside1.removeClass(AsideControl.cssToggle);
+            self.aside2.removeClass(AsideControl.cssToggle);
+            self.elUnderlay.removeClass(AsideControl.cssToggle);
+        };
+        AsideControl.prototype.toggle = function (isAlerts) {
+            var self = this;
+            switch (isAlerts) {
+                case true:
+                    self.toggleStatic(self.aside2, self.aside1, self.elUnderlay);
+                    break;
+                case false:
+                    self.toggleStatic(self.aside1, self.aside2, self.elUnderlay);
+                    break;
+            }
+        };
+        AsideControl.prototype.toggleStatic = function (asideToShow, asideToHide, asideUnderlay) {
+            if (!asideToShow.hasClass(AsideControl.cssToggle)) {
+                asideToShow.addClass(AsideControl.cssToggle);
+                asideUnderlay.addClass(AsideControl.cssToggle);
+                asideToHide.removeClass(AsideControl.cssToggle);
+            }
+            else {
+                asideToShow.removeClass(AsideControl.cssToggle);
+                asideUnderlay.removeClass(AsideControl.cssToggle);
+            }
+        };
+        AsideControl.cssToggle = "toggle-aside";
+        return AsideControl;
+    }());
+    Views.AsideControl = AsideControl;
+    var Page = (function () {
+        function Page() {
+            var self = this;
+            self.layout = new Views.Controls.MasterLayout();
+            self.appContext = Session.AppContext.getInstance();
+            self.appContext.addEventListener(Models.Events.dataLoaded, function (arg) {
+                self.dataLoaded();
+            });
+            self.appContext.addEventListener(Models.Events.notificationsLoaded, function (arg) {
+                self.dataLoaded2();
+            });
+        }
+        Page.prototype.dataLoaded = function () {
+            var self = this;
+            console.log("dataloaded you.", self.appContext.payloadUser);
+            self.layout.main.databind(self.appContext.payloadMenu);
+            self.layout.header.databind({
+                payload: self.appContext.payloadUser
+            });
+            self.init();
+        };
+        Page.prototype.dataLoaded2 = function () {
+            var self = this;
+            self.asideControl = new AsideControl();
+            self.alerts = new Views.Controls.Components.Alerts(self.appContext.payloadNotifications);
+            self.progressReports = new Views.Controls.Components.ProgressReports(self.appContext.payloadNotifications);
+        };
+        Page.prototype.init = function () {
+            var self = this;
+            self.pageButtons = new PageButtons(self);
+            self.userMenuControl = new Views.Controls.Components.UserMenu();
+        };
+        return Page;
+    }());
+    Views.Page = Page;
+    var PageButtons = (function () {
+        function PageButtons(ref) {
+            var self = this;
+            self.parent = ref;
+            self.search = $("#search-box");
+            self.searchButton = $("#trigger-search");
+            self.buttonToggle = $("#btn-toggle");
+            self.init();
+        }
+        PageButtons.prototype.init = function () {
+            var self = this;
+            self.buttonToggle.on("click", function (evt) {
+                self.parent.layout.header.toggle();
+                self.parent.layout.main.sideNav.toggle();
+            });
+            self.searchButton.on("click", function (evt) {
+                self.search.addClass("active");
+                self.parent.layout.header.logoControl.searchControl.triggerEvent();
+            });
+        };
+        return PageButtons;
+    }());
+    Views.PageButtons = PageButtons;
+})(Views || (Views = {}));
+var toggleFullScreen = function () {
+    if (screenfull.enabled) {
+        if (!screenfull.isFullscreen) {
+            screenfull.request();
+        }
+        else {
+            screenfull.exit();
+        }
+    }
+};
+// Create loader
+$(document).ready(function () {
+    console.warn("ready");
+    var app = new Views.Page();
+    $("#layout-static .static-content-wrapper").append("<div class='extrabar-underlay'></div>");
+});
+// Clean up loader
+$(window).load(function () {
+    console.warn("load");
+    setTimeout(function () {
+        $(".page-loader").addClass("m-hide");
+    }, 1900);
+    setTimeout(function () {
+        $(".page-content").removeClass("m-hide");
+    }, 2000);
+    var options = {
+        html: true
+    };
+    for (var i = 1; i < 4; i++) {
+        switch (i) {
+            case 1:
+                for (var k = 0; k < 5; k++) {
+                    $("#menu" + i + "_link" + k).popover(options);
+                }
+                break;
+            case 2:
+                for (var k = 0; k < 4; k++) {
+                    $("#menu" + i + "_link" + k).popover(options);
+                }
+                break;
+            case 3:
+                for (var k = 0; k < 1; k++) {
+                    $("#menu" + i + "_link" + k).popover(options);
+                }
+                break;
+        }
+    }
+});
+var System;
+(function (System) {
+    var Singleton = (function () {
+        function Singleton() {
+        }
+        Singleton.getInstance = function () {
+            if (this.instance === null || this.instance === undefined) {
+                this.instance = new Singleton();
+            }
+            return this.instance;
+        };
+        return Singleton;
+    }());
+})(System || (System = {}));
+/// <reference path="../../ref.d.ts" />
+var Base = Views.Controls.Base;
+var Head = Views.Controls.Head;
+// import Main = Views.Controls.Main;
+var SideNav = Views.SideNav;
