@@ -21,6 +21,16 @@
                 console.log(this);
                 UserMenu.toggleState(self.menuOpen, self.menuClose, self.menu);
             });
+            self.render();
+        }
+        render() {
+           const result = `<a href="javascript:void(0)" id="menu0_link0"
+                       class="menu-item waves-effect waves-light"><i class="material-icons menu-icon">account_box</i><span class="menu-text" title="Dashboard">My Profile</span></a>
+                    <a href="javascript:void(0)" id="menu0_link1"
+                       class="menu-item waves-effect waves-light"><i class="material-icons menu-icon">edit</i><span class="menu-text" title="Dashboard">Edit Profile</span></a>
+                    <a href="javascript:void(0)" id="menu0_link2"
+                       class="menu-item waves-effect waves-light"><i class="material-icons menu-icon">phone_iphone</i><span class="menu-text" title="Dashboard">Update Phone</span></a>`
+            this.menu.append(result);
         }
         static toggleState(linkToShow: JQuery, linkToHide: JQuery, menu: JQuery) {
             if (!menu.hasClass(UserMenu.cssExp)) {

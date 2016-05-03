@@ -45,7 +45,26 @@
             const self = this;
             self.aside1 = $(".user-aside-1");
             self.aside2 = $(".user-aside-2");
-            self.init();
+            if (self.render()) {
+                self.init();
+            }
+        }
+
+        render() {
+            const self = this;
+            const result1 = `<header>Alerts</header>
+        <a href="javascript:void(0);" class="waves-effect waves-light close" id="buttonCloseAlerts">X</a>
+        <section id="alerts_wrapper">
+            <div id="message_no_alerts">No Alerts available.</div>
+        </section>`;
+            const result2 = ` <header>Progress Reports</header>
+        <a href="javascript:void(0);" class="waves-effect waves-light close" id="buttonCloseProgressReports">X</a>
+        <section id="progress_reports">
+            <div id="message_no_progress_reports">No Progress Reports available.</div>
+        </section>`;
+            self.aside1.append(result1);
+            self.aside2.append(result2);
+            return true;
         }
 
         init() {
@@ -81,12 +100,12 @@
             }
         }
     }
-    
+
     export class Page {
         asideControl: AsideControl;
         layout: Controls.MasterLayout;
         appContext: Session.AppContext;
-        pageButtons:PageButtons;
+        pageButtons: PageButtons;
         userMenuControl: Views.Controls.Components.UserMenu;
         alerts: Controls.Components.Alerts;
         progressReports: Controls.Components.ProgressReports;
@@ -132,7 +151,7 @@
         search: JQuery;
         searchButton: JQuery;
         buttonToggle: JQuery;
-        parent:Page;
+        parent: Page;
         constructor(ref: Page) {
             const self = this;
             self.parent = ref;
@@ -169,5 +188,5 @@ $(document).ready(() => {
     const app = new Views.Page();
     $("#layout-static .static-content-wrapper").append(
         "<div class='extrabar-underlay'></div>");
-    
+
 });

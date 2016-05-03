@@ -419,8 +419,18 @@ var Views;
             var self = this;
             self.aside1 = $(".user-aside-1");
             self.aside2 = $(".user-aside-2");
-            self.init();
+            if (self.render()) {
+                self.init();
+            }
         }
+        AsideControl.prototype.render = function () {
+            var self = this;
+            var result1 = "<header>Alerts</header>\n        <a href=\"javascript:void(0);\" class=\"waves-effect waves-light close\" id=\"buttonCloseAlerts\">X</a>\n        <section id=\"alerts_wrapper\">\n            <div id=\"message_no_alerts\">No Alerts available.</div>\n        </section>";
+            var result2 = " <header>Progress Reports</header>\n        <a href=\"javascript:void(0);\" class=\"waves-effect waves-light close\" id=\"buttonCloseProgressReports\">X</a>\n        <section id=\"progress_reports\">\n            <div id=\"message_no_progress_reports\">No Progress Reports available.</div>\n        </section>";
+            self.aside1.append(result1);
+            self.aside2.append(result2);
+            return true;
+        };
         AsideControl.prototype.init = function () {
             var self = this;
             self.buttons = new AsideButtons(self);
@@ -780,6 +790,11 @@ var Views;
                         console.log(_this);
                         UserMenu.toggleState(self.menuOpen, self.menuClose, self.menu);
                     });
+                    self.render();
+                };
+                UserMenu.prototype.render = function () {
+                    var result = "<a href=\"javascript:void(0)\" id=\"menu0_link0\"\n                       class=\"menu-item waves-effect waves-light\"><i class=\"material-icons menu-icon\">account_box</i><span class=\"menu-text\" title=\"Dashboard\">My Profile</span></a>\n                    <a href=\"javascript:void(0)\" id=\"menu0_link1\"\n                       class=\"menu-item waves-effect waves-light\"><i class=\"material-icons menu-icon\">edit</i><span class=\"menu-text\" title=\"Dashboard\">Edit Profile</span></a>\n                    <a href=\"javascript:void(0)\" id=\"menu0_link2\"\n                       class=\"menu-item waves-effect waves-light\"><i class=\"material-icons menu-icon\">phone_iphone</i><span class=\"menu-text\" title=\"Dashboard\">Update Phone</span></a>";
+                    this.menu.append(result);
                 };
                 UserMenu.toggleState = function (linkToShow, linkToHide, menu) {
                     if (!menu.hasClass(UserMenu.cssExp)) {
