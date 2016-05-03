@@ -1,0 +1,245 @@
+﻿body {
+    font-family: "Roboto";
+}
+
+.user-aside-1, .user-aside-2 {
+    position: fixed;
+    top: 64px;
+    right: -251px;
+    bottom: 0;
+    width: 250px;
+    background: #ffffff;
+    border-left: solid 1px #00aced;
+    z-index: 1201;
+    -moz-transition-duration: 200ms;
+    -o-transition-duration: 200ms;
+    -webkit-transition-duration: 200ms;
+    transition-duration: 200ms;
+}
+
+    .user-aside-1 header, .user-aside-2 header {
+        color: #2196f3;
+        font-size: 1.8rem;
+        font-weight: 700;
+        padding: 8px;
+        background: #fff;
+        border-top: solid 1px #00aced;
+        border-bottom: solid 1px #00aced;
+    }
+
+    .user-aside-1 a.close, .user-aside-2 a.close {
+        position: absolute;
+        right: 15px;
+        top: 12px;
+    }
+
+    .user-aside-1.toggle-aside, .user-aside-2.toggle-aside {
+        right: 0 !important;
+        width: 40vw;
+    }
+
+
+
+.progress-report-wrapper {
+    border-bottom: solid 1px #ccc;
+    padding: 5px;
+    padding-bottom: 0;
+}
+
+    .progress-report-wrapper > h5 {
+        font-weight: bold;
+    }
+
+table.progress-report-item {
+    text-align: right;
+    display: block;
+}
+
+div.progress-report-item {
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.progress_report__item {
+    width: 40vw;
+    float: left;
+    display: block;
+    padding: 8px;
+    border-bottom: solid 1px #ccc;
+}
+
+.progress_report__date {
+    display: block;
+    clear: both;
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 10px;
+}
+
+.progress_report__message {
+    display: block;
+    clear: both;
+    font-size: 14px;
+    font-weight: 300;
+}
+
+.progress_report__buttons {
+    width: 98%;
+    display: block;
+    clear: both;
+    margin-top: 5px;
+    margin-left: 2px;
+    border-top: solid 0 #ccc;
+    text-align: right;
+}
+
+.progress_check {
+    color: #43a047 !important;
+}
+
+.progress_x {
+    color: #c62828 !important;
+}
+
+.menu_user__more {
+    position: absolute;
+    left: 0;
+    top: 20px;
+    right: 0;
+    height: 50px;
+    transition-duration: 320ms;
+}
+
+.more_info_menu__link {
+    position: absolute;
+    right: 10px;
+    width: 25px;
+    top: 10px;
+    opacity: 1;
+    -moz-transition-duration: 300ms;
+    -o-transition-duration: 300ms;
+    -webkit-transition-duration: 300ms;
+    transition-duration: 300ms;
+}
+
+.m-hide-opacity {
+    display: none;
+    opacity: 0;
+}
+
+.user-menu {
+    height: 0;
+    overflow: hidden;
+    border-top: solid 3px #ccc;
+    border-bottom: solid 0 transparent;
+    -moz-transition-property: all;
+    -o-transition-property: all;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -moz-transition-duration: 320ms;
+    -o-transition-duration: 320ms;
+    -webkit-transition-duration: 320ms;
+    transition-duration: 320ms;
+    transition-timing-function: cubic-bezier(0.87, -0.36, 0.27, 1.55) !important;
+}
+
+.static-sidebar-wrapper.toggle-icon > .user-menu {
+    height: 141px;
+    border-bottom: solid 3px #ccc;
+    border-top: solid 3px #ccc;
+}
+
+    .static-sidebar-wrapper.toggle-icon > .user-menu > .menu-item {
+        opacity: 1;
+    }
+
+.static-sidebar-wrapper.toggle-icon > .user-widget > .menu_user__more {
+    opacity: 0;
+    transition-duration: 320ms;
+}
+
+.static-sidebar-wrapper.toggle-icon > .user-menu > .menu-item > .menu-icon, .static-sidebar-wrapper.toggle-icon > .user-menu.expanded > .menu-item > .menu-icon {
+    left: 2px;
+}
+
+.static-sidebar-wrapper.toggle-icon > .user-menu > .menu-item > .menu-text, .static-sidebar-wrapper.toggle-icon > .user-menu.expanded > .menu-item > .menu-text {
+    opacity: 0;
+    transition-duration: 320ms;
+}
+
+.user-menu .menu-item {
+    opacity: 0;
+    -moz-transition-duration: 300ms;
+    -o-transition-duration: 300ms;
+    -webkit-transition-duration: 300ms;
+    transition-duration: 300ms;
+}
+
+.user-menu.expanded {
+    height: 141px;
+    border-bottom: solid 3px #ccc;
+    border-top: solid 3px #ccc;
+}
+
+    .user-menu.expanded .menu-item {
+        opacity: 1;
+        -moz-transition-duration: 300ms;
+        -o-transition-duration: 300ms;
+        -webkit-transition-duration: 300ms;
+        transition-duration: 300ms;
+    }
+
+@media (max-width: 640px) {
+    .user-aside-1.toggle-aside, .user-aside-2.toggle-aside {
+        right: 0 !important;
+        width: 70vw;
+    }
+
+    .progress_report__item {
+        width: 70vw;
+    }
+
+    .more_info_menu__link {
+        opacity: 0;
+    }
+
+    .user-menu {
+        height: 137px;
+        border-bottom: solid 1px #ccc !important;
+        border-top: solid 1px #ccc !important;
+        transition-duration: 300ms;
+    }
+
+        .user-menu .menu-item {
+            opacity: 1;
+            -moz-transition-duration: 300ms;
+            -o-transition-duration: 300ms;
+            -webkit-transition-duration: 300ms;
+            transition-duration: 300ms;
+        }
+
+            .user-menu .menu-item .menu-text {
+                opacity: 0;
+                transition-duration: 300ms;
+            }
+
+    .stay-on-search {
+        display: none !important;
+    }
+}
+
+.badge-custom {
+    top: 10px !important;
+    background-color: #ee306a !important;
+}
+
+#message_no_alerts {
+    padding: 5px;
+    padding-left: 8px;
+    font-size: 16px;
+    font-weight: 500;
+}
+#alerts_wrapper {
+    padding: 8px;
+    font-size: 16px;
+}

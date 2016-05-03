@@ -1,195 +1,93 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <title>Menu</title>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,500,700,500italic,400italic,700italic|Roboto+Condensed:400,700"
-          rel="stylesheet" type="text/css"/>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
-    <link href="dist/vendor.css" rel="stylesheet"/>
-    <link href="dist/admin.vendor.css" rel="stylesheet"/>
+          rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css" />
+    <link href="dist/vendor.css" rel="stylesheet" />
+    <link href="libs/bootstrap/bootstrap-3.3.6-dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="dist/admin.vendor.css" rel="stylesheet" />
+    <link href="styles/refactor.css" rel="stylesheet" />
     <script src="dist/vendor.js"></script>
+    <script src="libs/bootstrap/bootstrap-3.3.6-dist/js/bootstrap.js"></script>
+    <!--<script src="libs/materialize/js/materialize.js"></script>-->
     <script src="dist/application.2016.js"></script>
-
     <style>
-        .user-aside-1, .user-aside-2 {
+        .static-tooltip-gutter {
             position: fixed;
             top: 64px;
-            right: -251px;
+            left: 240px;
             bottom: 0;
-            width: 250px;
-            background: #ffffff;
-            border-left: solid 1px #00aced;
-            z-index: 1201;
-            transition-duration: 200ms;
-        }
-
-        .user-aside-1 header, .user-aside-2 header {
-            color: #2196f3;
-            font-size: 1.8rem;
-            font-weight: 700;
-            padding: 8px;
-            background: #fff;
-            border-top: solid 1px #00aced;
-            border-bottom: solid 1px #00aced;
-
-        }
-        .user-aside-1 a.close, .user-aside-2 a.close {
-          position: absolute;
-          right:15px;
-          top:12px;
-        }
-        .user-aside-1.toggle-aside, .user-aside-2.toggle-aside {
-            right: 0 !important;
-            width:40vw;
-        }
-
-        .progress-report-wrapper{
-            border-bottom:solid 1px #ccc;padding:5px;padding-bottom:0;
-        }
-        .progress-report-wrapper > h5{
-            font-weight: bold;
-        }
-        table.progress-report-item{
-            text-align:right;display:block;
-        }
-        div.progress-report-item{
-            padding-bottom:0; margin-bottom:0;
+            height: 100vh;
+            z-index: 100000;
+            border-left: solid 1px #ccc;
+            background: #f5f5f5!important;
         }
     </style>
-    <style>
-    body{
-      font-family: "Roboto";
-    }
-    .progress_report__item{
-      width:40vw;float:left;display:block;
-      padding:8px;
-      border-bottom:solid 1px #ccc;
-    }
-    .progress_report__date{
-      display: block;
-      clear:both;
-      font-size: 14px;
-      font-weight: 500;
-      margin-top:10px;
-    }
-    .progress_report__message{
-      display: block;
-      clear:both;
-      font-size: 14px;
-      font-weight: 300;
-    }
-    .progress_report__buttons{
-      width:98%;display:block;clear:both;
-      margin-top:5px;
-      margin-left:2px;
-      border-top:solid 0 #ccc;
-      text-align:right;
-    }
-    .progress_check{
-      color:#43a047!important;
-    }
-    .progress_x{
-        color:#c62828!important;
-
-    }
-    .menu_user__more{
-      position: absolute;
-      left:0;
-      top:20px;
-      right:0;
-      height:50px;
-    }
-    .more_info_menu__link{
-      position: absolute;
-      right:10px;
-      width:25px;
-      top:10px;
-      opacity: 1;
-      transition-duration: 300ms;
-    }
-    .m-hide-opacity{
-      display:none;
-      opacity: 0;
-    }
-    .user-menu{
-      height: 0;
-      overflow: hidden;
-      border-top:solid 3px #ccc;
-      border-bottom:solid 0 transparent;
-      transition-property: all;
-      transition-duration: 320ms;
-    }
-    .user-menu .menu-item{
-      opacity: 0;
-      transition-duration: 300ms;
-    }
-    .user-menu.expanded{
-      height: 141px;
-      border-bottom:solid 3px #ccc;
-      border-top:solid 3px #ccc;
-    }
-    .user-menu.expanded .menu-item{
-      opacity: 1;transition-duration: 300ms;
-    }
-    .badge-custom{
-      top:10px!important;
-      background-color:#ee306a!important;
-    }
-    </style>
+</head>
 <body>
-
-  <header id="topnav"
-          class="navbar navbar-fixed-top navbar-blue" role="banner">
-  </header>
-  <aside class="user-aside-1">
-     <a href="javascript:void(0);" class="waves-effect waves-light close" id="buttonCloseAlerts">X</a>
-      <header>Alerts</header>
-      <span></span>
-  </aside>
-  <aside class="user-aside-2">
-      <header>Progress Reports</header>
-      <a href="javascript:void(0);" class="waves-effect waves-light close" id="buttonCloseProgressReports">X</a>
-      <section id="progress_reports"></section>
-  </aside>
-  <main id="wrapper">
-      <article id="layout-static">
-          <section class="static-sidebar-wrapper">
-            <div class="user-widget">
-                <div class="user-avatar"><img src="http://copley-staging.herokuapp.com/assets/profile_pictures/thumb/male-3-697a43d70eccc44d3cac898cd3302598.jpg"></div>
-                <div class="user-info">Henry Smith</div>
-                <div class="menu_user__more">
-                  <a href="javascript:void(0)" class="more_info_menu__link waves-effect waves-light" id="user-menu-expand">
-                  <!-- <i class="material-icons">more_vert</i> -->
-                  <i class="material-icons">keyboard_arrow_down</i>
-                </a>
-                <a href="javascript:void(0)" class="more_info_menu__link  m-hide-opacity waves-effect waves-light" id="user-menu-collapse">
-                <!-- <i class="material-icons">more_vert</i> -->
-                <i class="material-icons">keyboard_arrow_up</i>
-              </a>
+    <header id="topnav"
+            class="navbar navbar-fixed-top navbar-blue" role="banner"></header>
+    <aside class="user-aside-1">
+        <header>Alerts</header>
+        <a href="javascript:void(0);" class="waves-effect waves-light close" id="buttonCloseAlerts">X</a>
+        <section id="alerts_wrapper">
+            <div id="message_no_alerts">No Alerts available.</div>
+        </section>
+    </aside>
+    <aside class="user-aside-2">
+        <header>Progress Reports</header>
+        <a href="javascript:void(0);" class="waves-effect waves-light close" id="buttonCloseProgressReports">X</a>
+        <section id="progress_reports">
+            <div id="message_no_progress_reports">No Progress Reports available.</div>
+        </section>
+    </aside>
+    <main id="wrapper">
+        <article id="layout-static">
+            <section class="static-sidebar-wrapper">
+                <div class="user-widget">
+                    <div class="user-avatar"><img alt="" src="http://copley-staging.herokuapp.com/assets/profile_pictures/thumb/male-3-697a43d70eccc44d3cac898cd3302598.jpg">
+                    </div>
+                    <div class="user-info">Henry Smith</div>
+                    <div class="menu_user__more">
+                        <a href="javascript:void(0)" class="more_info_menu__link waves-effect waves-light" id="user-menu-expand">
+                            <i class="material-icons">keyboard_arrow_down</i>
+                        </a>
+                        <a href="javascript:void(0)" class="more_info_menu__link  m-hide-opacity waves-effect waves-light" id="user-menu-collapse">
+                            <i class="material-icons">keyboard_arrow_up</i>
+                        </a>
+                    </div>
                 </div>
-            </div>
-            <div class="user-menu">
-                <a href="javascript:void(0)" id="menu0_link0"
-                class="menu-item waves-effect waves-light"><i class="material-icons menu-icon">account_box</i><span class="menu-text" title="Dashboard">My Profile</span></a>
-                <a href="javascript:void(0)" id="menu0_link1"
-                class="menu-item waves-effect waves-light"><i class="material-icons menu-icon">edit</i><span class="menu-text" title="Dashboard">Edit Profile</span></a>
-                <a href="javascript:void(0)" id="menu0_link2"
-                class="menu-item waves-effect waves-light"><i class="material-icons menu-icon">phone_iphone</i><span class="menu-text" title="Dashboard">Update Phone</span></a>
-            </div>
-              <nav id="nav-menu" class="menus"></nav>
-          </section>
-          <section class="static-content-wrapper">
-              <div class="static-content">
-                  <div class="page-content">
+                <div class="user-menu">
+                    <a href="javascript:void(0)" id="menu0_link0"
+                       class="menu-item waves-effect waves-light"><i class="material-icons menu-icon">account_box</i><span class="menu-text" title="Dashboard">My Profile</span></a>
+                    <a href="javascript:void(0)" id="menu0_link1"
+                       class="menu-item waves-effect waves-light"><i class="material-icons menu-icon">edit</i><span class="menu-text" title="Dashboard">Edit Profile</span></a>
+                    <a href="javascript:void(0)" id="menu0_link2"
+                       class="menu-item waves-effect waves-light"><i class="material-icons menu-icon">phone_iphone</i><span class="menu-text" title="Dashboard">Update Phone</span></a>
+                </div>
+                <nav id="nav-menu" class="menus"></nav>
+            </section>
+            <section class="static-tooltip-gutter">
+                <div style="height: 82px; width:20px; background: #fff;"></div>
+                <div style="height: 45px; width: 20px; position: relative;">
+                    <div style="position: absolute; top: 5px; left: -10px; transform: rotate(45deg); height: 25px; width: 25px; background: #2196f3;z-index:1111111"></div>
+                    <div style="position: absolute; top:-10px; left:2px; height: 66px; width: 200px; background: #2196f3; border-radius: 4px; border-top-left-radius: 4px; z-index: 1111110;box-shadow: 0 2px 5px 0 rgba(0,0,0,.16),0 2px 10px 0 rgba(0,0,0,.12)!important; "></div>
+                </div>
+            </section>
+            <section class="static-content-wrapper">
+                <div class="static-content">
+                    <div class="page-content">
 
-                      <h3>This is Main.</h3>
-                  </div>
-              </div>
-          </section>
-      </article>
-  </main>
+                        <h3>This is Main.</h3>
+                    </div>
+                </div>
+            </section>
+        </article>
+    </main>
 
 </body>
 </html>

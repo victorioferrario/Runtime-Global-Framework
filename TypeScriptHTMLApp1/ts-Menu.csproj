@@ -27,12 +27,24 @@
     <Content Include="bundle.config.js" />
     <Content Include="dist\admin.vendor.css" />
     <Content Include="dist\app.ui.2016.js" />
-    <Content Include="dist\vendor.bundle.js" />
-    <Content Include="dist\vendor.bundle.min.js">
-      <DependentUpon>vendor.bundle.js</DependentUpon>
-    </Content>
+    <Content Include="dist\application.2016.js" />
+    <Content Include="dist\images\background.jpg" />
+    <Content Include="dist\images\h-mini.png" />
+    <Content Include="dist\images\harvard.png" />
+    <Content Include="dist\images\havard-logo.png" />
+    <Content Include="dist\vendor.css" />
+    <Content Include="dist\vendor.js" />
     <Content Include="gulpfile.js" />
     <Content Include="index.html" />
+    <Content Include="index2.html" />
+    <Content Include="libs\bootstrap\bootstrap-3.3.6-dist\css\bootstrap-theme.css" />
+    <Content Include="libs\bootstrap\bootstrap-3.3.6-dist\css\bootstrap-theme.min.css" />
+    <Content Include="libs\bootstrap\bootstrap-3.3.6-dist\css\bootstrap.css" />
+    <Content Include="libs\bootstrap\bootstrap-3.3.6-dist\css\bootstrap.min.css" />
+    <Content Include="libs\bootstrap\bootstrap-3.3.6-dist\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="libs\bootstrap\bootstrap-3.3.6-dist\js\bootstrap.js" />
+    <Content Include="libs\bootstrap\bootstrap-3.3.6-dist\js\bootstrap.min.js" />
+    <Content Include="libs\bootstrap\bootstrap-3.3.6-dist\js\npm.js" />
     <Content Include="libs\materialize\css\materialize.css" />
     <Content Include="libs\materialize\css\materialize.min.css" />
     <Content Include="libs\materialize\font\material-design-icons\LICENSE.txt" />
@@ -59,6 +71,7 @@
     <Content Include="styles\images\havard-logo.png" />
     <Content Include="styles\layout.css" />
     <Content Include="styles\menu.css" />
+    <Content Include="styles\refactor.css" />
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -108,7 +121,14 @@
     <Content Include="libs\materialize\font\roboto\Roboto-Thin.woff2" />
     <Content Include="data.json" />
     <Content Include="tsconfig.json" />
-    <None Include="bundleconfig.json" />
+    <Content Include="libs\bootstrap\bootstrap-3.3.6-dist\css\bootstrap-theme.css.map" />
+    <Content Include="libs\bootstrap\bootstrap-3.3.6-dist\css\bootstrap-theme.min.css.map" />
+    <Content Include="libs\bootstrap\bootstrap-3.3.6-dist\css\bootstrap.css.map" />
+    <Content Include="libs\bootstrap\bootstrap-3.3.6-dist\css\bootstrap.min.css.map" />
+    <Content Include="libs\bootstrap\bootstrap-3.3.6-dist\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="libs\bootstrap\bootstrap-3.3.6-dist\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="libs\bootstrap\bootstrap-3.3.6-dist\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="libs\bootstrap\bootstrap-3.3.6-dist\fonts\glyphicons-halflings-regular.woff2" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -121,6 +141,7 @@
     <TypeScriptCompile Include="src\app.ts" />
     <TypeScriptCompile Include="src\models\IEntity.ts" />
     <TypeScriptCompile Include="src\models\IEvents.ts" />
+    <TypeScriptCompile Include="src\models\INotifications.ts" />
     <TypeScriptCompile Include="src\session\appContext.ts" />
     <TypeScriptCompile Include="src\models\IMenu.ts" />
     <TypeScriptCompile Include="src\models\IMenuItem.ts" />
@@ -129,6 +150,9 @@
     <TypeScriptCompile Include="src\core\eventDispatcher.ts" />
     <TypeScriptCompile Include="src\system\singleton.ts" />
     <TypeScriptCompile Include="src\views\controls\base.ts" />
+    <TypeScriptCompile Include="src\views\controls\components\Alerts.ts" />
+    <TypeScriptCompile Include="src\views\controls\components\ProgressReports.ts" />
+    <TypeScriptCompile Include="src\views\controls\components\UserMenu.ts" />
     <TypeScriptCompile Include="src\views\controls\head.ts" />
     <TypeScriptCompile Include="src\views\controls\components\Logo.ts" />
     <TypeScriptCompile Include="src\views\controls\components\Search.ts" />

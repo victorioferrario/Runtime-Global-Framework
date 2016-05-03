@@ -390,20 +390,21 @@ a.waves-effect .waves-ripple {
 }
 .extrabar-underlay {
     background: rgba(0, 0, 0, 0.3) none repeat scroll 0 0;
-    display:none;
     bottom: 0;
     left: 0;
     position: fixed;
     right: 0;
     top: 0;
-    z-index: 1198;
+    z-index: 1;
     opacity: 0;
     transition-duration: 300ms;
 }
 
 .extrabar-underlay.toggle-aside{
     display:block;
-      opacity: 1;    transition-duration: 300ms;
+      z-index: 1198;
+      opacity: 1;    
+      transition-duration: 300ms;
 }
 
  .user-aside-1, .user-aside-2 {

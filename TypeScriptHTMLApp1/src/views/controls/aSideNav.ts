@@ -55,6 +55,7 @@
                 self.nav.append(item.render());
                 self.nav.append( Views.Controls.StaticElementBuilder.createMenuSplitter());
             });
+            
         }
     }
 }
