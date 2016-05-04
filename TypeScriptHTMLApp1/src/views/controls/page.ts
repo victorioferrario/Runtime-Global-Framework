@@ -61,7 +61,7 @@ namespace Views {
             });
             self.searchButton.on("click", (evt: any) => {
                 self.search.addClass("active");
-                self.parent.header.logoControl.searchControl.triggerEvent();
+                self.parent.header.leftControl.searchControl.triggerEvent();
             });
         }
     }

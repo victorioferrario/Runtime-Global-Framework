@@ -37,6 +37,7 @@ namespace Views.Controls.Components {
             });
 
         }
+
         render() {
             const self = this;
             $("#button-toggle-fullscreen").on("click", (event: any) => {

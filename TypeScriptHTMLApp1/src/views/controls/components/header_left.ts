@@ -1,4 +1,4 @@
-/// <reference path="Search.ts" />
+/// <reference path="searchControl.ts" />
 /// <reference path="utilities/StringTemplates.ts" />
 /// <reference path="../navigation/utilities/StaticElementBuilder.ts" />
 /// <reference path="../../../../typings/tsd.d.ts" />
@@ -30,7 +30,6 @@ namespace Views.Controls.Components {
         constructor(props: IBrandControlProps) {
 
             const self = this;
-
             self.el = $("<div/>", {
                 "class": props.className
             });
@@ -38,7 +37,6 @@ namespace Views.Controls.Components {
                 href: "javascript:void(0);",
                 "class": "navbar-brand navbar-blue"
             });
-
             self.searchControl = new Views.Controls.Components.SearchControl();
 
             self.smallLogo = elementGenerator.createImage(props.small);
@@ -48,6 +46,7 @@ namespace Views.Controls.Components {
             self.lnk.append(self.largeLogo);
 
         }
+
         render() {
             const self = this;
 

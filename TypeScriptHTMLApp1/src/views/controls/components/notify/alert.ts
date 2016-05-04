@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../../typings/tsd.d.ts" />
+﻿/// <reference path="../../../../../typings/tsd.d.ts" />
 namespace Views.Controls.Components {
     export class Alerts {
         el: JQuery;

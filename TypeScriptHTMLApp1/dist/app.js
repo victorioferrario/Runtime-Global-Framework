@@ -154,7 +154,7 @@ var Views;
         })(Components = Controls.Components || (Controls.Components = {}));
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
-/// <reference path="../../../../typings/tsd.d.ts" />
+/// <reference path="../../../../../typings/tsd.d.ts" />
 var Views;
 (function (Views) {
     var Controls;
@@ -198,6 +198,50 @@ var Views;
                 return AlertItem;
             }());
             Components.AlertItem = AlertItem;
+        })(Components = Controls.Components || (Controls.Components = {}));
+    })(Controls = Views.Controls || (Views.Controls = {}));
+})(Views || (Views = {}));
+/// <reference path="../../../../../typings/tsd.d.ts" />
+var Views;
+(function (Views) {
+    var Controls;
+    (function (Controls) {
+        var Components;
+        (function (Components) {
+            var Reports = (function () {
+                function Reports(data) {
+                    var self = this;
+                    self.el = $("#progress_reports");
+                    if (data.notifications.progress_reports !== undefined && data.notifications.progress_reports.length > 0) {
+                        $("#message_no_progress_reports").hide();
+                        data.notifications.progress_reports.forEach(function (item) {
+                            self.el.append(new ReportItem(item).render());
+                        });
+                    }
+                }
+                return Reports;
+            }());
+            Components.Reports = Reports;
+            var ReportItem = (function () {
+                function ReportItem(data) {
+                    var self = this;
+                    self.data = data;
+                    self.el = $("<article>", {
+                        class: "progress_report__item"
+                    });
+                    self.el.append(self.populateControl());
+                }
+                ReportItem.prototype.populateControl = function () {
+                    var self = this;
+                    return "<h5 class=\"progress_report__date\">" + self.data.date + "</h5>\n                <div class=\"progress_report__message\">" + self.data.message + "</div>\n                <div class=\"progress_report__buttons\">\n                  <a href=\"javascript:void(0);\" class=\"btn waves-effect waves-light progress_check\"><i class=\"material-icons\">check_circle</i></a>\n                  <a href=\"javascript:void(0);\" class=\"btn waves-effect waves-light progress_x\"><i class=\"material-icons\">highlight_off</i></a>\n                </div>";
+                };
+                ReportItem.prototype.render = function () {
+                    var self = this;
+                    return self.el;
+                };
+                return ReportItem;
+            }());
+            Components.ReportItem = ReportItem;
         })(Components = Controls.Components || (Controls.Components = {}));
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
@@ -294,7 +338,7 @@ var Views;
         Controls.StaticElementBuilder = StaticElementBuilder;
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
-/// <reference path="Search.ts" />
+/// <reference path="searchControl.ts" />
 /// <reference path="utilities/StringTemplates.ts" />
 /// <reference path="../navigation/utilities/StaticElementBuilder.ts" />
 /// <reference path="../../../../typings/tsd.d.ts" />
@@ -341,95 +385,51 @@ var Views;
     (function (Controls) {
         var Components;
         (function (Components) {
-            var UserMenu = (function () {
-                function UserMenu() {
+            var ProfileMenu = (function () {
+                function ProfileMenu() {
                     var self = this;
                     self.menu = $(".user-menu");
                     self.menuOpen = $("#user-menu-expand");
                     self.menuClose = $("#user-menu-collapse");
                     self.init();
                 }
-                UserMenu.prototype.init = function () {
+                ProfileMenu.prototype.init = function () {
                     var self = this;
                     //self.menu
                     self.menuOpen.on("click", function (evt) {
-                        UserMenu.toggleState(self.menuClose, self.menuOpen, self.menu);
+                        ProfileMenu.toggleState(self.menuClose, self.menuOpen, self.menu);
                     });
                     self.menuClose.on("click", function (evt) {
-                        UserMenu.toggleHide(self.menuOpen, self.menuClose, self.menu);
+                        ProfileMenu.toggleHide(self.menuOpen, self.menuClose, self.menu);
                     });
                     self.render();
                 };
-                UserMenu.prototype.render = function () {
+                ProfileMenu.prototype.render = function () {
                     var result = "<a href=\"javascript:void(0)\" id=\"menu0_link0\"\n                       class=\"menu-item waves-effect waves-light\"><i class=\"material-icons menu-icon\">account_box</i><span class=\"menu-text\" title=\"Dashboard\">My Profile</span></a>\n                    <a href=\"javascript:void(0)\" id=\"menu0_link1\"\n                       class=\"menu-item waves-effect waves-light\"><i class=\"material-icons menu-icon\">edit</i><span class=\"menu-text\" title=\"Dashboard\">Edit Profile</span></a>\n                    <a href=\"javascript:void(0)\" id=\"menu0_link2\"\n                       class=\"menu-item waves-effect waves-light\"><i class=\"material-icons menu-icon\">phone_iphone</i><span class=\"menu-text\" title=\"Dashboard\">Update Phone</span></a>";
                     this.menu.append(result);
                 };
-                UserMenu.toggleState = function (linkToShow, linkToHide, menu) {
-                    if (!menu.hasClass(UserMenu.cssExp)) {
-                        menu.addClass(UserMenu.cssExp);
-                        linkToHide.addClass(UserMenu.cssHide);
-                        linkToShow.removeClass(UserMenu.cssHide);
+                ProfileMenu.toggleState = function (linkToShow, linkToHide, menu) {
+                    if (!menu.hasClass(ProfileMenu.cssExp)) {
+                        menu.addClass(ProfileMenu.cssExp);
+                        linkToHide.addClass(ProfileMenu.cssHide);
+                        linkToShow.removeClass(ProfileMenu.cssHide);
                     }
                     else {
-                        menu.removeClass(UserMenu.cssExp);
-                        linkToHide.removeClass(UserMenu.cssHide);
-                        linkToShow.addClass(UserMenu.cssHide);
+                        menu.removeClass(ProfileMenu.cssExp);
+                        linkToHide.removeClass(ProfileMenu.cssHide);
+                        linkToShow.addClass(ProfileMenu.cssHide);
                     }
                 };
-                UserMenu.toggleHide = function (linkToShow, linkToHide, menu) {
-                    menu.removeClass(UserMenu.cssExp);
-                    linkToShow.removeClass(UserMenu.cssHide);
-                    linkToHide.addClass(UserMenu.cssHide);
+                ProfileMenu.toggleHide = function (linkToShow, linkToHide, menu) {
+                    menu.removeClass(ProfileMenu.cssExp);
+                    linkToShow.removeClass(ProfileMenu.cssHide);
+                    linkToHide.addClass(ProfileMenu.cssHide);
                 };
-                UserMenu.cssExp = "expanded";
-                UserMenu.cssHide = "m-hide-opacity";
-                return UserMenu;
+                ProfileMenu.cssExp = "expanded";
+                ProfileMenu.cssHide = "m-hide-opacity";
+                return ProfileMenu;
             }());
-            Components.UserMenu = UserMenu;
-        })(Components = Controls.Components || (Controls.Components = {}));
-    })(Controls = Views.Controls || (Views.Controls = {}));
-})(Views || (Views = {}));
-/// <reference path="../../../../typings/tsd.d.ts" />
-var Views;
-(function (Views) {
-    var Controls;
-    (function (Controls) {
-        var Components;
-        (function (Components) {
-            var ProgressReports = (function () {
-                function ProgressReports(data) {
-                    var self = this;
-                    self.el = $("#progress_reports");
-                    if (data.notifications.progress_reports !== undefined && data.notifications.progress_reports.length > 0) {
-                        $("#message_no_progress_reports").hide();
-                        data.notifications.progress_reports.forEach(function (item) {
-                            self.el.append(new ProgressReportItem(item).render());
-                        });
-                    }
-                }
-                return ProgressReports;
-            }());
-            Components.ProgressReports = ProgressReports;
-            var ProgressReportItem = (function () {
-                function ProgressReportItem(data) {
-                    var self = this;
-                    self.data = data;
-                    self.el = $("<article>", {
-                        class: "progress_report__item"
-                    });
-                    self.el.append(self.populateControl());
-                }
-                ProgressReportItem.prototype.populateControl = function () {
-                    var self = this;
-                    return "<h5 class=\"progress_report__date\">" + self.data.date + "</h5>\n                <div class=\"progress_report__message\">" + self.data.message + "</div>\n                <div class=\"progress_report__buttons\">\n                  <a href=\"javascript:void(0);\" class=\"btn waves-effect waves-light progress_check\"><i class=\"material-icons\">check_circle</i></a>\n                  <a href=\"javascript:void(0);\" class=\"btn waves-effect waves-light progress_x\"><i class=\"material-icons\">highlight_off</i></a>\n                </div>";
-                };
-                ProgressReportItem.prototype.render = function () {
-                    var self = this;
-                    return self.el;
-                };
-                return ProgressReportItem;
-            }());
-            Components.ProgressReportItem = ProgressReportItem;
+            Components.ProfileMenu = ProfileMenu;
         })(Components = Controls.Components || (Controls.Components = {}));
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
@@ -606,7 +606,7 @@ var Views;
             Aside.prototype.render = function () {
                 var self = this;
                 self.alerts = new Views.Controls.Components.Alerts(self.appContext.payloadNotifications);
-                self.reports = new Views.Controls.Components.ProgressReports(self.appContext.payloadNotifications);
+                self.reports = new Views.Controls.Components.Reports(self.appContext.payloadNotifications);
             };
             return Aside;
         }(Session.BaseView));
@@ -619,43 +619,23 @@ var Views;
 (function (Views) {
     var Controls;
     (function (Controls) {
-        var Head = (function (_super) {
-            __extends(Head, _super);
-            function Head() {
-                _super.call(this, "topnav");
-            }
-            Head.prototype.databind = function (data) {
+        var DropdownControl = (function () {
+            function DropdownControl(parent) {
+                this.parent = parent;
                 var self = this;
-                console.warn("head", data);
-                var logoProps = {
-                    className: "logo-area",
-                    small: {
-                        alt: data.payload.entity.logos[0].alt,
-                        src: data.payload.entity.logos[0].src,
-                        className: data.payload.entity.logos[0].className
-                    },
-                    large: {
-                        alt: data.payload.entity.logos[1].alt,
-                        src: data.payload.entity.logos[1].src,
-                        className: data.payload.entity.logos[1].className
-                    }
-                };
-                self.rightControl
-                    = new Views.Controls.Components.RightMenu();
-                self.logoControl
-                    = new Views.Controls.Components.LogoControl(logoProps);
-                self.el.append(self.logoControl.render());
-                self.el.append(self.rightControl.render());
-                self.el.prepend(Controls.Components.Utilities.StringTemplates.dropdownMenuComponent());
+                parent.append(DropdownControl.htmlPayload);
+                //
+                self.init();
+            }
+            DropdownControl.prototype.init = function () {
+                var self = this;
                 self.ddMenu = $("#dropdown");
                 self.ddMenuTrigger = $("#button-Trigger");
                 self.ddMenuBackground = $(".dropdown-close-background");
-                self.initTrigger();
+                //
+                self.trigger();
             };
-            Head.prototype.render = function () {
-                var self = this;
-            };
-            Head.prototype.initTrigger = function () {
+            DropdownControl.prototype.trigger = function () {
                 var self = this;
                 var jqueryArray = [
                     self.ddMenu,
@@ -672,13 +652,12 @@ var Views;
                     }
                     else {
                         self.ddMenuBackground.off("mouseenter", function () {
-                            console.log("offfff");
                         });
                         self.toggleArrayClass(false, jqueryArray, "open");
                     }
                 });
             };
-            Head.prototype.toggleArrayClass = function (direction, items, cssClass) {
+            DropdownControl.prototype.toggleArrayClass = function (direction, items, cssClass) {
                 items.forEach(function (item) {
                     if (direction) {
                         item.addClass(cssClass);
@@ -688,6 +667,77 @@ var Views;
                     }
                 });
             };
+            DropdownControl.htmlPayload = Controls.Components.Utilities.StringTemplates.dropdownMenuComponent();
+            return DropdownControl;
+        }());
+        Controls.DropdownControl = DropdownControl;
+        var Head = (function (_super) {
+            __extends(Head, _super);
+            function Head() {
+                _super.call(this, "topnav");
+            }
+            Head.prototype.databind = function (data) {
+                var self = this;
+                var logoProps = {
+                    className: "logo-area",
+                    small: {
+                        alt: data.payload.entity.logos[0].alt,
+                        src: data.payload.entity.logos[0].src,
+                        className: data.payload.entity.logos[0].className
+                    },
+                    large: {
+                        alt: data.payload.entity.logos[1].alt,
+                        src: data.payload.entity.logos[1].src,
+                        className: data.payload.entity.logos[1].className
+                    }
+                };
+                // RightControl
+                self.rightControl
+                    = new Views.Controls.Components.RightMenu();
+                self.el.append(self.rightControl.render());
+                // LeftControl
+                self.leftControl
+                    = new Views.Controls.Components.BrandControl(logoProps);
+                self.el.append(self.leftControl.render());
+                // Department switcher menu.
+                self.dropControl = new DropdownControl(self.el);
+            };
+            Head.prototype.render = function () {
+                var self = this;
+            };
+            //ddMenu: JQuery;
+            //ddMenuTrigger: JQuery;
+            //ddMenuBackground: JQuery;
+            //initTrigger() {
+            //    const self = this;
+            //    const jqueryArray = [
+            //        self.ddMenu,
+            //        self.ddMenuTrigger,
+            //        self.ddMenuBackground];
+            //    self.ddMenuTrigger.on("click", (event) => {
+            //        if (!self.ddMenu.hasClass("open")) {
+            //            self.toggleArrayClass(true, jqueryArray, "open");
+            //            setTimeout(() => {
+            //                self.ddMenuBackground.on("mouseenter", (evt: any) => {
+            //                    self.toggleArrayClass(false, jqueryArray, "open");
+            //                });
+            //            }, 1000);
+            //        } else {
+            //            self.ddMenuBackground.off("mouseenter", () => {
+            //            });
+            //            self.toggleArrayClass(false, jqueryArray, "open");
+            //        }
+            //    });
+            //}
+            //toggleArrayClass(direction: boolean, items: Array<JQuery>, cssClass: string) {
+            //    items.forEach((item: JQuery) => {
+            //        if (direction) {
+            //            item.addClass(cssClass);
+            //        } else {
+            //            item.removeClass(cssClass);
+            //        }
+            //    });
+            //}
             Head.prototype.toggle = function () {
                 var self = this;
                 var topBar = $(".navbar-brand"), toggleCss = "toggle-icon";
@@ -759,7 +809,7 @@ var Views;
             MasterLayout.prototype.addOtherElements = function () {
                 var self = this;
                 self.searchTemp = new Views.PageButtons(self);
-                self.userMenuControl = new Views.Controls.Components.UserMenu();
+                self.userMenuControl = new Views.Controls.Components.ProfileMenu();
             };
             return MasterLayout;
         }(Session.BaseView));
@@ -824,7 +874,7 @@ var Views;
             });
             self.searchButton.on("click", function (evt) {
                 self.search.addClass("active");
-                self.parent.header.logoControl.searchControl.triggerEvent();
+                self.parent.header.leftControl.searchControl.triggerEvent();
             });
         };
         return PageButtons;

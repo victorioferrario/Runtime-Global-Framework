@@ -4,7 +4,7 @@
         aside: Views.Controls.Aside;
         header: Views.Controls.Head;
         searchTemp: PageButtons;
-        userMenuControl:Views.Controls.Components.UserMenu;
+        userMenuControl:Views.Controls.Components.ProfileMenu;
         constructor() {
             super();
             const self = this;
@@ -18,7 +18,7 @@
         addOtherElements() {
             const self = this;
              self.searchTemp = new PageButtons(self);
-             self.userMenuControl = new Views.Controls.Components.UserMenu();
+             self.userMenuControl = new Views.Controls.Components.ProfileMenu();
         }
     }
 }

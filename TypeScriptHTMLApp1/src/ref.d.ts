@@ -85,12 +85,13 @@
 // [@    views/controls/components                           @]
 // [@    -------------------------------------------------   @]
 
-/// <reference path="views/controls/components/Alerts.ts" />
-/// <reference path="views/controls/components/BrandControl.ts" />
-/// <reference path="views/controls/components/Search.ts" />
-/// <reference path="views/controls/components/RightMenu.ts" />
-/// <reference path="views/controls/components/UserMenu.ts" />
-/// <reference path="views/controls/components/ProgressReports.ts" />
+/// <reference path="views/controls/components/notify/alert.ts" />
+/// <reference path="views/controls/components/notify/report.ts" />
+/// <reference path="views/controls/components/header_left.ts" />
+/// <reference path="views/controls/components/searchControl.ts" />
+/// <reference path="views/controls/components/header_right.ts" />
+/// <reference path="views/controls/components/profileMenu.ts" />
+
 
 // [@    -------------------------------------------------   @]
 // [@    -------------------------------------------------   @]

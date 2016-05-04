@@ -60,7 +60,7 @@ namespace Views {
 
         }
         pageButtons: PageButtons;
-        userMenuControl: Views.Controls.Components.UserMenu;
+        userMenuControl: Views.Controls.Components.ProfileMenu;
         render() { }
     }
 }

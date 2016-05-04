@@ -1,5 +1,5 @@
 ﻿namespace Views.Controls.Components {
-    export class UserMenu {
+    export class ProfileMenu {
         menu :JQuery;
         menuOpen: JQuery;
         menuClose: JQuery;
@@ -16,10 +16,10 @@
             const self = this;
             //self.menu
             self.menuOpen.on("click", (evt: any) => {
-                UserMenu.toggleState(self.menuClose, self.menuOpen, self.menu);
+                ProfileMenu.toggleState(self.menuClose, self.menuOpen, self.menu);
             });
             self.menuClose.on("click", (evt: any) => {
-                UserMenu.toggleHide(self.menuOpen, self.menuClose, self.menu);
+                ProfileMenu.toggleHide(self.menuOpen, self.menuClose, self.menu);
             });
             self.render();
         }
@@ -33,20 +33,20 @@
             this.menu.append(result);
         }
         static toggleState(linkToShow: JQuery, linkToHide: JQuery, menu: JQuery) {
-            if (!menu.hasClass(UserMenu.cssExp)) {
-                menu.addClass(UserMenu.cssExp);
-                linkToHide.addClass(UserMenu.cssHide);
-                linkToShow.removeClass(UserMenu.cssHide);
+            if (!menu.hasClass(ProfileMenu.cssExp)) {
+                menu.addClass(ProfileMenu.cssExp);
+                linkToHide.addClass(ProfileMenu.cssHide);
+                linkToShow.removeClass(ProfileMenu.cssHide);
             } else {
-                menu.removeClass(UserMenu.cssExp);
-                linkToHide.removeClass(UserMenu.cssHide);
-                linkToShow.addClass(UserMenu.cssHide);
+                menu.removeClass(ProfileMenu.cssExp);
+                linkToHide.removeClass(ProfileMenu.cssHide);
+                linkToShow.addClass(ProfileMenu.cssHide);
             }
         }
         static toggleHide(linkToShow:JQuery, linkToHide: JQuery, menu: JQuery) {
-                menu.removeClass(UserMenu.cssExp);
-                linkToShow.removeClass(UserMenu.cssHide);
-                linkToHide.addClass(UserMenu.cssHide);
+                menu.removeClass(ProfileMenu.cssExp);
+                linkToShow.removeClass(ProfileMenu.cssHide);
+                linkToHide.addClass(ProfileMenu.cssHide);
         }
     }
 }

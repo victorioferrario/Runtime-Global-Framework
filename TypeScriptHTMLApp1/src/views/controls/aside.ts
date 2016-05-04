@@ -1,4 +1,5 @@
 ﻿namespace Views.Controls {
+
     export class AsideLayout {
 
         aside1: JQuery;
@@ -30,6 +31,7 @@
                 <section id="progress_reports">
                     <div id="message_no_progress_reports">No Progress Reports available.</div>
                 </section>`;
+
             self.aside1.append(result1);
             self.aside2.append(result2);
             return true;
@@ -104,7 +106,7 @@
     export class Aside extends Session.BaseView {
         layout: AsideLayout;
         alerts: Controls.Components.Alerts;
-        reports: Controls.Components.ProgressReports;
+        reports: Controls.Components.Reports;
         constructor() {
             super();
             const self = this;
@@ -115,7 +117,7 @@
             const self = this;
             self.alerts = new Views.Controls.Components.Alerts(
                 self.appContext.payloadNotifications);
-            self.reports = new Views.Controls.Components.ProgressReports(
+            self.reports = new Views.Controls.Components.Reports(
                 self.appContext.payloadNotifications);
         }
     }
