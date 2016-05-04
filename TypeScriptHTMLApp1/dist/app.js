@@ -802,14 +802,20 @@ var Views;
                 self.main = new Views.Controls.Main();
                 self.header = new Views.Controls.Head();
             }
+            MasterLayout.prototype.addOtherElements = function () {
+                var self = this;
+                // ToDo: See Search Top
+                self.searchTemp = new Views.PageButtons(self);
+                self.userMenuControl = new Views.Controls.Components.ProfileMenu();
+            };
             MasterLayout.prototype.addNotificationPanels = function () {
                 var self = this;
                 self.aside = new Views.Controls.Aside();
             };
-            MasterLayout.prototype.addOtherElements = function () {
+            MasterLayout.prototype.databind = function (data, data2) {
                 var self = this;
-                self.searchTemp = new Views.PageButtons(self);
-                self.userMenuControl = new Views.Controls.Components.ProfileMenu();
+                self.main.databind(data);
+                self.header.databind({ payload: data2 });
             };
             return MasterLayout;
         }(Session.BaseView));
@@ -824,11 +830,11 @@ var Views;
         function Page() {
             _super.call(this);
             var self = this;
-            if (self.initSession()) {
+            if (self.init()) {
                 self.layout = new Views.Controls.MasterLayout();
             }
         }
-        Page.prototype.initSession = function () {
+        Page.prototype.init = function () {
             var self = this;
             self.appContext.addEventListener(Models.Events.dataLoaded, function (arg) {
                 self.dataLoaded();
@@ -838,25 +844,20 @@ var Views;
             });
             return true;
         };
+        //Responses.
         Page.prototype.dataLoaded = function () {
             var self = this;
-            self.layout.main.databind(self.appContext.payloadMenu);
-            self.layout.header.databind({
-                payload: self.appContext.payloadUser });
-            self.init();
-            Session.Trace.log("dataLoaded", self.appContext.payloadUser, self.appContext.payloadMenu);
+            self.layout.databind(self.appContext.payloadMenu, self.appContext.payloadUser);
         };
         Page.prototype.dataLoaded2 = function () {
             var self = this;
             self.layout.addOtherElements();
             self.layout.addNotificationPanels();
         };
-        Page.prototype.init = function () {
-            var self = this;
-        };
         return Page;
     }(Session.BaseView));
     Views.Page = Page;
+    // ToDo: Re-factor this entire object. Most likely go down a namespace. Class name is wrong. The elements seem to be assosicated to search.
     var PageButtons = (function () {
         function PageButtons(ref) {
             var self = this;
@@ -905,6 +906,7 @@ $(window).load(function () {
     setTimeout(function () {
         $(".page-content").removeClass("m-hide");
     }, 2000);
+    // Pop overs
     var options = {
         html: true
     };

@@ -1,15 +1,19 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 namespace Views {
+
     export class Page extends Session.BaseView {
+
         layout: Controls.MasterLayout;
+
         constructor() {
             super();
             const self = this;
-            if (self.initSession()) {
+            if (self.init()) {
                 self.layout = new Controls.MasterLayout();
             }
         }
-        initSession() {
+
+        init() {
             const self = this;
             self.appContext.addEventListener(
                 Models.Events.dataLoaded, (arg: any) => {
@@ -21,25 +25,25 @@ namespace Views {
             });
             return true;
         }
+
+        //Responses.
+
         dataLoaded() {
             const self = this;
-            self.layout.main.databind(
-                self.appContext.payloadMenu);
-            self.layout.header.databind({
-                payload: self.appContext.payloadUser});
-            self.init();
-            Session.Trace.log("dataLoaded",self.appContext.payloadUser,self.appContext.payloadMenu);
+            self.layout.databind(
+                self.appContext.payloadMenu,
+                self.appContext.payloadUser); 
         }
+
         dataLoaded2() {
             const self = this;
             self.layout.addOtherElements();
             self.layout.addNotificationPanels();
         }
-        init() {
-            const self = this;
-          
-        }
+        
     }
+
+    // ToDo: Re-factor this entire object. Most likely go down a namespace. Class name is wrong. The elements seem to be assosicated to search.
     export class PageButtons {
         search: JQuery;
         searchButton: JQuery;
@@ -66,6 +70,7 @@ namespace Views {
         }
     }
 }
+
 declare var screenfull: any;
 var toggleFullScreen = () => {
     if (screenfull.enabled) {
@@ -91,6 +96,7 @@ $(window).load(() => {
     setTimeout(() => {
         $(".page-content").removeClass("m-hide");
     }, 2000);
+    // Pop overs
     let options = {
         html: true
     }
