@@ -1,4 +1,4 @@
-// [@    -------------------------------------------------   @]
+﻿// [@    -------------------------------------------------   @]
 // [@    -------------------------------------------------   @]
 // [@    -------------------------------------------------   @]
 // [@    -------------------------------------------------   @]
@@ -86,9 +86,9 @@
 // [@    -------------------------------------------------   @]
 
 /// <reference path="views/controls/components/Alerts.ts" />
-/// <reference path="views/controls/components/Logo.ts" />
+/// <reference path="views/controls/components/BrandControl.ts" />
 /// <reference path="views/controls/components/Search.ts" />
-/// <reference path="views/controls/components/TopNav.ts" />
+/// <reference path="views/controls/components/RightMenu.ts" />
 /// <reference path="views/controls/components/UserMenu.ts" />
 /// <reference path="views/controls/components/ProgressReports.ts" />
 

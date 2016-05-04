@@ -24,7 +24,8 @@ namespace Views.Controls.Components.Utilities {
         static rightMenuCloseSearch() {
             return '<li class="toolbar-icon-bg appear-on-search ov-h" id="trigger-search-close"><a class="toggle-fullscreen" id="button-search-close"><span class="icon-bg"><i class="material-icons">close</i></span><div class="ripple-container"></div></a> </li>';
         }
-        static rightMenuFullScreen() {
+
+        static headerButtonFullScreen() {
             return '<li class="toolbar-icon-bg hidden-xs" id="trigger-fullscreen">'
                 + '     <a href="#" class="toggle-fullscreen waves-effect waves-light" id="button-toggle-fullscreen" onclick="window.toggleFullScreen();">             '
                 + '         <span class="icon-bg" style="background: transparent !important;">             '
@@ -41,7 +42,7 @@ namespace Views.Controls.Components.Utilities {
             return `<li class="dropdown toolbar-icon-bg"><a href="#" class="hasnotifications dropdown-toggle waves-effect waves-light" data-toggle="dropdown" id="button-toggle-aside_Notifications">
             <span class="badge badge-custom">${ count}</span><span class="icon-bg" style="background: transparent !important;"><i class="material-icons">notifications</i></span><span class="badge badge-info"></span></a></li>`;
         }
-        static moreMenuItem() {
+        static switchDepartmentsMenuItem() {
             return `<li class="dropdown toolbar-icon-bg" style="border-left:solid 1px #ccc"><a href="#" title="Switch Departments" class="hasnotifications dropdown-toggle waves-effect waves-light" data-toggle="dropdown" id="button-Trigger">
            <span class="icon-bg" style="background: transparent !important;"><i class="material-icons">layers</i></span></a></li>`;
         }

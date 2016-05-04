@@ -1,19 +1,18 @@
-﻿/// <reference path="../../../typings/tsd.d.ts" />
-/// <reference path="Components/Logo.ts" />
-/// <reference path="Components/TopNav.ts" />
-/// <reference path="../../Session/base.ts" />
-/// <reference path="../../models/IMenu.ts" />
+﻿/// <reference path="../../ref.d.ts" />
+///** Head                                  **\\\
 namespace Views.Controls {
-    import LogoControlProps = Views.Controls.Components.ILogoControlProps;
     export interface IHeadProps {
         payload: Models.IUserPayload;
     }
     export class Head extends Session.Base {
+
+        leftControl: Views.Controls.Components.LeftControl;
         rightControl: Views.Controls.Components.RightMenu;
-        logoControl: Views.Controls.Components.LogoControl;
+
         constructor() {
             super("topnav");
         }
+
         databind(data: IHeadProps) {
             const self = this;
             console.warn("head", data)
@@ -47,12 +46,15 @@ namespace Views.Controls {
             self.initTrigger();
 
         }
+
         render() {
             const self = this;
         }
+
         ddMenu: JQuery;
         ddMenuTrigger: JQuery;
         ddMenuBackground: JQuery;
+
         initTrigger() {
             const self = this;
             const jqueryArray = [
@@ -77,6 +79,7 @@ namespace Views.Controls {
 
 
         }
+
         toggleArrayClass(direction: boolean, items: Array<JQuery>, cssClass: string) {
             items.forEach((item: JQuery) => {
                 if (direction) {

@@ -84,6 +84,12 @@ var Services;
 /// <reference path="../ref.d.ts" />
 var Session;
 (function (Session) {
+    var INotificationProps = (function () {
+        function INotificationProps() {
+        }
+        return INotificationProps;
+    }());
+    Session.INotificationProps = INotificationProps;
     var DataContext = (function (_super) {
         __extends(DataContext, _super);
         function DataContext() {
@@ -131,8 +137,10 @@ var Session;
             }).done(function (result) {
                 self.isLoadedNotifications = true;
                 self.payloadNotifications = result;
-                self.countAlerts = result.notifications.alerts[0].count + result.notifications.alerts[1].count;
-                self.countProgressReports = result.notifications.progress_reports.length;
+                self.iNotificatonProps = {
+                    progRCount: result.notifications.progress_reports.length,
+                    alertCount: result.notifications.alerts[0].count + result.notifications.alerts[1].count
+                };
                 Q.resolve(result);
             }).always(function () {
                 return Q.resolve(self.payloadNotifications);
@@ -266,7 +274,7 @@ var Views;
                     StringTemplates.rightMenuCloseSearch = function () {
                         return '<li class="toolbar-icon-bg appear-on-search ov-h" id="trigger-search-close"><a class="toggle-fullscreen" id="button-search-close"><span class="icon-bg"><i class="material-icons">close</i></span><div class="ripple-container"></div></a> </li>';
                     };
-                    StringTemplates.rightMenuFullScreen = function () {
+                    StringTemplates.headerButtonFullScreen = function () {
                         return '<li class="toolbar-icon-bg hidden-xs" id="trigger-fullscreen">'
                             + '     <a href="#" class="toggle-fullscreen waves-effect waves-light" id="button-toggle-fullscreen" onclick="window.toggleFullScreen();">             '
                             + '         <span class="icon-bg" style="background: transparent !important;">             '
@@ -281,7 +289,7 @@ var Views;
                     StringTemplates.notificationMenuItem = function (count) {
                         return "<li class=\"dropdown toolbar-icon-bg\"><a href=\"#\" class=\"hasnotifications dropdown-toggle waves-effect waves-light\" data-toggle=\"dropdown\" id=\"button-toggle-aside_Notifications\">\n            <span class=\"badge badge-custom\">" + count + "</span><span class=\"icon-bg\" style=\"background: transparent !important;\"><i class=\"material-icons\">notifications</i></span><span class=\"badge badge-info\"></span></a></li>";
                     };
-                    StringTemplates.moreMenuItem = function () {
+                    StringTemplates.switchDepartmentsMenuItem = function () {
                         return "<li class=\"dropdown toolbar-icon-bg\" style=\"border-left:solid 1px #ccc\"><a href=\"#\" title=\"Switch Departments\" class=\"hasnotifications dropdown-toggle waves-effect waves-light\" data-toggle=\"dropdown\" id=\"button-Trigger\">\n           <span class=\"icon-bg\" style=\"background: transparent !important;\"><i class=\"material-icons\">layers</i></span></a></li>";
                     };
                     StringTemplates.profileWidget = function (data) {
@@ -404,83 +412,6 @@ var Views;
         })(Components = Controls.Components || (Controls.Components = {}));
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
-var Views;
-(function (Views) {
-    var Controls;
-    (function (Controls) {
-        var StaticElementBuilder = (function () {
-            function StaticElementBuilder() {
-            }
-            StaticElementBuilder.createIcon = function (props) {
-                var icon = document.createElement("i");
-                icon.setAttribute("class", "material-icons menu-icon");
-                icon.innerText = props.icon;
-                return icon;
-            };
-            StaticElementBuilder.createText = function (props) {
-                var label = document.createElement("span");
-                label.setAttribute("class", "menu-text");
-                label.setAttribute("title", props.label);
-                label.innerText = props.label;
-                return label;
-            };
-            StaticElementBuilder.createMenuSplitter = function () {
-                return $("<div/>", {
-                    class: "menu-splitter"
-                });
-            };
-            StaticElementBuilder.createImage = function (props) {
-                var image = document.createElement("img");
-                image.src = props.src;
-                image.setAttribute("title", props.alt);
-                image.setAttribute("class", props.className);
-                return image;
-            };
-            return StaticElementBuilder;
-        }());
-        Controls.StaticElementBuilder = StaticElementBuilder;
-    })(Controls = Views.Controls || (Views.Controls = {}));
-})(Views || (Views = {}));
-/// <reference path="Search.ts" />
-/// <reference path="utilities/StringTemplates.ts" />
-/// <reference path="../navigation/utilities/StaticElementBuilder.ts" />
-/// <reference path="../../../../typings/tsd.d.ts" />
-var Views;
-(function (Views) {
-    var Controls;
-    (function (Controls) {
-        var Components;
-        (function (Components) {
-            var LogoControl = (function () {
-                function LogoControl(props) {
-                    var self = this;
-                    self.el = $("<div/>", {
-                        class: props.className
-                    });
-                    self.lnk = $("<a/>", {
-                        href: "javascript:void(0);",
-                        class: "navbar-brand navbar-blue"
-                    });
-                    self.searchControl = new Views.Controls.Components.SearchControl();
-                    self.smallLogo = Views.Controls.StaticElementBuilder.createImage(props.small);
-                    self.largeLogo = Views.Controls.StaticElementBuilder.createImage(props.large);
-                    self.lnk.append(self.smallLogo);
-                    self.lnk.append(self.largeLogo);
-                }
-                LogoControl.prototype.render = function () {
-                    var self = this;
-                    self.el.append(self.lnk);
-                    self.el.append(Components.Utilities.StringTemplates.toggleMenu);
-                    self.el.append(self.searchControl.render());
-                    self.el.append(Components.Utilities.StringTemplates.toggleSearch);
-                    return self.el;
-                };
-                return LogoControl;
-            }());
-            Components.LogoControl = LogoControl;
-        })(Components = Controls.Components || (Controls.Components = {}));
-    })(Controls = Views.Controls || (Views.Controls = {}));
-})(Views || (Views = {}));
 /// <reference path="../../../../typings/tsd.d.ts" />
 /// <reference path="../../../session/AppContext.ts" />
 /// <reference path="utilities/StringTemplates.ts" />
@@ -490,23 +421,36 @@ var Views;
     (function (Controls) {
         var Components;
         (function (Components) {
-            var RightMenu = (function () {
+            var sTemplates = Components.Utilities.StringTemplates;
+            var eTemplates = Components.Utilities.ElementTemplates;
+            // ------->
+            var RightMenu = (function (_super) {
+                __extends(RightMenu, _super);
                 function RightMenu() {
+                    _super.call(this);
                     var self = this;
-                    self.appContext = Session.AppContext.getInstance();
-                    self.el = Views.Controls.Components.Utilities.ElementTemplates.ulMenu();
-                    self.el.append(Components.Utilities.StringTemplates.rightMenuCloseSearch());
-                    self.el.append(Components.Utilities.StringTemplates.rightMenuFullScreen());
-                    self.el.append(Components.Utilities.StringTemplates.otherMenuItem(self.appContext.countProgressReports));
-                    self.el.append(Components.Utilities.StringTemplates.notificationMenuItem(self.appContext.countAlerts));
-                    self.el.append(Components.Utilities.StringTemplates.moreMenuItem());
+                    var iNotify = self.appContext.iNotificatonProps;
+                    // @create a scrath list of items.
+                    self.controlsList = [
+                        sTemplates.rightMenuCloseSearch(),
+                        sTemplates.headerButtonFullScreen(),
+                        sTemplates.otherMenuItem(iNotify.progRCount),
+                        sTemplates.notificationMenuItem(iNotify.alertCount),
+                        sTemplates.switchDepartmentsMenuItem()
+                    ];
+                    // @create ul
+                    self.ulList = eTemplates.ulMenu();
+                    // @append li per scratch list.
+                    self.controlsList.forEach(function (item) {
+                        self.ulList.append(item);
+                    });
                 }
                 RightMenu.prototype.render = function () {
                     var self = this;
                     $("#button-toggle-fullscreen").on("click", function (event) {
                         console.log("this");
                     });
-                    return self.el;
+                    return self.ulList;
                 };
                 RightMenu.prototype.onclickFullScreen = function (event) {
                     if (screenfull.enabled) {
@@ -519,7 +463,7 @@ var Views;
                     }
                 };
                 return RightMenu;
-            }());
+            }(Session.BaseView));
             Components.RightMenu = RightMenu;
         })(Components = Controls.Components || (Controls.Components = {}));
     })(Controls = Views.Controls || (Views.Controls = {}));
@@ -620,6 +564,43 @@ var Views;
             }());
             Components.ProgressReportItem = ProgressReportItem;
         })(Components = Controls.Components || (Controls.Components = {}));
+    })(Controls = Views.Controls || (Views.Controls = {}));
+})(Views || (Views = {}));
+var Views;
+(function (Views) {
+    var Controls;
+    (function (Controls) {
+        var StaticElementBuilder = (function () {
+            function StaticElementBuilder() {
+            }
+            StaticElementBuilder.createIcon = function (props) {
+                var icon = document.createElement("i");
+                icon.setAttribute("class", "material-icons menu-icon");
+                icon.innerText = props.icon;
+                return icon;
+            };
+            StaticElementBuilder.createText = function (props) {
+                var label = document.createElement("span");
+                label.setAttribute("class", "menu-text");
+                label.setAttribute("title", props.label);
+                label.innerText = props.label;
+                return label;
+            };
+            StaticElementBuilder.createMenuSplitter = function () {
+                return $("<div/>", {
+                    class: "menu-splitter"
+                });
+            };
+            StaticElementBuilder.createImage = function (props) {
+                var image = document.createElement("img");
+                image.src = props.src;
+                image.setAttribute("title", props.alt);
+                image.setAttribute("class", props.className);
+                return image;
+            };
+            return StaticElementBuilder;
+        }());
+        Controls.StaticElementBuilder = StaticElementBuilder;
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
 var Views;
@@ -802,11 +783,8 @@ var Views;
         Controls.Aside = Aside;
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
-/// <reference path="../../../typings/tsd.d.ts" />
-/// <reference path="Components/Logo.ts" />
-/// <reference path="Components/TopNav.ts" />
-/// <reference path="../../Session/base.ts" />
-/// <reference path="../../models/IMenu.ts" />
+/// <reference path="../../ref.d.ts" />
+///** Head                                  **\\\
 var Views;
 (function (Views) {
     var Controls;
@@ -1141,6 +1119,47 @@ var Views;
         return SideNav;
     }(SideNavBase));
     Views.SideNav = SideNav;
+})(Views || (Views = {}));
+/// <reference path="Search.ts" />
+/// <reference path="utilities/StringTemplates.ts" />
+/// <reference path="../navigation/utilities/StaticElementBuilder.ts" />
+/// <reference path="../../../../typings/tsd.d.ts" />
+var Views;
+(function (Views) {
+    var Controls;
+    (function (Controls) {
+        var Components;
+        (function (Components) {
+            var elementGenerator = Views.Controls.StaticElementBuilder;
+            var BrandControl = (function () {
+                function BrandControl(props) {
+                    var self = this;
+                    self.el = $("<div/>", {
+                        "class": props.className
+                    });
+                    self.lnk = $("<a/>", {
+                        href: "javascript:void(0);",
+                        "class": "navbar-brand navbar-blue"
+                    });
+                    self.searchControl = new Views.Controls.Components.SearchControl();
+                    self.smallLogo = elementGenerator.createImage(props.small);
+                    self.largeLogo = elementGenerator.createImage(props.large);
+                    self.lnk.append(self.smallLogo);
+                    self.lnk.append(self.largeLogo);
+                }
+                BrandControl.prototype.render = function () {
+                    var self = this;
+                    self.el.append(self.lnk);
+                    self.el.append(Components.Utilities.StringTemplates.toggleMenu);
+                    self.el.append(self.searchControl.render());
+                    self.el.append(Components.Utilities.StringTemplates.toggleSearch);
+                    return self.el;
+                };
+                return BrandControl;
+            }());
+            Components.BrandControl = BrandControl;
+        })(Components = Controls.Components || (Controls.Components = {}));
+    })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
 var Views;
 (function (Views) {

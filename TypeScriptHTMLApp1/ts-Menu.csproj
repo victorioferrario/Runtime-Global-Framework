@@ -155,10 +155,10 @@
     <TypeScriptCompile Include="src\views\controls\components\ProgressReports.ts" />
     <TypeScriptCompile Include="src\views\controls\components\UserMenu.ts" />
     <TypeScriptCompile Include="src\views\controls\head.ts" />
-    <TypeScriptCompile Include="src\views\controls\components\Logo.ts" />
+    <TypeScriptCompile Include="src\views\controls\components\LeftMenu.ts" />
     <TypeScriptCompile Include="src\views\controls\components\Search.ts" />
     <TypeScriptCompile Include="src\views\controls\components\utilities\StringTemplates.ts" />
-    <TypeScriptCompile Include="src\views\controls\components\TopNav.ts" />
+    <TypeScriptCompile Include="src\views\controls\components\RightMenu.ts" />
     <TypeScriptCompile Include="src\views\controls\index.ts" />
     <TypeScriptCompile Include="src\views\controls\master.ts" />
     <TypeScriptCompile Include="src\views\controls\navigation\Menu.ts" />

@@ -1,7 +1,5 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 namespace Views {
-    
-    
     export class Page extends Session.BaseView {
         layout: Controls.MasterLayout;
         constructor() {
@@ -43,13 +41,10 @@ namespace Views {
         }
     }
     export class PageButtons {
-
-        parent: Views.Controls.MasterLayout;
         search: JQuery;
-
         searchButton: JQuery;
         buttonToggle: JQuery;
-
+        parent: Views.Controls.MasterLayout;
         constructor(ref: Views.Controls.MasterLayout) {
             const self = this;
             self.parent = ref;

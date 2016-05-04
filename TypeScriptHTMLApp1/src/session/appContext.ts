@@ -1,5 +1,9 @@
 /// <reference path="../ref.d.ts" />
 namespace Session {
+    export class INotificationProps {
+        alertCount: number;
+        progRCount: number;
+    }
     export class DataContext extends Core.EventDispatcher {
 
         isLoadedMenu: boolean = false;
@@ -11,8 +15,8 @@ namespace Session {
         payloadUser: Models.IUserPayload;
         payloadNotifications: Models.INotificationsPayload;
 
-        countAlerts: number;
-        countProgressReports: number;
+        iNotificatonProps: INotificationProps;
+
 
         constructor() {
             super();
@@ -54,11 +58,17 @@ namespace Session {
             Services.Http.loadJson(AppContextSettings.notificationUrl).fail(() => {
                 Q.reject("Error Loading Notifications");
             }).done((result: Models.INotificationsPayload) => {
+
                 self.isLoadedNotifications = true;
                 self.payloadNotifications = result;
-                self.countAlerts = result.notifications.alerts[0].count + result.notifications.alerts[1].count;
-                self.countProgressReports = result.notifications.progress_reports.length;
+
+                self.iNotificatonProps = {
+                    progRCount: result.notifications.progress_reports.length,
+                    alertCount: result.notifications.alerts[0].count + result.notifications.alerts[1].count
+                }
+                
                 Q.resolve(result);
+
             }).always(() => {
                 return Q.resolve(self.payloadNotifications);
             });
