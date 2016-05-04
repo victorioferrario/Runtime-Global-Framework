@@ -6,27 +6,14 @@ namespace Views.Controls.Components {
         el: JQuery;
         appContext: Session.AppContext;
         constructor() {
-            const self = this;            
-            let total = self.appContext.payloadNotifications.notifications.alerts[0].count 
-            + self.appContext.payloadNotifications.notifications.alerts[1].count;  
-            
+            const self = this;  
             self.appContext = Session.AppContext.getInstance();
-            
-            self.el = $("<ul/>", { class: "nav navbar-nav toolbar pull-right" });
-            self.el.append('<li class="toolbar-icon-bg appear-on-search ov-h" id="trigger-search-close"><a class="toggle-fullscreen" id="button-search-close"><span class="icon-bg"><i class="material-icons">close</i></span><div class="ripple-container"></div></a> </li>');
-           
-            self.el.append(
-                Components.Utilities.StringTemplates.rightMenuFullScreen);       
-                    
-            self.el.append(
-                Components.Utilities.StringTemplates.otherMenuItem(
-                     self.appContext.payloadNotifications.notifications.progress_reports.length));           
-                     
-            self.el.append(
-                Components.Utilities.StringTemplates.notificationMenuItem(total));
-                        
+            self.el = Views.Controls.Components.Utilities.ElementTemplates.ulMenu();
+            self.el.append(Components.Utilities.StringTemplates.rightMenuCloseSearch());
+            self.el.append(Components.Utilities.StringTemplates.rightMenuFullScreen());      
+            self.el.append(Components.Utilities.StringTemplates.otherMenuItem(self.appContext.countProgressReports));          
+            self.el.append(Components.Utilities.StringTemplates.notificationMenuItem(self.appContext.countAlerts));
             self.el.append(Components.Utilities.StringTemplates.moreMenuItem());
-
         }
         render() {
             const self = this;

@@ -9,4 +9,3 @@ C:\Users\victo\Documents\GitHub\ts-menu\TypeScriptHTMLApp1\bin\ts-Menu.dll
 C:\Users\victo\Documents\GitHub\ts-menu\TypeScriptHTMLApp1\bin\ts-Menu.pdb
 C:\Users\victo\Documents\GitHub\ts-menu\TypeScriptHTMLApp1\obj\Debug\ts-Menu.dll
 C:\Users\victo\Documents\GitHub\ts-menu\TypeScriptHTMLApp1\obj\Debug\ts-Menu.pdb
-C:\Users\victo\Documents\GitHub\ts-menu\TypeScriptHTMLApp1\obj\Debug\ts-Menu.csprojResolveAssemblyReference.cache

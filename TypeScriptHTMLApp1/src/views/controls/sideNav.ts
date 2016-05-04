@@ -34,9 +34,9 @@ namespace Views {
     }
     export class SideNav extends SideNavBase {
         nav: JQuery;
-        staticColumn:JQuery;
+        staticColumn: JQuery;
         props: ISideNavProps;
-        items: Array<Controls.Navigation.Menu | any>;        
+        items: Array<Controls.Navigation.Menu | any>;
         constructor(props: Models.IMenuPayload) {
             super();
             const self = this;
@@ -47,21 +47,20 @@ namespace Views {
             self.init();
         }
         init() {
-            const self = this;            
+            const self = this;
             let i = 1;
-            self.staticColumn.prepend(
-                Views.Controls.Components.Utilities.StringTemplates.profileWidget(
-                    self.props.data.entity.user));
+            self.staticColumn.prepend(Views.Controls.Components.Utilities.StringTemplates.profileWidget(self.props.data.entity.user));
             self.props.data.list.forEach((segment: Models.IMenuSegment) => {
-                self.items.push(
-                    new Views.Controls.Navigation.Menu({
-                        index: i++, items: segment }));
+                self.items.push(new Views.Controls.Navigation.Menu({ index: i++, items: segment }));
             });
-            self.items.forEach((item:  Views.Controls.Navigation.Menu) => {
+            self.items.forEach((item: Views.Controls.Navigation.Menu) => {
                 self.nav.append(item.render());
-                self.nav.append( Views.Controls.StaticElementBuilder.createMenuSplitter());
+                self.nav.append(Views.Controls.StaticElementBuilder.createMenuSplitter());
             });
 
         }
+        pageButtons: PageButtons;
+        userMenuControl: Views.Controls.Components.UserMenu;
+        render() { }
     }
 }

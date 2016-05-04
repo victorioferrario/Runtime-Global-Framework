@@ -4,7 +4,7 @@
     "out": "dist/app.js",
     "sourceRoot": "src",
     "rootDir": "src",
-    "sourceMap": true,
-    "filesGlob" : "*"
+    "sourceMap": true
+   
   }
 }

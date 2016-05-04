@@ -133,8 +133,8 @@
 // [@    views/controls                                      @]
 // [@    -------------------------------------------------   @]
 
-/// <reference path="views/controls/aSideNav.ts" />
-/// <reference path="views/controls/base.ts" />
+/// <reference path="views/controls/aside.ts" />
+/// <reference path="session/base.ts" />
 /// <reference path="views/controls/head.ts" />
 /// <reference path="views/controls/main.ts" />
 /// <reference path="views/controls/master.ts" />

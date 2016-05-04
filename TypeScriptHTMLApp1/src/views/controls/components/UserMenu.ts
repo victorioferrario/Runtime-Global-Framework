@@ -14,13 +14,11 @@
         }
         init() {
             const self = this;
-            self.menu
+            //self.menu
             self.menuOpen.on("click", (evt: any) => {
-                console.log(this);
                 UserMenu.toggleState(self.menuClose, self.menuOpen, self.menu);
             });
             self.menuClose.on("click", (evt: any) => {
-                console.log("menuClose", this);
                 UserMenu.toggleHide(self.menuOpen, self.menuClose, self.menu);
             });
             self.render();

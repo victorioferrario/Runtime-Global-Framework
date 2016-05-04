@@ -28,7 +28,6 @@ namespace Views.Controls.Components {
                href:"javascript:void(0);",
                class:"navbar-brand navbar-blue"
             });
-
             self.searchControl = new Views.Controls.Components.SearchControl();
 
             self.smallLogo = Views.Controls.StaticElementBuilder.createImage( props.small );

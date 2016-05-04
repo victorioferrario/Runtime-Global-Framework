@@ -11,6 +11,9 @@ namespace Session {
         payloadUser: Models.IUserPayload;
         payloadNotifications: Models.INotificationsPayload;
 
+        countAlerts: number;
+        countProgressReports: number;
+
         constructor() {
             super();
             const self = this;
@@ -53,6 +56,8 @@ namespace Session {
             }).done((result: Models.INotificationsPayload) => {
                 self.isLoadedNotifications = true;
                 self.payloadNotifications = result;
+                self.countAlerts = result.notifications.alerts[0].count + result.notifications.alerts[1].count;
+                self.countProgressReports = result.notifications.progress_reports.length;
                 Q.resolve(result);
             }).always(() => {
                 return Q.resolve(self.payloadNotifications);
@@ -64,7 +69,6 @@ namespace Session {
             const self = this;
             Q.all([self.loadMenu(), self.loadUser()]).then(() => {
                 if (self.isLoadedMenu) {
-                    console.log("isLoadedMenu")
                     self.dispatchEvent(
                         new Core.Event(Models.Events.dataLoaded, self.payloadMenu));
                 }
@@ -75,7 +79,6 @@ namespace Session {
             });
             Q.all([self.loadNotifications()]).then(() => {
                 if (self.isLoadedNotifications) {
-                    console.log("this is me")
                     self.dispatchEvent(
                         new Core.Event(
                             Models.Events.notificationsLoaded,
@@ -92,7 +95,7 @@ namespace Session {
                 } else {
                     console.group("Writter")
                     for (var item in value) {
-
+                        console.log(item);
                     }
                 }
             }
@@ -121,4 +124,23 @@ namespace Session {
             return this.instance;
         }
     }
+
+
+    export class BaseView {
+        appContext: Session.AppContext;
+        constructor() {
+            const self = this;
+            self.appContext = Session.AppContext.getInstance();
+        }
+    }
+    export class Base extends BaseView {
+        el: JQuery;
+        appContext: Session.AppContext;
+        constructor(id: string) {
+            super();
+            const self = this;
+            self.el = $(`#${id}`);
+        }
+    }
+
 }

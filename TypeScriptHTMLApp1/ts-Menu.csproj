@@ -149,7 +149,8 @@
     <TypeScriptCompile Include="src\services\http.ts" />
     <TypeScriptCompile Include="src\core\eventDispatcher.ts" />
     <TypeScriptCompile Include="src\system\singleton.ts" />
-    <TypeScriptCompile Include="src\views\controls\base.ts" />
+    <TypeScriptCompile Include="src\views\controls\aside.ts" />
+    <TypeScriptCompile Include="src\session\base.ts" />
     <TypeScriptCompile Include="src\views\controls\components\Alerts.ts" />
     <TypeScriptCompile Include="src\views\controls\components\ProgressReports.ts" />
     <TypeScriptCompile Include="src\views\controls\components\UserMenu.ts" />
@@ -164,9 +165,10 @@
     <TypeScriptCompile Include="src\views\controls\navigation\MenuItem.ts">
       <DependentUpon>Menu.ts</DependentUpon>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="src\views\controls\aSideNav.ts" />
+    <TypeScriptCompile Include="src\views\controls\sideNav.ts" />
+    <TypeScriptCompile Include="src\views\controls\shared\loader.ts" />
     <TypeScriptCompile Include="src\views\controls\SideNavElements.ts">
-      <DependentUpon>aSideNav.ts</DependentUpon>
+      <DependentUpon>sideNav.ts</DependentUpon>
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\views\controls\navigation\utilities\StaticElementBuilder.ts" />
     <TypeScriptCompile Include="src\views\controls\main.ts" />
