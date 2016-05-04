@@ -69,6 +69,7 @@
             }
         }
     }
+
     export class AsideButtons {
         parent: AsideLayout;
         buttonCloseAlerts: JQuery;
@@ -103,6 +104,7 @@
             });
         }
     }
+
     export class Aside extends Session.BaseView {
         layout: AsideLayout;
         alerts: Controls.Components.Alerts;

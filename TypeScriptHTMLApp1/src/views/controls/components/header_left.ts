@@ -1,4 +1,4 @@
-/// <reference path="searchControl.ts" />
+/// <reference path="search.ts" />
 /// <reference path="utilities/StringTemplates.ts" />
 /// <reference path="../navigation/utilities/StaticElementBuilder.ts" />
 /// <reference path="../../../../typings/tsd.d.ts" />

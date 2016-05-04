@@ -88,9 +88,9 @@
 /// <reference path="views/controls/components/notify/alert.ts" />
 /// <reference path="views/controls/components/notify/report.ts" />
 /// <reference path="views/controls/components/header_left.ts" />
-/// <reference path="views/controls/components/searchControl.ts" />
+/// <reference path="views/controls/components/search.ts" />
 /// <reference path="views/controls/components/header_right.ts" />
-/// <reference path="views/controls/components/profileMenu.ts" />
+/// <reference path="views/controls/components/profile.ts" />
 
 
 // [@    -------------------------------------------------   @]

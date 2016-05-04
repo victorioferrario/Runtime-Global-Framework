@@ -3,6 +3,113 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+var Views;
+(function (Views) {
+    var Controls;
+    (function (Controls) {
+        var AsideLayout = (function () {
+            function AsideLayout() {
+                var self = this;
+                self.aside1 = $(".user-aside-1");
+                self.aside2 = $(".user-aside-2");
+                if (self.render()) {
+                    self.init();
+                }
+            }
+            AsideLayout.prototype.render = function () {
+                var self = this;
+                var result1 = "<header>Alerts</header>\n                <a href=\"javascript:void(0);\" class=\"waves-effect waves-light close\" id=\"buttonCloseAlerts\">X</a>\n                <section id=\"alerts_wrapper\">\n                    <div id=\"message_no_alerts\">No Alerts available.</div>\n                </section>";
+                var result2 = " <header>Progress Reports</header>\n                <a href=\"javascript:void(0);\" class=\"waves-effect waves-light close\" id=\"buttonCloseProgressReports\">X</a>\n                <section id=\"progress_reports\">\n                    <div id=\"message_no_progress_reports\">No Progress Reports available.</div>\n                </section>";
+                self.aside1.append(result1);
+                self.aside2.append(result2);
+                return true;
+            };
+            AsideLayout.prototype.init = function () {
+                var self = this;
+                self.buttons = new AsideButtons(self);
+                self.elUnderlay = $(".extrabar-underlay");
+            };
+            AsideLayout.prototype.hide = function () {
+                var self = this;
+                self.aside1.removeClass(AsideLayout.cssToggle);
+                self.aside2.removeClass(AsideLayout.cssToggle);
+                self.elUnderlay.removeClass(AsideLayout.cssToggle);
+            };
+            AsideLayout.prototype.toggle = function (isAlerts) {
+                var self = this;
+                switch (isAlerts) {
+                    case true:
+                        self.toggleStatic(self.aside2, self.aside1, self.elUnderlay);
+                        break;
+                    case false:
+                        self.toggleStatic(self.aside1, self.aside2, self.elUnderlay);
+                        break;
+                }
+            };
+            AsideLayout.prototype.toggleStatic = function (asideToShow, asideToHide, asideUnderlay) {
+                if (!asideToShow.hasClass(AsideLayout.cssToggle)) {
+                    asideToShow.addClass(AsideLayout.cssToggle);
+                    asideUnderlay.addClass(AsideLayout.cssToggle);
+                    asideToHide.removeClass(AsideLayout.cssToggle);
+                }
+                else {
+                    asideToShow.removeClass(AsideLayout.cssToggle);
+                    asideUnderlay.removeClass(AsideLayout.cssToggle);
+                }
+            };
+            AsideLayout.cssToggle = "toggle-aside";
+            return AsideLayout;
+        }());
+        Controls.AsideLayout = AsideLayout;
+        var AsideButtons = (function () {
+            function AsideButtons(ref) {
+                var self = this;
+                self.parent = ref;
+                // Alerts
+                self.buttonCloseAlerts = $("#buttonCloseAlerts");
+                self.buttonToggleAlerts = $("#button-toggle-aside_Notifications");
+                // Progress Reports
+                self.buttonCloseReports = $("#buttonCloseProgressReports");
+                self.buttonToggleReports = $("#button-toggle-aside_ProgressReports");
+                // 
+                self.init();
+            }
+            AsideButtons.prototype.init = function () {
+                var self = this;
+                self.buttonCloseAlerts.on("click", function (evt) {
+                    self.parent.hide();
+                });
+                self.buttonCloseReports.on("click", function (evt) {
+                    self.parent.hide();
+                });
+                self.buttonToggleAlerts.on("click", function (evt) {
+                    self.parent.toggle(false);
+                });
+                self.buttonToggleReports.on("click", function (evt) {
+                    self.parent.toggle(true);
+                });
+            };
+            return AsideButtons;
+        }());
+        Controls.AsideButtons = AsideButtons;
+        var Aside = (function (_super) {
+            __extends(Aside, _super);
+            function Aside() {
+                _super.call(this);
+                var self = this;
+                self.layout = new AsideLayout();
+                self.render();
+            }
+            Aside.prototype.render = function () {
+                var self = this;
+                self.alerts = new Views.Controls.Components.Alerts(self.appContext.payloadNotifications);
+                self.reports = new Views.Controls.Components.Reports(self.appContext.payloadNotifications);
+            };
+            return Aside;
+        }(Session.BaseView));
+        Controls.Aside = Aside;
+    })(Controls = Views.Controls || (Views.Controls = {}));
+})(Views || (Views = {}));
 var Core;
 (function (Core) {
     var Event = (function () {
@@ -81,6 +188,161 @@ var Services;
     }());
     Services.Http = Http;
 })(Services || (Services = {}));
+/// <reference path="../ref.d.ts" />
+var Session;
+(function (Session) {
+    var INotificationProps = (function () {
+        function INotificationProps() {
+        }
+        return INotificationProps;
+    }());
+    Session.INotificationProps = INotificationProps;
+    var DataContext = (function (_super) {
+        __extends(DataContext, _super);
+        function DataContext() {
+            _super.call(this);
+            this.isLoadedMenu = false;
+            this.isLoadedUser = false;
+            this.isLoadedNotifications = false;
+            var self = this;
+            self.payloadMenu = {
+                entity: null,
+                list: null
+            };
+        }
+        DataContext.prototype.loadMenu = function () {
+            var self = this;
+            Services.Http.loadJson(AppContextSettings.menuUrl).fail(function () {
+                Q.reject("Error Loading Data");
+            }).done(function (result) {
+                self.isLoadedMenu = true;
+                self.payloadMenu = result;
+                Q.resolve(result);
+            }).always(function () {
+                return Q.resolve(self.payloadMenu);
+            });
+            return null;
+        };
+        DataContext.prototype.loadUser = function () {
+            var self = this;
+            Services.Http.loadJson(AppContextSettings.userUrl).fail(function () {
+                Q.reject("Error Loading Data");
+            }).done(function (result) {
+                self.isLoadedUser = true;
+                self.payloadUser = result;
+                self.payloadMenu.entity = result.entity;
+                Q.resolve(result);
+            }).always(function () {
+                return Q.resolve(self.payloadUser);
+            });
+            return null;
+        };
+        DataContext.prototype.loadNotifications = function () {
+            var self = this;
+            Services.Http.loadJson(AppContextSettings.notificationUrl).fail(function () {
+                Q.reject("Error Loading Notifications");
+            }).done(function (result) {
+                self.isLoadedNotifications = true;
+                self.payloadNotifications = result;
+                self.iNotificatonProps = {
+                    progRCount: result.notifications.progress_reports.length,
+                    alertCount: result.notifications.alerts[0].count + result.notifications.alerts[1].count
+                };
+                Q.resolve(result);
+            }).always(function () {
+                return Q.resolve(self.payloadNotifications);
+            });
+            return null;
+        };
+        DataContext.prototype.initialize = function () {
+            var self = this;
+            Q.all([self.loadMenu(), self.loadUser()]).then(function () {
+                if (self.isLoadedMenu) {
+                    self.dispatchEvent(new Core.Event(Models.Events.dataLoaded, self.payloadMenu));
+                }
+                if (self.isLoadedUser) {
+                    self.dispatchEvent(new Core.Event(Models.Events.userLoaded, self.payloadUser));
+                }
+            });
+            Q.all([self.loadNotifications()]).then(function () {
+                if (self.isLoadedNotifications) {
+                    self.dispatchEvent(new Core.Event(Models.Events.notificationsLoaded, self.payloadNotifications));
+                }
+            });
+        };
+        return DataContext;
+    }(Core.EventDispatcher));
+    Session.DataContext = DataContext;
+    var Trace = (function () {
+        function Trace() {
+        }
+        Trace.log = function () {
+            var value = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                value[_i - 0] = arguments[_i];
+            }
+            if (AppContextSettings.isDebugConsoleWrite) {
+                if (value.length > 0 && value.length < 2) {
+                    console.log(value);
+                }
+                else {
+                    console.group("Writter");
+                    for (var item in value) {
+                        console.log(item);
+                    }
+                }
+            }
+        };
+        return Trace;
+    }());
+    Session.Trace = Trace;
+    var AppContextSettings = (function () {
+        function AppContextSettings() {
+        }
+        AppContextSettings.isDebug = true;
+        AppContextSettings.isDebugConsoleWrite = true;
+        AppContextSettings.menuUrl = AppContextSettings.isDebug ? "data.json" : "/navbar_builder";
+        AppContextSettings.userUrl = AppContextSettings.isDebug ? "data-user.json" : "/user_profile_information_builder";
+        AppContextSettings.notificationUrl = AppContextSettings.isDebug ? "data-notifications.json" : "/dashboard_notification_builder";
+        return AppContextSettings;
+    }());
+    Session.AppContextSettings = AppContextSettings;
+    var AppContext = (function (_super) {
+        __extends(AppContext, _super);
+        function AppContext() {
+            _super.call(this);
+            this.isLoaded = false;
+            var self = this;
+            self.initialize();
+        }
+        AppContext.getInstance = function () {
+            if (this.instance === null || this.instance === undefined) {
+                this.instance = new Session.AppContext();
+            }
+            return this.instance;
+        };
+        return AppContext;
+    }(DataContext));
+    Session.AppContext = AppContext;
+    var BaseView = (function () {
+        function BaseView() {
+            var self = this;
+            self.appContext = Session.AppContext.getInstance();
+        }
+        return BaseView;
+    }());
+    Session.BaseView = BaseView;
+    var Base = (function (_super) {
+        __extends(Base, _super);
+        function Base(id) {
+            _super.call(this);
+            var self = this;
+            self.el = $("#" + id);
+        }
+        return Base;
+    }(BaseView));
+    Session.Base = Base;
+})(Session || (Session = {}));
 var Views;
 (function (Views) {
     var Controls;
@@ -338,7 +600,7 @@ var Views;
         Controls.StaticElementBuilder = StaticElementBuilder;
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
-/// <reference path="searchControl.ts" />
+/// <reference path="search.ts" />
 /// <reference path="utilities/StringTemplates.ts" />
 /// <reference path="../navigation/utilities/StaticElementBuilder.ts" />
 /// <reference path="../../../../typings/tsd.d.ts" />
@@ -376,6 +638,62 @@ var Views;
                 return BrandControl;
             }());
             Components.BrandControl = BrandControl;
+        })(Components = Controls.Components || (Controls.Components = {}));
+    })(Controls = Views.Controls || (Views.Controls = {}));
+})(Views || (Views = {}));
+/// <reference path="../../../../typings/tsd.d.ts" />
+/// <reference path="../../../session/AppContext.ts" />
+/// <reference path="utilities/StringTemplates.ts" />
+var Views;
+(function (Views) {
+    var Controls;
+    (function (Controls) {
+        var Components;
+        (function (Components) {
+            var sTemplates = Components.Utilities.StringTemplates;
+            var eTemplates = Components.Utilities.ElementTemplates;
+            // ------->
+            var RightMenu = (function (_super) {
+                __extends(RightMenu, _super);
+                function RightMenu() {
+                    _super.call(this);
+                    var self = this;
+                    var iNotify = self.appContext.iNotificatonProps;
+                    // @create a scrath list of items.
+                    self.controlsList = [
+                        sTemplates.rightMenuCloseSearch(),
+                        sTemplates.headerButtonFullScreen(),
+                        sTemplates.otherMenuItem(iNotify.progRCount),
+                        sTemplates.notificationMenuItem(iNotify.alertCount),
+                        sTemplates.switchDepartmentsMenuItem()
+                    ];
+                    // @create ul
+                    self.ulList = eTemplates.ulMenu();
+                    // @append li per scratch list.
+                    self.controlsList.forEach(function (item) {
+                        self.ulList.append(item);
+                    });
+                }
+                RightMenu.prototype.render = function () {
+                    var self = this;
+                    $("#button-toggle-fullscreen").on("click", function (event) {
+                        console.log("this");
+                    });
+                    return self.ulList;
+                };
+                RightMenu.prototype.onclickFullScreen = function (event) {
+                    if (screenfull.enabled) {
+                        if (!screenfull.isFullscreen) {
+                            screenfull.request();
+                        }
+                        else {
+                            screenfull.exit();
+                        }
+                    }
+                };
+                return RightMenu;
+            }(Session.BaseView));
+            Components.RightMenu = RightMenu;
         })(Components = Controls.Components || (Controls.Components = {}));
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
@@ -504,253 +822,6 @@ var Views;
             return MenuItem;
         }());
         Controls.MenuItem = MenuItem;
-    })(Controls = Views.Controls || (Views.Controls = {}));
-})(Views || (Views = {}));
-var Views;
-(function (Views) {
-    var Controls;
-    (function (Controls) {
-        var AsideLayout = (function () {
-            function AsideLayout() {
-                var self = this;
-                self.aside1 = $(".user-aside-1");
-                self.aside2 = $(".user-aside-2");
-                if (self.render()) {
-                    self.init();
-                }
-            }
-            AsideLayout.prototype.render = function () {
-                var self = this;
-                var result1 = "<header>Alerts</header>\n                <a href=\"javascript:void(0);\" class=\"waves-effect waves-light close\" id=\"buttonCloseAlerts\">X</a>\n                <section id=\"alerts_wrapper\">\n                    <div id=\"message_no_alerts\">No Alerts available.</div>\n                </section>";
-                var result2 = " <header>Progress Reports</header>\n                <a href=\"javascript:void(0);\" class=\"waves-effect waves-light close\" id=\"buttonCloseProgressReports\">X</a>\n                <section id=\"progress_reports\">\n                    <div id=\"message_no_progress_reports\">No Progress Reports available.</div>\n                </section>";
-                self.aside1.append(result1);
-                self.aside2.append(result2);
-                return true;
-            };
-            AsideLayout.prototype.init = function () {
-                var self = this;
-                self.buttons = new AsideButtons(self);
-                self.elUnderlay = $(".extrabar-underlay");
-            };
-            AsideLayout.prototype.hide = function () {
-                var self = this;
-                self.aside1.removeClass(AsideLayout.cssToggle);
-                self.aside2.removeClass(AsideLayout.cssToggle);
-                self.elUnderlay.removeClass(AsideLayout.cssToggle);
-            };
-            AsideLayout.prototype.toggle = function (isAlerts) {
-                var self = this;
-                switch (isAlerts) {
-                    case true:
-                        self.toggleStatic(self.aside2, self.aside1, self.elUnderlay);
-                        break;
-                    case false:
-                        self.toggleStatic(self.aside1, self.aside2, self.elUnderlay);
-                        break;
-                }
-            };
-            AsideLayout.prototype.toggleStatic = function (asideToShow, asideToHide, asideUnderlay) {
-                if (!asideToShow.hasClass(AsideLayout.cssToggle)) {
-                    asideToShow.addClass(AsideLayout.cssToggle);
-                    asideUnderlay.addClass(AsideLayout.cssToggle);
-                    asideToHide.removeClass(AsideLayout.cssToggle);
-                }
-                else {
-                    asideToShow.removeClass(AsideLayout.cssToggle);
-                    asideUnderlay.removeClass(AsideLayout.cssToggle);
-                }
-            };
-            AsideLayout.cssToggle = "toggle-aside";
-            return AsideLayout;
-        }());
-        Controls.AsideLayout = AsideLayout;
-        var AsideButtons = (function () {
-            function AsideButtons(ref) {
-                var self = this;
-                self.parent = ref;
-                // Alerts
-                self.buttonCloseAlerts = $("#buttonCloseAlerts");
-                self.buttonToggleAlerts = $("#button-toggle-aside_Notifications");
-                // Progress Reports
-                self.buttonCloseReports = $("#buttonCloseProgressReports");
-                self.buttonToggleReports = $("#button-toggle-aside_ProgressReports");
-                // 
-                self.init();
-            }
-            AsideButtons.prototype.init = function () {
-                var self = this;
-                self.buttonCloseAlerts.on("click", function (evt) {
-                    self.parent.hide();
-                });
-                self.buttonCloseReports.on("click", function (evt) {
-                    self.parent.hide();
-                });
-                self.buttonToggleAlerts.on("click", function (evt) {
-                    self.parent.toggle(false);
-                });
-                self.buttonToggleReports.on("click", function (evt) {
-                    self.parent.toggle(true);
-                });
-            };
-            return AsideButtons;
-        }());
-        Controls.AsideButtons = AsideButtons;
-        var Aside = (function (_super) {
-            __extends(Aside, _super);
-            function Aside() {
-                _super.call(this);
-                var self = this;
-                self.layout = new AsideLayout();
-                self.render();
-            }
-            Aside.prototype.render = function () {
-                var self = this;
-                self.alerts = new Views.Controls.Components.Alerts(self.appContext.payloadNotifications);
-                self.reports = new Views.Controls.Components.Reports(self.appContext.payloadNotifications);
-            };
-            return Aside;
-        }(Session.BaseView));
-        Controls.Aside = Aside;
-    })(Controls = Views.Controls || (Views.Controls = {}));
-})(Views || (Views = {}));
-/// <reference path="../../ref.d.ts" />
-///** Head                                  **\\\
-var Views;
-(function (Views) {
-    var Controls;
-    (function (Controls) {
-        var DropdownControl = (function () {
-            function DropdownControl(parent) {
-                this.parent = parent;
-                var self = this;
-                parent.append(DropdownControl.htmlPayload);
-                //
-                self.init();
-            }
-            DropdownControl.prototype.init = function () {
-                var self = this;
-                self.ddMenu = $("#dropdown");
-                self.ddMenuTrigger = $("#button-Trigger");
-                self.ddMenuBackground = $(".dropdown-close-background");
-                //
-                self.trigger();
-            };
-            DropdownControl.prototype.trigger = function () {
-                var self = this;
-                var jqueryArray = [
-                    self.ddMenu,
-                    self.ddMenuTrigger,
-                    self.ddMenuBackground];
-                self.ddMenuTrigger.on("click", function (event) {
-                    if (!self.ddMenu.hasClass("open")) {
-                        self.toggleArrayClass(true, jqueryArray, "open");
-                        setTimeout(function () {
-                            self.ddMenuBackground.on("mouseenter", function (evt) {
-                                self.toggleArrayClass(false, jqueryArray, "open");
-                            });
-                        }, 1000);
-                    }
-                    else {
-                        self.ddMenuBackground.off("mouseenter", function () {
-                        });
-                        self.toggleArrayClass(false, jqueryArray, "open");
-                    }
-                });
-            };
-            DropdownControl.prototype.toggleArrayClass = function (direction, items, cssClass) {
-                items.forEach(function (item) {
-                    if (direction) {
-                        item.addClass(cssClass);
-                    }
-                    else {
-                        item.removeClass(cssClass);
-                    }
-                });
-            };
-            DropdownControl.htmlPayload = Controls.Components.Utilities.StringTemplates.dropdownMenuComponent();
-            return DropdownControl;
-        }());
-        Controls.DropdownControl = DropdownControl;
-        var Head = (function (_super) {
-            __extends(Head, _super);
-            function Head() {
-                _super.call(this, "topnav");
-            }
-            Head.prototype.databind = function (data) {
-                var self = this;
-                var logoProps = {
-                    className: "logo-area",
-                    small: {
-                        alt: data.payload.entity.logos[0].alt,
-                        src: data.payload.entity.logos[0].src,
-                        className: data.payload.entity.logos[0].className
-                    },
-                    large: {
-                        alt: data.payload.entity.logos[1].alt,
-                        src: data.payload.entity.logos[1].src,
-                        className: data.payload.entity.logos[1].className
-                    }
-                };
-                // RightControl
-                self.rightControl
-                    = new Views.Controls.Components.RightMenu();
-                self.el.append(self.rightControl.render());
-                // LeftControl
-                self.leftControl
-                    = new Views.Controls.Components.BrandControl(logoProps);
-                self.el.append(self.leftControl.render());
-                // Department switcher menu.
-                self.dropControl = new DropdownControl(self.el);
-            };
-            Head.prototype.render = function () {
-                var self = this;
-            };
-            //ddMenu: JQuery;
-            //ddMenuTrigger: JQuery;
-            //ddMenuBackground: JQuery;
-            //initTrigger() {
-            //    const self = this;
-            //    const jqueryArray = [
-            //        self.ddMenu,
-            //        self.ddMenuTrigger,
-            //        self.ddMenuBackground];
-            //    self.ddMenuTrigger.on("click", (event) => {
-            //        if (!self.ddMenu.hasClass("open")) {
-            //            self.toggleArrayClass(true, jqueryArray, "open");
-            //            setTimeout(() => {
-            //                self.ddMenuBackground.on("mouseenter", (evt: any) => {
-            //                    self.toggleArrayClass(false, jqueryArray, "open");
-            //                });
-            //            }, 1000);
-            //        } else {
-            //            self.ddMenuBackground.off("mouseenter", () => {
-            //            });
-            //            self.toggleArrayClass(false, jqueryArray, "open");
-            //        }
-            //    });
-            //}
-            //toggleArrayClass(direction: boolean, items: Array<JQuery>, cssClass: string) {
-            //    items.forEach((item: JQuery) => {
-            //        if (direction) {
-            //            item.addClass(cssClass);
-            //        } else {
-            //            item.removeClass(cssClass);
-            //        }
-            //    });
-            //}
-            Head.prototype.toggle = function () {
-                var self = this;
-                var topBar = $(".navbar-brand"), toggleCss = "toggle-icon";
-                if (!topBar.hasClass(toggleCss)) {
-                    topBar.addClass(toggleCss);
-                }
-                else {
-                    topBar.removeClass(toggleCss);
-                }
-            };
-            return Head;
-        }(Session.Base));
-        Controls.Head = Head;
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
 var Views;
@@ -930,231 +1001,146 @@ $(window).load(function () {
         }
     }
 });
-/// <reference path="../ref.d.ts" />
-var Session;
-(function (Session) {
-    var INotificationProps = (function () {
-        function INotificationProps() {
-        }
-        return INotificationProps;
-    }());
-    Session.INotificationProps = INotificationProps;
-    var DataContext = (function (_super) {
-        __extends(DataContext, _super);
-        function DataContext() {
-            _super.call(this);
-            this.isLoadedMenu = false;
-            this.isLoadedUser = false;
-            this.isLoadedNotifications = false;
-            var self = this;
-            self.payloadMenu = {
-                entity: null,
-                list: null
-            };
-        }
-        DataContext.prototype.loadMenu = function () {
-            var self = this;
-            Services.Http.loadJson(AppContextSettings.menuUrl).fail(function () {
-                Q.reject("Error Loading Data");
-            }).done(function (result) {
-                self.isLoadedMenu = true;
-                self.payloadMenu = result;
-                Q.resolve(result);
-            }).always(function () {
-                return Q.resolve(self.payloadMenu);
-            });
-            return null;
-        };
-        DataContext.prototype.loadUser = function () {
-            var self = this;
-            Services.Http.loadJson(AppContextSettings.userUrl).fail(function () {
-                Q.reject("Error Loading Data");
-            }).done(function (result) {
-                self.isLoadedUser = true;
-                self.payloadUser = result;
-                self.payloadMenu.entity = result.entity;
-                Q.resolve(result);
-            }).always(function () {
-                return Q.resolve(self.payloadUser);
-            });
-            return null;
-        };
-        DataContext.prototype.loadNotifications = function () {
-            var self = this;
-            Services.Http.loadJson(AppContextSettings.notificationUrl).fail(function () {
-                Q.reject("Error Loading Notifications");
-            }).done(function (result) {
-                self.isLoadedNotifications = true;
-                self.payloadNotifications = result;
-                self.iNotificatonProps = {
-                    progRCount: result.notifications.progress_reports.length,
-                    alertCount: result.notifications.alerts[0].count + result.notifications.alerts[1].count
-                };
-                Q.resolve(result);
-            }).always(function () {
-                return Q.resolve(self.payloadNotifications);
-            });
-            return null;
-        };
-        DataContext.prototype.initialize = function () {
-            var self = this;
-            Q.all([self.loadMenu(), self.loadUser()]).then(function () {
-                if (self.isLoadedMenu) {
-                    self.dispatchEvent(new Core.Event(Models.Events.dataLoaded, self.payloadMenu));
-                }
-                if (self.isLoadedUser) {
-                    self.dispatchEvent(new Core.Event(Models.Events.userLoaded, self.payloadUser));
-                }
-            });
-            Q.all([self.loadNotifications()]).then(function () {
-                if (self.isLoadedNotifications) {
-                    self.dispatchEvent(new Core.Event(Models.Events.notificationsLoaded, self.payloadNotifications));
-                }
-            });
-        };
-        return DataContext;
-    }(Core.EventDispatcher));
-    Session.DataContext = DataContext;
-    var Trace = (function () {
-        function Trace() {
-        }
-        Trace.log = function () {
-            var value = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                value[_i - 0] = arguments[_i];
-            }
-            if (AppContextSettings.isDebugConsoleWrite) {
-                if (value.length > 0 && value.length < 2) {
-                    console.log(value);
-                }
-                else {
-                    console.group("Writter");
-                    for (var item in value) {
-                        console.log(item);
-                    }
-                }
-            }
-        };
-        return Trace;
-    }());
-    Session.Trace = Trace;
-    var AppContextSettings = (function () {
-        function AppContextSettings() {
-        }
-        AppContextSettings.isDebug = true;
-        AppContextSettings.isDebugConsoleWrite = true;
-        AppContextSettings.menuUrl = AppContextSettings.isDebug ? "data.json" : "/navbar_builder";
-        AppContextSettings.userUrl = AppContextSettings.isDebug ? "data-user.json" : "/user_profile_information_builder";
-        AppContextSettings.notificationUrl = AppContextSettings.isDebug ? "data-notifications.json" : "/dashboard_notification_builder";
-        return AppContextSettings;
-    }());
-    Session.AppContextSettings = AppContextSettings;
-    var AppContext = (function (_super) {
-        __extends(AppContext, _super);
-        function AppContext() {
-            _super.call(this);
-            this.isLoaded = false;
-            var self = this;
-            self.initialize();
-        }
-        AppContext.getInstance = function () {
-            if (this.instance === null || this.instance === undefined) {
-                this.instance = new Session.AppContext();
-            }
-            return this.instance;
-        };
-        return AppContext;
-    }(DataContext));
-    Session.AppContext = AppContext;
-    var BaseView = (function () {
-        function BaseView() {
-            var self = this;
-            self.appContext = Session.AppContext.getInstance();
-        }
-        return BaseView;
-    }());
-    Session.BaseView = BaseView;
-    var Base = (function (_super) {
-        __extends(Base, _super);
-        function Base(id) {
-            _super.call(this);
-            var self = this;
-            self.el = $("#" + id);
-        }
-        return Base;
-    }(BaseView));
-    Session.Base = Base;
-})(Session || (Session = {}));
-/// <reference path="../../../../typings/tsd.d.ts" />
-/// <reference path="../../../session/AppContext.ts" />
-/// <reference path="utilities/StringTemplates.ts" />
+/// <reference path="../../ref.d.ts" />
+///** Head                                  **\\\
 var Views;
 (function (Views) {
     var Controls;
     (function (Controls) {
-        var Components;
-        (function (Components) {
-            var sTemplates = Components.Utilities.StringTemplates;
-            var eTemplates = Components.Utilities.ElementTemplates;
-            // ------->
-            var RightMenu = (function (_super) {
-                __extends(RightMenu, _super);
-                function RightMenu() {
-                    _super.call(this);
-                    var self = this;
-                    var iNotify = self.appContext.iNotificatonProps;
-                    // @create a scrath list of items.
-                    self.controlsList = [
-                        sTemplates.rightMenuCloseSearch(),
-                        sTemplates.headerButtonFullScreen(),
-                        sTemplates.otherMenuItem(iNotify.progRCount),
-                        sTemplates.notificationMenuItem(iNotify.alertCount),
-                        sTemplates.switchDepartmentsMenuItem()
-                    ];
-                    // @create ul
-                    self.ulList = eTemplates.ulMenu();
-                    // @append li per scratch list.
-                    self.controlsList.forEach(function (item) {
-                        self.ulList.append(item);
-                    });
-                }
-                RightMenu.prototype.render = function () {
-                    var self = this;
-                    $("#button-toggle-fullscreen").on("click", function (event) {
-                        console.log("this");
-                    });
-                    return self.ulList;
-                };
-                RightMenu.prototype.onclickFullScreen = function (event) {
-                    if (screenfull.enabled) {
-                        if (!screenfull.isFullscreen) {
-                            screenfull.request();
-                        }
-                        else {
-                            screenfull.exit();
-                        }
+        var DropdownControl = (function () {
+            function DropdownControl(parent) {
+                this.parent = parent;
+                var self = this;
+                parent.append(DropdownControl.htmlPayload);
+                //
+                self.init();
+            }
+            DropdownControl.prototype.init = function () {
+                var self = this;
+                self.ddMenu = $("#dropdown");
+                self.ddMenuTrigger = $("#button-Trigger");
+                self.ddMenuBackground = $(".dropdown-close-background");
+                //
+                self.trigger();
+            };
+            DropdownControl.prototype.trigger = function () {
+                var self = this;
+                var jqueryArray = [
+                    self.ddMenu,
+                    self.ddMenuTrigger,
+                    self.ddMenuBackground];
+                self.ddMenuTrigger.on("click", function (event) {
+                    if (!self.ddMenu.hasClass("open")) {
+                        self.toggleArrayClass(true, jqueryArray, "open");
+                        setTimeout(function () {
+                            self.ddMenuBackground.on("mouseenter", function (evt) {
+                                self.toggleArrayClass(false, jqueryArray, "open");
+                            });
+                        }, 1000);
+                    }
+                    else {
+                        self.ddMenuBackground.off("mouseenter", function () {
+                        });
+                        self.toggleArrayClass(false, jqueryArray, "open");
+                    }
+                });
+            };
+            DropdownControl.prototype.toggleArrayClass = function (direction, items, cssClass) {
+                items.forEach(function (item) {
+                    if (direction) {
+                        item.addClass(cssClass);
+                    }
+                    else {
+                        item.removeClass(cssClass);
+                    }
+                });
+            };
+            DropdownControl.htmlPayload = Controls.Components.Utilities.StringTemplates.dropdownMenuComponent();
+            return DropdownControl;
+        }());
+        Controls.DropdownControl = DropdownControl;
+        var Head = (function (_super) {
+            __extends(Head, _super);
+            function Head() {
+                _super.call(this, "topnav");
+            }
+            Head.prototype.databind = function (data) {
+                var self = this;
+                var logoProps = {
+                    className: "logo-area",
+                    small: {
+                        alt: data.payload.entity.logos[0].alt,
+                        src: data.payload.entity.logos[0].src,
+                        className: data.payload.entity.logos[0].className
+                    },
+                    large: {
+                        alt: data.payload.entity.logos[1].alt,
+                        src: data.payload.entity.logos[1].src,
+                        className: data.payload.entity.logos[1].className
                     }
                 };
-                return RightMenu;
-            }(Session.BaseView));
-            Components.RightMenu = RightMenu;
-        })(Components = Controls.Components || (Controls.Components = {}));
+                // RightControl
+                self.rightControl
+                    = new Views.Controls.Components.RightMenu();
+                self.el.append(self.rightControl.render());
+                // LeftControl
+                self.leftControl
+                    = new Views.Controls.Components.BrandControl(logoProps);
+                self.el.append(self.leftControl.render());
+                // Department switcher menu.
+                self.dropControl = new DropdownControl(self.el);
+            };
+            Head.prototype.render = function () {
+                var self = this;
+            };
+            //ddMenu: JQuery;
+            //ddMenuTrigger: JQuery;
+            //ddMenuBackground: JQuery;
+            //initTrigger() {
+            //    const self = this;
+            //    const jqueryArray = [
+            //        self.ddMenu,
+            //        self.ddMenuTrigger,
+            //        self.ddMenuBackground];
+            //    self.ddMenuTrigger.on("click", (event) => {
+            //        if (!self.ddMenu.hasClass("open")) {
+            //            self.toggleArrayClass(true, jqueryArray, "open");
+            //            setTimeout(() => {
+            //                self.ddMenuBackground.on("mouseenter", (evt: any) => {
+            //                    self.toggleArrayClass(false, jqueryArray, "open");
+            //                });
+            //            }, 1000);
+            //        } else {
+            //            self.ddMenuBackground.off("mouseenter", () => {
+            //            });
+            //            self.toggleArrayClass(false, jqueryArray, "open");
+            //        }
+            //    });
+            //}
+            //toggleArrayClass(direction: boolean, items: Array<JQuery>, cssClass: string) {
+            //    items.forEach((item: JQuery) => {
+            //        if (direction) {
+            //            item.addClass(cssClass);
+            //        } else {
+            //            item.removeClass(cssClass);
+            //        }
+            //    });
+            //}
+            Head.prototype.toggle = function () {
+                var self = this;
+                var topBar = $(".navbar-brand"), toggleCss = "toggle-icon";
+                if (!topBar.hasClass(toggleCss)) {
+                    topBar.addClass(toggleCss);
+                }
+                else {
+                    topBar.removeClass(toggleCss);
+                }
+            };
+            return Head;
+        }(Session.Base));
+        Controls.Head = Head;
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
-var System;
-(function (System) {
-    var Singleton = (function () {
-        function Singleton() {
-        }
-        Singleton.getInstance = function () {
-            if (this.instance === null || this.instance === undefined) {
-                this.instance = new Singleton();
-            }
-            return this.instance;
-        };
-        return Singleton;
-    }());
-})(System || (System = {}));
 /// <reference path="../../ref.d.ts" />
 var Views;
 (function (Views) {
@@ -1231,4 +1217,18 @@ var Views;
         })(Shared = Controls.Shared || (Controls.Shared = {}));
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
+var System;
+(function (System) {
+    var Singleton = (function () {
+        function Singleton() {
+        }
+        Singleton.getInstance = function () {
+            if (this.instance === null || this.instance === undefined) {
+                this.instance = new Singleton();
+            }
+            return this.instance;
+        };
+        return Singleton;
+    }());
+})(System || (System = {}));
 //# sourceMappingURL=app.js.map
