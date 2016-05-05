@@ -1,210 +1,35 @@
 ﻿<!DOCTYPE html>
 <html>
+
 <head>
     <title></title>
     <meta charset="utf-8" />
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,500,700,500italic,400italic,700italic|Roboto+Condensed:400,700"
-          rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,500,700,500italic,400italic,700italic|Roboto+Condensed:400,700" rel="stylesheet" type="text/css" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <style>
-        body {
-            color: #fff !important;
-            font-family: "Roboto";
-        }
 
-        .devsite-search-wrapper {
-            background: #3b78e7;
-            border-radius: 2px;
-            display: inline-block;
-            margin: 0 40px;
-            max-width: 872px;
-            position: relative;
-            transition: background .2s;
-            vertical-align: top;
-            width: calc(100% - 592px);
-        }
-
-        .devsite-searchbox {
-            display: -ms-flex;
-            display: -webkit-flex;
-            display: flex;
-        }
-
-        .devsite-search-image {
-            color: #fff;
-            left: 24px;
-            position: absolute;
-            top: 6px;
-            transition: color .2s;
-        }
-
-            .devsite-search-image::before {
-                content: 'search';
-            }
-
-        .devsite-search-active .devsite-search-image {
-            color: #757575;
-        }
-
-        input.devsite-search-field {
-            font-size: 18px;
-            background: 0;
-            border: 0;
-            color: #fff;
-            -ms-flex: 1;
-            -webkit-flex: 1;
-            flex: 1;
-            height: 36px;
-            margin: 0;
-            padding: 8px 8px 8px 72px;
-            transition: color .2s;
-        }
-
-        ::-webkit-input-placeholder {
-            color: #FFFFFF;
-        }
-
-        :-moz-placeholder { /* Firefox 18- */
-            color: #FFFFFF;
-        }
-
-        ::-moz-placeholder { /* Firefox 19+ */
-            color: #FFFFFF;
-        }
-
-        :-ms-input-placeholder {
-            color: #FFFFFF;
-        }
-
-        .devsite-search-active .devsite-search-field {
-            color: #212121;
-        }
-
-
-
-        .devsite-search-form ::-webkit-input-placeholder {
-            color: #fff;
-            transition: color .2s;
-        }
-
-        .devsite-search-form :-moz-placeholder {
-            color: #fff;
-            opacity: 1;
-            transition: color .2s;
-        }
-
-        .devsite-search-form ::-moz-placeholder {
-            color: #fff;
-            opacity: 1;
-            transition: color .2s;
-        }
-
-        .devsite-search-form :-ms-input-placeholder {
-            color: #fff;
-            transition: color .2s;
-        }
-
-        .devsite-search-active .devsite-search-form ::-webkit-input-placeholder {
-            color: #757575;
-        }
-
-        .devsite-search-active .devsite-search-form :-moz-placeholder {
-            color: #757575;
-            opacity: 1;
-        }
-
-        .devsite-search-active .devsite-search-form ::-moz-placeholder {
-            color: #757575;
-            opacity: 1;
-        }
-
-        .devsite-search-active .devsite-search-form :-ms-input-placeholder {
-            color: #757575;
-        }
-
-
-
-        input.devsite-search-field:before {
-            color: #fff !important;
-        }
-
-        input.devsite-search-field {
-            color: #fff;
-            height: 46px;
-            margin: 0;
-            padding: 8px 8px 8px 8px;
-            transition: all .2s ease-out;
-            background: rgba(3, 155, 229,.1) !important;
-            border: 2px solid transparent;
-            padding-bottom: 6px;
-            margin-top: 10px;
-            margin-left: 10vw;
-            border-radius: 3px;
-            transition: all ease-out 200ms;
-            box-shadow: 0 0 0 rgba(0,0,0,.14),0 0 0 rgba(0,0,0,.28);
-            width: 80%;
-        }
-
-            input.devsite-search-field:hover {
-                background: rgba(3, 155, 229,.7) !important;
-                transition: all ease-out 200ms;
-                width: 80%;
-            }
-
-        .devsite-top-logo-row-wrapper {
-            background: #3367d6;
-            height: 65px;
-        }
-
-
-        input.devsite-search-field:focus {
-            border: 2px solid rgba(79, 195, 247,.6);
-            background:rgba(255, 255, 255,.9)!important;
-            width: 80%;
-            box-shadow: 0 0 -4px rgba(0,0,0,.14),0 4px -3px rgba(0,0,0,.28);
-        }
-            input.devsite-search-field:focus::-webkit-input-placeholder {
-                color: #222222;
-                 transition: all .2s ease-out;
-                
-                 }
-
-
-      .devsite-popout {
-    background: #fff;
-    box-shadow: 0 0 2px rgba(0,0,0,.12),0 2px 4px rgba(0,0,0,.24),inset 0 4px 6px -4px rgba(0,0,0,.24);
-    margin-top: 10px;
-    max-height: calc(100vh - 56px);
-    overflow-y: auto;
-    position: absolute;
-    transition: transform .2s,visibility .2s;
-    transform: translateY(0);
-    width: 100%;
-          height: 400px;
-    z-index: -1;
-}
-
-        #topnav.navbar-blue {
-            background: #2196f3;
-        }
     </style>
-    <link href="libs/bootstrap/bootstrap-3.3.6-dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="dist/admin.vendor.css" rel="stylesheet" />
-    <link href="styles/refactor.css" rel="stylesheet" />
-    <link href="styles/animate.css" rel="stylesheet" />
+    <link href="dist/vendor.css" rel="stylesheet" />
+    <link href="dist/defaultInstance.css" rel="stylesheet" />
+    <link href="styles/search.css" rel="stylesheet" />
 </head>
 <body>
     <header id="topnav" class="navbar navbar-fixed-top navbar-blue" role="banner">
         <div class="devsite-top-logo-row-wrapper">
             <form>
-                <input placeholder="Search" type="text"
-                       class="devsite-search-field devsite-search-query" name="q" value="" autocomplete="off">
+                <input placeholder="Search" type="text" class="devsite-search-field devsite-search-query" id="q" name="q" value="" autocomplete="off">
                 <div style="width: 80%; margin: auto;">
-        <div class="devsite-popout">Test</div></div>
+                </div>
             </form>
         </div>
-        
     </header>
-
+    <header  class="search-active--wrapper">
+        <div class="search-result-popout">
+            <i class="material-icons" style="font-size:148px;opacity:.155;color:#fff;position:absolute;bottom:45px;right:45px;">search</i>
+        </div>
+        <div class="search-active-background"></div>
+    </header>
+    <script src="dist/vendor.js"></script>
+    <script src="dist/copley.app.navigation.js"></script>    
 </body>
 </html>

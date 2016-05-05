@@ -2,6 +2,8 @@ module.exports = {
     bundle: {
         vendor: {
             styles: [
+                "libs/css/google.material.css",
+                "libs/css/google.roboto.css",
                 "libs/css/animate.css",
                 "dist/admin.vendor.css",
                 "libs/vendor/waves.css",

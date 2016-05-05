@@ -8,25 +8,28 @@ namespace Session {
 
         isLoadedMenu: boolean = false;
         isLoadedUser: boolean = false;
+        isLoadedSearch: boolean = false;
         isLoadedNotifications: boolean = false;
 
         payload: Models.IMenuPayload;
         payloadMenu: Models.IMenuPayload;
         payloadUser: Models.IUserPayload;
+        payloadSearch: Models.IResults;
         payloadNotifications: Models.INotificationsPayload;
 
         iNotificatonProps: INotificationProps;
 
-
         constructor() {
             super();
             const self = this;
-            self.payloadMenu = {
-                entity: null,
-                list: null
-            };
+            self.payloadMenu = { entity: null, list: null };
         }
-        loadMenu(): Q.Promise<any> {
+        /**
+         * private Q.Promise to return json.
+         * @method loadMenu         
+         * @return Q.Promise< Models.IMenuPayload>
+         */
+        private loadMenu(): Q.Promise<any> {
             const self = this;
             Services.Http.loadJson(AppContextSettings.menuUrl).fail(() => {
                 Q.reject("Error Loading Data");
@@ -39,7 +42,12 @@ namespace Session {
             });
             return null;
         }
-        loadUser(): Q.Promise<any> {
+        /**
+        * private Q.Promise to return json.
+        * @method loadUser         
+        * @return Q.Promise<Models.IUserPayload>
+        */
+        private loadUser(): Q.Promise<any> {
             const self = this;
             Services.Http.loadJson(AppContextSettings.userUrl).fail(() => {
                 Q.reject("Error Loading Data");
@@ -53,7 +61,12 @@ namespace Session {
             });
             return null;
         }
-        loadNotifications(): Q.Promise<any> {
+        /**
+        * private Q.Promise to return json.
+        * @method loadNotifications         
+        * @return Q.Promise< Models.INotificationsPayload>
+        */
+        private loadNotifications(): Q.Promise<any> {
             const self = this;
             Services.Http.loadJson(AppContextSettings.notificationUrl).fail(() => {
                 Q.reject("Error Loading Notifications");
@@ -66,7 +79,7 @@ namespace Session {
                     progRCount: result.notifications.progress_reports.length,
                     alertCount: result.notifications.alerts[0].count + result.notifications.alerts[1].count
                 }
-                
+
                 Q.resolve(result);
 
             }).always(() => {
@@ -74,7 +87,30 @@ namespace Session {
             });
             return null;
         }
-
+        /**
+         * private Q.Promise to return json.
+         * @method loadSearhResults         
+         * @return Q.Promise< Models.IResults>
+         */
+        private loadSearhResults(): Q.Promise<Models.IResults> {
+            const self = this;
+            Services.Http.loadJson(AppContextSettings.searchUrl).fail(() => {
+                Q.reject("Error Loading Search");
+                return null;
+            }).done((result: Models.IResults) => {
+                self.isLoadedSearch = true;
+                self.payloadSearch = result;
+                Q.resolve(result);
+            }).always(() => {
+                return Q.resolve(self.payloadSearch);
+            });
+            return null;
+        }
+        /**
+         * public Q.method to fire all the async calls into a queue.
+         * @method initialize         
+         * @return null, when each data call is complete, it broadcasts an event.
+         */
         initialize() {
             const self = this;
             Q.all([self.loadMenu(), self.loadUser()]).then(() => {
@@ -93,6 +129,14 @@ namespace Session {
                         new Core.Event(
                             Models.Events.notificationsLoaded,
                             self.payloadNotifications));
+                }
+            });
+            Q.all([self.loadSearhResults()]).then(() => {
+                if (self.isLoadedSearch) {
+                    self.dispatchEvent(
+                        new Core.Event(
+                            Models.Events.searchLoaded,
+                            self.payloadSearch));
                 }
             });
         }
@@ -117,7 +161,9 @@ namespace Session {
         static isDebugConsoleWrite: boolean = true;
         static menuUrl: string = AppContextSettings.isDebug ? "data.json" : "/navbar_builder";
         static userUrl: string = AppContextSettings.isDebug ? "data-user.json" : "/user_profile_information_builder";
+        static searchUrl: string = AppContextSettings.isDebug ? "data-search.json" : "/student_search";
         static notificationUrl: string = AppContextSettings.isDebug ? "data-notifications.json" : "/dashboard_notification_builder";
+
     }
     export class AppContext extends DataContext {
         private isLoaded: boolean = false;

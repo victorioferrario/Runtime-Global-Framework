@@ -1,0 +1,236 @@
+body {
+            color: #fff !important;
+            font-family: "Roboto";
+        }
+
+        .devsite-search-wrapper {
+            background: #3b78e7;
+            border-radius: 2px;
+            display: inline-block;
+            margin: 0 40px;
+            max-width: 872px;
+            position: relative;
+            transition: background .2s;
+            vertical-align: top;
+            width: calc(100% - 592px);
+        }
+
+        .devsite-searchbox {
+            display: -ms-flex;
+            display: -webkit-flex;
+            display: flex;
+        }
+
+        .devsite-search-image {
+            color: #fff;
+            left: 24px;
+            position: absolute;
+            top: 6px;
+            transition: color .2s;
+        }
+
+            .devsite-search-image::before {
+                content: 'search';
+            }
+
+        .devsite-search-active .devsite-search-image {
+            color: #757575;
+        }
+
+        input.devsite-search-field {
+            font-size: 18px;
+            background: 0;
+            border: 0;
+            color: #fff;
+            -ms-flex: 1;
+            -webkit-flex: 1;
+            flex: 1;
+            height: 36px;
+            margin: 0;
+            padding: 8px 8px 8px 72px;
+            transition: color .2s;
+        }
+
+        ::-webkit-input-placeholder {
+            color: #FFFFFF;
+        }
+
+        :-moz-placeholder { /* Firefox 18- */
+            color: #FFFFFF;
+        }
+
+        ::-moz-placeholder { /* Firefox 19+ */
+            color: #FFFFFF;
+        }
+
+        :-ms-input-placeholder {
+            color: #FFFFFF;
+        }
+
+        .devsite-search-active .devsite-search-field {
+            color: #212121;
+        }
+
+
+
+        .devsite-search-form ::-webkit-input-placeholder {
+            color: #fff;
+            transition: color .2s;
+        }
+
+        .devsite-search-form :-moz-placeholder {
+            color: #fff;
+            opacity: 1;
+            transition: color .2s;
+        }
+
+        .devsite-search-form ::-moz-placeholder {
+            color: #fff;
+            opacity: 1;
+            transition: color .2s;
+        }
+
+        .devsite-search-form :-ms-input-placeholder {
+            color: #fff;
+            transition: color .2s;
+        }
+
+        .devsite-search-active .devsite-search-form ::-webkit-input-placeholder {
+            color: #757575;
+        }
+
+        .devsite-search-active .devsite-search-form :-moz-placeholder {
+            color: #757575;
+            opacity: 1;
+        }
+
+        .devsite-search-active .devsite-search-form ::-moz-placeholder {
+            color: #757575;
+            opacity: 1;
+        }
+
+        .devsite-search-active .devsite-search-form :-ms-input-placeholder {
+            color: #757575;
+        }
+
+
+
+        input.devsite-search-field:before {
+            color: #fff !important;
+        }
+
+        input.devsite-search-field {
+            color: #fff;
+            height: 46px;
+            margin: 0;
+            padding: 8px 8px 8px 8px;
+            transition: all .2s ease-out;
+            background: rgba(3, 155, 229,.1) !important;
+            border: 0 solid transparent;
+            padding-bottom: 6px;
+            margin-top: 10px;
+            margin-left: 10vw;
+            border-radius: 3px;
+            transition: all ease-out 200ms;
+            box-shadow: 0 0 0 rgba(0,0,0,.14),0 0 0 rgba(0,0,0,.28);
+            width: 80%;
+        }
+
+            input.devsite-search-field:hover {
+                background: rgba(3, 155, 229,.7) !important;
+                transition: all ease-out 200ms;
+                width: 80%;
+            }
+
+        .devsite-top-logo-row-wrapper {
+            background: #3367d6;
+            height: 65px;
+        }
+        input.devsite-search-field:focus {
+            color:#fff!important;
+           border-radius: 3px;
+           border-bottom-left-radius: 0;
+           border-bottom-right-radius:0;          
+           border: 0 solid #fff!important;          
+           background: rgba(3, 155, 229,.4) !important;
+            width: 80vw;           
+            box-shadow: 0 0 -4px rgba(0,0,0,.14),0 4px -3px rgba(0,0,0,.28);
+        }
+            input.devsite-search-field:focus::-webkit-input-placeholder {
+                color: rgba(250,250,250,.5);
+                 transition: all .2s ease-out;
+                
+                 }
+
+
+      .search-result-popout {
+          margin:auto;
+          margin-left:10vw;
+    background:#1976d2;
+    background: #fff;
+    box-shadow: 0 0 2px rgba(0,0,0,.12),0 2px 4px rgba(0,0,0,.24),inset 0 4px 6px -14px rgba(0,0,0,.04);
+    margin-top: 10px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    position: absolute;
+    top:1px;
+    transition: all .2s; 
+    width:80vw;     
+    height: 0; 
+    opacity: 0;           
+    border:solid 4px #3367d6;
+    border-top:solid 0 #3367d6;
+    transition: all 200ms ease-out;
+    z-index: 2001; 
+}
+
+.search-result-popout.active{
+    top:1px;
+    opacity: 1;
+    background:#1976d2;
+    border-color:#1976d2;
+    border-top:solid 0 #fff!important;
+     transition-duration: 200ms; 
+    height:300px!important;   
+ border-top-left-radius:0!important;    
+ border-top-right-radius:0!important;  
+    border-bottom-left-radius:4px;    
+    border-bottom-right-radius:4px;
+        z-index: 2002; 
+}
+
+body .search-active-background {
+    position: fixed;
+    left:0;right:0;top:66px;
+    bottom:0;
+     background:rgba(0,0,0,0);
+      z-index: -1199; 
+      opacity:0;
+      transition-duration: 200ms;
+}
+body.search-active .search-active-background {
+    position: fixed;
+    left:0;right:0;top:66px;
+    bottom:0;
+    background:#000;
+    opacity: .5;
+    z-index: 1197;    
+}
+
+        #topnav.navbar-blue {
+            background: #2196f3;
+        }
+        
+        .search-active--wrapper{
+            position: fixed;
+            left:0;right:0;top:55px;
+            bottom:0;
+            overflow:hidden!important;             
+              z-index: 1998;               
+        }
+        body #topnav{
+            border-bottom:solid 1px #fff;
+        }
+        body.search-active #topnav{
+            border-bottom:solid 1px #fff;
+        }

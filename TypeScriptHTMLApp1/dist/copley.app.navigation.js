@@ -63,6 +63,7 @@ var Models;
         }
         Events.dataLoaded = "event:data:loaded";
         Events.userLoaded = "event:user:loaded";
+        Events.searchLoaded = "event:search:loaded";
         Events.notificationsLoaded = "event:data:notifications";
         return Events;
     }());
@@ -96,13 +97,16 @@ var Session;
             _super.call(this);
             this.isLoadedMenu = false;
             this.isLoadedUser = false;
+            this.isLoadedSearch = false;
             this.isLoadedNotifications = false;
             var self = this;
-            self.payloadMenu = {
-                entity: null,
-                list: null
-            };
+            self.payloadMenu = { entity: null, list: null };
         }
+        /**
+         * private Q.Promise to return json.
+         * @method loadMenu
+         * @return Q.Promise< Models.IMenuPayload>
+         */
         DataContext.prototype.loadMenu = function () {
             var self = this;
             Services.Http.loadJson(AppContextSettings.menuUrl).fail(function () {
@@ -116,6 +120,11 @@ var Session;
             });
             return null;
         };
+        /**
+        * private Q.Promise to return json.
+        * @method loadUser
+        * @return Q.Promise<Models.IUserPayload>
+        */
         DataContext.prototype.loadUser = function () {
             var self = this;
             Services.Http.loadJson(AppContextSettings.userUrl).fail(function () {
@@ -130,6 +139,11 @@ var Session;
             });
             return null;
         };
+        /**
+        * private Q.Promise to return json.
+        * @method loadNotifications
+        * @return Q.Promise< Models.INotificationsPayload>
+        */
         DataContext.prototype.loadNotifications = function () {
             var self = this;
             Services.Http.loadJson(AppContextSettings.notificationUrl).fail(function () {
@@ -147,6 +161,30 @@ var Session;
             });
             return null;
         };
+        /**
+         * private Q.Promise to return json.
+         * @method loadSearhResults
+         * @return Q.Promise< Models.IResults>
+         */
+        DataContext.prototype.loadSearhResults = function () {
+            var self = this;
+            Services.Http.loadJson(AppContextSettings.searchUrl).fail(function () {
+                Q.reject("Error Loading Search");
+                return null;
+            }).done(function (result) {
+                self.isLoadedSearch = true;
+                self.payloadSearch = result;
+                Q.resolve(result);
+            }).always(function () {
+                return Q.resolve(self.payloadSearch);
+            });
+            return null;
+        };
+        /**
+         * public Q.method to fire all the async calls into a queue.
+         * @method initialize
+         * @return null, when each data call is complete, it broadcasts an event.
+         */
         DataContext.prototype.initialize = function () {
             var self = this;
             Q.all([self.loadMenu(), self.loadUser()]).then(function () {
@@ -160,6 +198,11 @@ var Session;
             Q.all([self.loadNotifications()]).then(function () {
                 if (self.isLoadedNotifications) {
                     self.dispatchEvent(new Core.Event(Models.Events.notificationsLoaded, self.payloadNotifications));
+                }
+            });
+            Q.all([self.loadSearhResults()]).then(function () {
+                if (self.isLoadedSearch) {
+                    self.dispatchEvent(new Core.Event(Models.Events.searchLoaded, self.payloadSearch));
                 }
             });
         };
@@ -196,6 +239,7 @@ var Session;
         AppContextSettings.isDebugConsoleWrite = true;
         AppContextSettings.menuUrl = AppContextSettings.isDebug ? "data.json" : "/navbar_builder";
         AppContextSettings.userUrl = AppContextSettings.isDebug ? "data-user.json" : "/user_profile_information_builder";
+        AppContextSettings.searchUrl = AppContextSettings.isDebug ? "data-search.json" : "/student_search";
         AppContextSettings.notificationUrl = AppContextSettings.isDebug ? "data-notifications.json" : "/dashboard_notification_builder";
         return AppContextSettings;
     }());
@@ -493,7 +537,7 @@ var Views;
         Controls.StaticElementBuilder = StaticElementBuilder;
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
-/// <reference path="searchControl.ts" />
+/// <reference path="search.ts" />
 /// <reference path="utilities/StringTemplates.ts" />
 /// <reference path="../navigation/utilities/StaticElementBuilder.ts" />
 /// <reference path="../../../../typings/tsd.d.ts" />
@@ -552,7 +596,7 @@ var Views;
                     _super.call(this);
                     var self = this;
                     var iNotify = self.appContext.iNotificatonProps;
-                    // @create a scrath list of items.
+                    // @create a scratch list of items.
                     self.controlsList = [
                         sTemplates.rightMenuCloseSearch(),
                         sTemplates.headerButtonFullScreen(),
@@ -1013,14 +1057,20 @@ var Views;
                 self.main = new Views.Controls.Main();
                 self.header = new Views.Controls.Head();
             }
+            MasterLayout.prototype.addOtherElements = function () {
+                var self = this;
+                // ToDo: See Search Top
+                self.searchTemp = new Views.PageButtons(self);
+                self.userMenuControl = new Views.Controls.Components.ProfileMenu();
+            };
             MasterLayout.prototype.addNotificationPanels = function () {
                 var self = this;
                 self.aside = new Views.Controls.Aside();
             };
-            MasterLayout.prototype.addOtherElements = function () {
+            MasterLayout.prototype.databind = function (data, data2) {
                 var self = this;
-                self.searchTemp = new Views.PageButtons(self);
-                self.userMenuControl = new Views.Controls.Components.ProfileMenu();
+                self.main.databind(data);
+                self.header.databind({ payload: data2 });
             };
             return MasterLayout;
         }(Session.BaseView));
@@ -1035,11 +1085,11 @@ var Views;
         function Page() {
             _super.call(this);
             var self = this;
-            if (self.initSession()) {
+            if (self.init()) {
                 self.layout = new Views.Controls.MasterLayout();
             }
         }
-        Page.prototype.initSession = function () {
+        Page.prototype.init = function () {
             var self = this;
             self.appContext.addEventListener(Models.Events.dataLoaded, function (arg) {
                 self.dataLoaded();
@@ -1047,27 +1097,55 @@ var Views;
             self.appContext.addEventListener(Models.Events.notificationsLoaded, function (arg) {
                 self.dataLoaded2();
             });
+            self.appContext.addEventListener(Models.Events.searchLoaded, function (arg) {
+                self.searchLoaded();
+            });
             return true;
         };
+        //Responses.
         Page.prototype.dataLoaded = function () {
             var self = this;
-            self.layout.main.databind(self.appContext.payloadMenu);
-            self.layout.header.databind({
-                payload: self.appContext.payloadUser });
-            self.init();
-            Session.Trace.log("dataLoaded", self.appContext.payloadUser, self.appContext.payloadMenu);
+            self.layout.databind(self.appContext.payloadMenu, self.appContext.payloadUser);
         };
         Page.prototype.dataLoaded2 = function () {
             var self = this;
             self.layout.addOtherElements();
             self.layout.addNotificationPanels();
         };
-        Page.prototype.init = function () {
+        // Search
+        Page.prototype.searchLoaded = function () {
             var self = this;
+            console.log(self.appContext.payloadSearch);
+            console.log("search loaded!~");
         };
         return Page;
     }(Session.BaseView));
     Views.Page = Page;
+    var SearchContext = (function (_super) {
+        __extends(SearchContext, _super);
+        function SearchContext() {
+            _super.call(this);
+            this.createChildControls();
+        }
+        SearchContext.prototype.databind = function () {
+            var self = this;
+            // self.appContext.payloadSearch.results.filter()
+        };
+        SearchContext.prototype.createChildControls = function () {
+            var self = this;
+            $("#q").focus(function () {
+                $(".search-result-popout").addClass("active");
+                $("body").addClass("search-active");
+            });
+            $(".search-active-background").click(function () {
+                $(".search-result-popout").removeClass("active");
+                $("body").removeClass("search-active");
+            });
+        };
+        return SearchContext;
+    }(Session.BaseView));
+    Views.SearchContext = SearchContext;
+    // ToDo: Re-factor this entire object. Most likely go down a namespace. Class name is wrong. The elements seem to be assosicated to search.
     var PageButtons = (function () {
         function PageButtons(ref) {
             var self = this;
@@ -1107,15 +1185,26 @@ $(document).ready(function () {
     console.warn("ready");
     $("#layout-static .static-content-wrapper").append("<div class='extrabar-underlay'></div>");
     var app = new Views.Page();
+    $("#q").focus(function () {
+        $(".search-result-popout").addClass("active");
+        $("body").addClass("search-active");
+    });
+    $(".search-active-background").click(function () {
+        $(".search-result-popout").removeClass("active");
+        $("body").removeClass("search-active");
+    });
 });
 // Clean up loader
 $(window).load(function () {
     setTimeout(function () {
-        $(".page-loader").addClass("m-hide");
+        $('.page-loader').addClass('fadeOut animated-500').on('webkitAnimationEnd mozAnimationEnd oAnimationEnd oanimationend animationend', function () {
+            $(".page-loader").remove();
+        });
     }, 1900);
     setTimeout(function () {
         $(".page-content").removeClass("m-hide");
     }, 2000);
+    // Pop overs
     var options = {
         html: true
     };
@@ -1229,3 +1318,103 @@ var Views;
         })(Shared = Controls.Shared || (Controls.Shared = {}));
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
+// namespace Views.Controls.Components.Forms {
+//     export class AutoCompleteControl {
+//         isInputFocused: KnockoutObservable<boolean>;
+//         isInputFocusedComputed: KnockoutComputed<boolean>;
+//         selectedItemList: KnockoutObservableArray<any>;
+//         selectedItem: KnockoutObservable<any>;
+//         selectedItemValue: KnockoutObservable<any>;
+//         constructor() {
+//             const self = this;
+//             self.initBindHandler();
+//             self.selectedItem = ko.observable("");
+//             self.selectedItemValue = ko.observable("");
+//             self.selectedItemList = ko.observableArray();
+//             self.isInputFocused = ko.observable(false);
+//             self.isInputFocusedComputed = ko.computed(() => {
+//                 if (self.selectedItemList().length > 0) {
+//                 } else if (self.selectedItemList().length === 0) {
+//                 }
+//                 if (this.isInputFocused()) {
+//                     return true;
+//                 } else {
+//                     return false;
+//                 }
+//             });
+//         }
+//         searchOnFocus(data: any, event: any) {
+//             console.log(data);
+//         }
+//         searchOnBlur(data: any, event: any) {
+//             console.log(data);
+//         }
+//         initBindHandler() {
+//             var self = this;
+//             ko.bindingHandlers.autoComplete = {
+//                 init(element, valueAccessor, allBiindings, viewModel, bindingContext) {
+//                     var settings = valueAccessor();
+//                     var selectedItem = settings.selected;
+//                     var updateElementValueWithLabel = (event:any, ui:any) => {
+//                         event.preventDefault();
+//                         $(element).val(ui.item.label);
+//                         if (typeof ui.item !== "undefined") { selectedItem(ui.item); }
+//                     };
+//                     $(element).autocomplete({
+//                         minLength: 3,
+//                         source(request:any, response:any) {
+//                             let arrayResult = [
+//                                 {
+//                                     label: "Hello",
+//                                     value: 1
+//                                 },
+//                                 {
+//                                     label: "Hello",
+//                                     value: 1
+//                                 }, {
+//                                     label: "Hello",
+//                                     value: 1
+//                                 }, {
+//                                     label: "Hello",
+//                                     value: 1
+//                                 }, {
+//                                     label: "Hello",
+//                                     value: 1
+//                                 }, {
+//                                     label: "Hello",
+//                                     value: 1
+//                                 }, {
+//                                     label: "Hello",
+//                                     value: 1
+//                                 }
+//                             ];
+//                             response(arrayResult);
+//                         },
+//                         select(event:any, ui:any) {
+//                             if (ui.item) {
+//                                 updateElementValueWithLabel(event, ui);
+//                             }
+//                         },
+//                         focus(event:any, ui:any) {
+//                             console.log("focus");
+//                             if (ui.item) {
+//                                 updateElementValueWithLabel(event, ui);
+//                             }
+//                         },
+//                         change(event:any, ui:any) {
+//                             if (ui.item) {
+//                                 updateElementValueWithLabel(event, ui);
+//                             }
+//                         }
+//                     });
+//                 }
+//             };
+//         }
+//     }
+// }
+// // let searchApp = window["searchApp"] || {};
+// // window["searchApp"].autoCompleteControl = new Views.Controls.Components.Forms.AutoCompleteControl();
+// // $(document).ready(() => {    
+// //     console.log(window["searchApp"].autoCompleteControl)
+// //     ko.applyBindings(window["searchApp"]);
+// // }); 
