@@ -1,20 +1,33 @@
 var gulp = require("gulp"),
-    ts = require("gulp-typescript"),
     merge = require("merge2"),
+    ts = require("gulp-typescript"),
     bundle = require("gulp-bundle-assets");
+
 var tsProject = ts.createProject({
+    //-----------------------------------------
+
     declaration: true,
-    noExternalResolve: false,
     noImplicitAny: true,
-    out: "application.2016.js"
+    noExternalResolve: false,
+
+    //-----------------------------------------
+
+    out: "copley.app.navigation.js"
+
+    //---------------------------------------
+
 });
-gulp.task("scripts", function() {
+
+gulp.task("scripts", function () {
+
     var tsResult = gulp.src(["src/**/*.ts", "src/**/*.tsx"])
         .pipe(ts(tsProject));
     return merge([
         tsResult.js.pipe(gulp.dest("dist"))
     ]);
+
 });
+
 gulp.task("bundle", function() {
     return gulp.src("./bundle.config.js")
         .pipe(bundle())

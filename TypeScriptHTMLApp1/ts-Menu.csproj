@@ -24,16 +24,24 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="bundle.config.js" />
+    <Content Include="bundle.config.js">
+      <DependentUpon>gulpfile.js</DependentUpon>
+    </Content>
+    <Content Include="data-notifications.json">
+      <DependentUpon>data.json</DependentUpon>
+    </Content>
+    <Content Include="data-user.json">
+      <DependentUpon>data.json</DependentUpon>
+    </Content>
     <Content Include="dist\admin.vendor.css" />
-    <Content Include="dist\app.ui.2016.js" />
+    <Content Include="dist\__app.ui.2016.js" />
     <Content Include="dist\application.2016.js" />
     <Content Include="dist\images\background.jpg" />
     <Content Include="dist\images\h-mini.png" />
     <Content Include="dist\images\harvard.png" />
     <Content Include="dist\images\havard-logo.png" />
-    <Content Include="dist\vendor.css" />
-    <Content Include="dist\vendor.js" />
+    <Content Include="dist\__vendor.css" />
+    <Content Include="dist\__vendor.js" />
     <Content Include="documentation\ElementTemplate.html" />
     <Content Include="gulpfile.js" />
     <Content Include="HtmlPageSearch.html" />
@@ -47,6 +55,9 @@
     <Content Include="libs\bootstrap\bootstrap-3.3.6-dist\js\bootstrap.js" />
     <Content Include="libs\bootstrap\bootstrap-3.3.6-dist\js\bootstrap.min.js" />
     <Content Include="libs\bootstrap\bootstrap-3.3.6-dist\js\npm.js" />
+    <Content Include="libs\css\animate.css" />
+    <Content Include="libs\css\google.material.css" />
+    <Content Include="libs\css\google.roboto.css" />
     <Content Include="libs\materialize\css\materialize.css" />
     <Content Include="libs\materialize\css\materialize.min.css" />
     <Content Include="libs\materialize\font\material-design-icons\LICENSE.txt" />
@@ -71,9 +82,16 @@
     <Content Include="styles\images\h-mini.png" />
     <Content Include="styles\images\harvard.png" />
     <Content Include="styles\images\havard-logo.png" />
-    <Content Include="styles\layout.css" />
+    <Content Include="styles\layout.css">
+      <DependentUpon>menu.css</DependentUpon>
+    </Content>
+    <Content Include="styles\loader.css">
+      <DependentUpon>menu.css</DependentUpon>
+    </Content>
     <Content Include="styles\menu.css" />
-    <Content Include="styles\refactor.css" />
+    <Content Include="styles\refactor.css">
+      <DependentUpon>menu.css</DependentUpon>
+    </Content>
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
