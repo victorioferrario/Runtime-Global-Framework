@@ -34,7 +34,9 @@
     <Content Include="dist\images\havard-logo.png" />
     <Content Include="dist\vendor.css" />
     <Content Include="dist\vendor.js" />
+    <Content Include="documentation\ElementTemplate.html" />
     <Content Include="gulpfile.js" />
+    <Content Include="HtmlPageSearch.html" />
     <Content Include="index.html" />
     <Content Include="index2.html" />
     <Content Include="libs\bootstrap\bootstrap-3.3.6-dist\css\bootstrap-theme.css" />

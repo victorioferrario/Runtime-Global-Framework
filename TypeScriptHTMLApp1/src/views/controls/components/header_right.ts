@@ -19,7 +19,7 @@ namespace Views.Controls.Components {
             const self = this;
             const iNotify = self.appContext.iNotificatonProps;
 
-            // @create a scrath list of items.
+            // @create a scratch list of items.
             self.controlsList = [
                 sTemplates.rightMenuCloseSearch(),
                 sTemplates.headerButtonFullScreen(),

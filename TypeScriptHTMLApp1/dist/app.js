@@ -659,7 +659,7 @@ var Views;
                     _super.call(this);
                     var self = this;
                     var iNotify = self.appContext.iNotificatonProps;
-                    // @create a scrath list of items.
+                    // @create a scratch list of items.
                     self.controlsList = [
                         sTemplates.rightMenuCloseSearch(),
                         sTemplates.headerButtonFullScreen(),
