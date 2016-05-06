@@ -20,7 +20,7 @@
         constructor() {
             this.listeners = [];
         }
-         hasEventListener(type: string, listener: Function): Boolean {
+        hasEventListener(type: string, listener: Function): Boolean {
              let exists: Boolean = false;
              for (let i = 0; i < this.listeners.length; i++) {
                 if (this.listeners[i].type === type && this.listeners[i].listener === listener) {

@@ -261,13 +261,15 @@ var Session;
         return AppContext;
     }(DataContext));
     Session.AppContext = AppContext;
-    var BaseView = (function () {
+    var BaseView = (function (_super) {
+        __extends(BaseView, _super);
         function BaseView() {
+            _super.call(this);
             var self = this;
             self.appContext = Session.AppContext.getInstance();
         }
         return BaseView;
-    }());
+    }(Core.EventDispatcher));
     Session.BaseView = BaseView;
     var Base = (function (_super) {
         __extends(Base, _super);
@@ -1085,6 +1087,8 @@ var Views;
         function Page() {
             _super.call(this);
             var self = this;
+            self.title = ko.observable("Welcome");
+            self.search = new Views.Components.Grid.GridView();
             if (self.init()) {
                 self.layout = new Views.Controls.MasterLayout();
             }
@@ -1099,6 +1103,9 @@ var Views;
             });
             self.appContext.addEventListener(Models.Events.searchLoaded, function (arg) {
                 self.searchLoaded();
+            });
+            self.search.addEventListener(Views.Components.Grid.StaticGridEvents.ready, function () {
+                self.search.handlerReady();
             });
             return true;
         };
@@ -1116,7 +1123,9 @@ var Views;
         Page.prototype.searchLoaded = function () {
             var self = this;
             console.log(self.appContext.payloadSearch);
-            console.log("search loaded!~");
+            // console.log("search loaded!~");
+            console.log(this);
+            self.search.databind();
         };
         return Page;
     }(Session.BaseView));
@@ -1193,6 +1202,7 @@ $(document).ready(function () {
         $(".search-result-popout").removeClass("active");
         $("body").removeClass("search-active");
     });
+    ko.applyBindings(app);
 });
 // Clean up loader
 $(window).load(function () {
@@ -1418,3 +1428,224 @@ var Views;
 // //     console.log(window["searchApp"].autoCompleteControl)
 // //     ko.applyBindings(window["searchApp"]);
 // // }); 
+var Views;
+(function (Views) {
+    var Components;
+    (function (Components) {
+        var Grid;
+        (function (Grid) {
+            var GridMetrics = (function () {
+                function GridMetrics(dsLength) {
+                    var self = this;
+                    self.limit = 10;
+                    self.totalCount = dsLength;
+                    self.totalPages = Math.ceil(self.totalCount / self.limit);
+                    console.log(self.totalCount / self.limit, self.totalPages);
+                }
+                GridMetrics.prototype.update = function (pageCount) {
+                    var self = this;
+                    self.limit = pageCount;
+                    self.totalPages = Math.ceil(self.totalCount / self.limit);
+                };
+                return GridMetrics;
+            }());
+            Grid.GridMetrics = GridMetrics;
+            var GridPagerButton = (function () {
+                function GridPagerButton(ref, arg) {
+                    var self = this;
+                    self.label = ko.observable(arg);
+                    self.value = ko.observable(arg);
+                    self.pageIndex = ko.observable(ref);
+                    self.isActive = ko.pureComputed(function () { return self.pageIndex() === self.value() ? "active" : "no"; }, self);
+                }
+                return GridPagerButton;
+            }());
+            Grid.GridPagerButton = GridPagerButton;
+        })(Grid = Components.Grid || (Components.Grid = {}));
+    })(Components = Views.Components || (Views.Components = {}));
+})(Views || (Views = {}));
+/// <reference path="../../../../../typings/tsd.d.ts" />
+var Views;
+(function (Views) {
+    var Components;
+    (function (Components) {
+        var Grid;
+        (function (Grid) {
+            var StaticGridEvents = (function () {
+                function StaticGridEvents() {
+                }
+                StaticGridEvents.ready = "event:grid:ready";
+                return StaticGridEvents;
+            }());
+            Grid.StaticGridEvents = StaticGridEvents;
+            var GridViewModel = (function (_super) {
+                __extends(GridViewModel, _super);
+                function GridViewModel() {
+                    _super.call(this, "gridView");
+                }
+                GridViewModel.prototype.databind = function () {
+                    console.log("search:databind");
+                    var self = this;
+                    self.datasource = self.appContext.payloadSearch;
+                    if (self.createChildControls()) {
+                        console.log("databind:before:dispatchEvent");
+                        self.dispatchEvent(new Core.Event(StaticGridEvents.ready, self.appContext.payloadSearch));
+                    }
+                };
+                GridViewModel.prototype.createChildControls = function () {
+                    var self = this;
+                    console.log("search:createChildControls");
+                    self.metrics = new Grid.GridMetrics(self.datasource.results.length);
+                    self.contextSearch = ko.observable("");
+                    self.items = ko.observableArray([]);
+                    self.isSorting
+                        = ko.observable(false);
+                    self.sortColumn
+                        = ko.observable("Name");
+                    self.pageSize = ko.observable(self.metrics.limit);
+                    self.totalCount = ko.observable(self.metrics.totalCount);
+                    self.totalPages = ko.observable(self.metrics.totalPages);
+                    self.currentPage = ko.observable(0);
+                    self.itemsPerPageCount = ko.observable(10);
+                    self.pageButtons = ko.observableArray([]);
+                    console.log("search:createChildControls:end");
+                    for (var i = 0; i < self.totalPages(); i++) {
+                        self.pageButtons.push(new Grid.GridPagerButton(self.currentPage(), i + 1));
+                    }
+                    self.pageButtons().forEach(function (item) {
+                        console.log(item);
+                    });
+                    console.log("search:createChildControls:end");
+                    return true;
+                };
+                return GridViewModel;
+            }(Session.Base));
+            Grid.GridViewModel = GridViewModel;
+            var GridView = (function (_super) {
+                __extends(GridView, _super);
+                function GridView() {
+                    _super.call(this);
+                    var self = this;
+                    self.searchTitle = ko.observable("Search Title");
+                }
+                GridView.prototype.handlerReady = function () {
+                    var _this = this;
+                    console.info("ready");
+                    var self = this;
+                    self.watchItemsPerPageCount = ko.pureComputed(function () {
+                        self.metrics.update(self.itemsPerPageCount());
+                        return " " + self.itemsPerPageCount().toString();
+                    }).extend({
+                        notify: 'always'
+                    });
+                    self.isBack = ko.pureComputed(function () {
+                        return self.currentPage() > 1 ? "" : "disabled";
+                    }, self);
+                    self.isNext = ko.computed(function () {
+                        return self.currentPage() === self.totalPages() ? "disabled" : "en";
+                    }, self);
+                    self.firstItemOnPage = ko.computed(function () {
+                        return (self.currentPage() - 1) * self.pageSize() + 1;
+                    });
+                    self.lastItemOnPage = ko.computed(function () {
+                        var num = self.firstItemOnPage() + self.pageSize() - 1;
+                        return num > self.totalCount() ? self.totalCount() : num;
+                    });
+                    self.pagedItems = ko.computed(function () {
+                        if (!self.isSorting()) {
+                            return self.datasource.results.slice(_this.firstItemOnPage() - 1, self.lastItemOnPage());
+                        }
+                        else {
+                            return self.filteredRows().slice(self.firstItemOnPage() - 1, self.lastItemOnPage());
+                        }
+                    });
+                    self.filteredRows = ko.computed(function () {
+                        var tttt = typeof _this.datasource.results !== "function" ? _this.datasource.results : _this.datasource.results;
+                        var rows = tttt, search = _this.contextSearch().toLowerCase();
+                        if (search === '') {
+                            $("#pagerButton-Container").show();
+                            return rows.slice();
+                        }
+                        if (search !== '') {
+                            _this.currentPage(1);
+                            $("#pagerButton-Container").hide();
+                        }
+                        return ko.utils.arrayFilter(rows, function (row) {
+                            var v = row["DTUTC_Created"];
+                            v = ko.unwrap(v);
+                            if (v) {
+                                if ($.isNumeric(v)) {
+                                    if (v === search)
+                                        return true;
+                                }
+                                else if (Date.parse(v)) {
+                                    if (Date.parse(v) === Date.parse(search))
+                                        return true;
+                                }
+                                else if (v.toString().toLowerCase().indexOf(search) >= 0) {
+                                    this.currentPage();
+                                    return true;
+                                }
+                            }
+                            return false;
+                        });
+                    }).extend({ throttle: 1 });
+                    var standardSort = function (a, b, sortProperty) {
+                        var propA = ko.unwrap(a[sortProperty]), propB = ko.unwrap(b[sortProperty]);
+                        if (propA === propB)
+                            return 0;
+                        return propA < propB ? 1 : -1;
+                    };
+                    self.isFirstSort = ko.observable(0);
+                    self.sortedRows = ko.computed(function () {
+                        self.pageSize(self.metrics.limit);
+                        self.totalCount(self.metrics.totalCount);
+                        self.totalPages(self.metrics.totalPages);
+                        var sorted = self.filteredRows().slice(), //We don't want to be sorting the original list
+                        sortDirection = self.sortDesc() ? 1 : -1, sortProperty = self.sortColumn() || "";
+                        if (sortProperty === "") {
+                            return sorted;
+                        }
+                        var sort = function (a, b) { return standardSort(a, b, sortProperty) * sortDirection; };
+                        return sorted.sort(sort);
+                    }).extend({ throttle: 10 });
+                    self.rows = ko.computed({
+                        read: function () {
+                            var sortedRows = self.sortedRows();
+                            return sortedRows.slice(self.firstItemOnPage() - 1, self.lastItemOnPage());
+                        },
+                        deferEvaluation: true
+                    });
+                    self.sortColumn("f_name");
+                };
+                GridView.prototype.onSortCommand = function (column) {
+                    var self = this;
+                    self.currentPage(1);
+                    self.isSorting(true);
+                    if (self.sortDesc()) {
+                        self.sortColumn(column);
+                        self.sortDesc(false);
+                    }
+                    else {
+                        self.sortDesc(true);
+                        self.sortColumn(column);
+                    }
+                    self.updateView(self.currentPage());
+                };
+                GridView.prototype.getSortColumn = function (instance) {
+                    var self = this;
+                    return self.sortColumn() === instance;
+                };
+                GridView.prototype.updateView = function (index) {
+                    var self = this;
+                    self.currentPage(index);
+                    ko.utils.arrayForEach(self.pageButtons(), function (item) {
+                        item.pageIndex(index);
+                    });
+                };
+                return GridView;
+            }(GridViewModel));
+            Grid.GridView = GridView;
+        })(Grid = Components.Grid || (Components.Grid = {}));
+    })(Components = Views.Components || (Views.Components = {}));
+})(Views || (Views = {}));

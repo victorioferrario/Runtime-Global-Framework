@@ -14,7 +14,7 @@ namespace Session {
         payload: Models.IMenuPayload;
         payloadMenu: Models.IMenuPayload;
         payloadUser: Models.IUserPayload;
-        payloadSearch: Models.IResults;
+        payloadSearch: Models.ISearchResults;
         payloadNotifications: Models.INotificationsPayload;
 
         iNotificatonProps: INotificationProps;
@@ -92,12 +92,12 @@ namespace Session {
          * @method loadSearhResults         
          * @return Q.Promise< Models.IResults>
          */
-        private loadSearhResults(): Q.Promise<Models.IResults> {
+        private loadSearhResults(): Q.Promise<Models.ISearchResults> {
             const self = this;
             Services.Http.loadJson(AppContextSettings.searchUrl).fail(() => {
                 Q.reject("Error Loading Search");
                 return null;
-            }).done((result: Models.IResults) => {
+            }).done((result: Models.ISearchResults) => {
                 self.isLoadedSearch = true;
                 self.payloadSearch = result;
                 Q.resolve(result);
@@ -182,9 +182,10 @@ namespace Session {
     }
 
 
-    export class BaseView {
+    export class BaseView extends Core.EventDispatcher {
         appContext: Session.AppContext;
         constructor() {
+            super();
             const self = this;
             self.appContext = Session.AppContext.getInstance();
         }

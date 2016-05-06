@@ -2,12 +2,15 @@
 namespace Views {
 
     export class Page extends Session.BaseView {
-
+        title: KnockoutObservable<string>;
+        search: Views.Components.Grid.GridView;
         layout: Controls.MasterLayout;
 
         constructor() {
             super();
             const self = this;
+            self.title = ko.observable("Welcome");
+            self.search = new Views.Components.Grid.GridView();
             if (self.init()) {
                 self.layout = new Controls.MasterLayout();
             }
@@ -27,6 +30,10 @@ namespace Views {
                 Models.Events.searchLoaded, (arg: any) => {
                     self.searchLoaded();
                 });
+            self.search.addEventListener(
+                Views.Components.Grid.StaticGridEvents.ready, () => {
+                    self.search.handlerReady();
+            });    
             return true;
         }
 
@@ -48,21 +55,23 @@ namespace Views {
         searchLoaded() {
             const self = this;
             console.log(self.appContext.payloadSearch);
-            console.log("search loaded!~");
+            // console.log("search loaded!~");
+            console.log(this)
+            self.search.databind();
         }
     }
-    
-    export class SearchContext extends Session.BaseView {       
-        
-        constructor() {            
-           super(); this.createChildControls();     
-        }   
-        
-        databind(){
+
+    export class SearchContext extends Session.BaseView {
+
+        constructor() {
+            super(); this.createChildControls();
+        }
+
+        databind() {
             const self = this;
             // self.appContext.payloadSearch.results.filter()
         }
-        
+
         createChildControls() {
             const self = this;
             $("#q").focus(function () {
@@ -74,8 +83,8 @@ namespace Views {
                 $("body").removeClass("search-active")
             });
         }
-        
-        
+
+
     }
 
     // ToDo: Re-factor this entire object. Most likely go down a namespace. Class name is wrong. The elements seem to be assosicated to search.
@@ -122,15 +131,18 @@ $(document).ready(() => {
     $("#layout-static .static-content-wrapper").append(
         "<div class='extrabar-underlay'></div>");
     const app = new Views.Page();
-    
-      $("#q").focus(function () {
-                $(".search-result-popout").addClass("active");
-                $("body").addClass("search-active")
-            });
-            $(".search-active-background").click(function () {
-                $(".search-result-popout").removeClass("active");
-                $("body").removeClass("search-active")
-            });
+
+    $("#q").focus(function () {
+        $(".search-result-popout").addClass("active");
+        $("body").addClass("search-active")
+    });
+    $(".search-active-background").click(function () {
+        $(".search-result-popout").removeClass("active");
+        $("body").removeClass("search-active")
+    });
+
+    ko.applyBindings(app);
+
 });
 // Clean up loader
 $(window).load(() => {

@@ -1,16 +1,16 @@
-namespace Models {
-    export interface IResults {
-        results: Array<IResultItem>;
+namespace Models {    
+    export interface IRemoteAccount {
+        id?: any;
+        provider_type: string;
     }
-    export interface IResultItem {
+    export interface ISearchItem {
         id: number;
         f_name: string;
         l_name: string;
         avatar?: any;
         remote_account: Array<IRemoteAccount>;
     }
-    export interface IRemoteAccount {
-        id?: any;
-        provider_type: string;
-    }    
+    export interface ISearchResults {
+        results: Array<ISearchItem>;
+    }        
 }

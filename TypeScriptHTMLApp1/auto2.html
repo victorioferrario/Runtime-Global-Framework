@@ -1,5 +1,15 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,500,700,500italic,400italic,700italic|Roboto+Condensed:400,700" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css" />
+    <title>AutoComplete</title>
+    
 <div id="content-wrapper">
-    <input type="text" data-bind="autoComplete: search, settings: { url : '@Url.Action("FetchSearchResults", "Home")', selectCallback : selectItemCallback}"/>
+    
+    <input type="text" data-bind="autoComplete: search, settings: { url : '@Url.Action("FetchSearchResults", "Home")', selectCallback : selectItemCallback}" />
 </div>
 
 

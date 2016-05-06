@@ -1,17 +1,19 @@
 ﻿<!DOCTYPE html>
 <html>
+
 <head>
 
     <title>Menu</title>
 
-    <meta charset="utf-8"/>
+    <meta charset="utf-8" />
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link href="dist/vendor.css" rel="stylesheet"/>
-    <link href="dist/defaultInstance.css" rel="stylesheet"/>
+    <link href="dist/vendor.css" rel="stylesheet" />
+    <link href="dist/defaultInstance.css" rel="stylesheet" />
 
 </head>
+
 <body id="page">
 
     <header id="topnav" class="navbar navbar-fixed-top navbar-blue" role="banner"></header>
@@ -29,6 +31,20 @@
                 <div class="static-content">
                     <div class="page-content fadeInUp animated-300 m-hide">
                         <h3>This is Main.</h3>
+                        <p data-bind="text:$data.title"></p>
+                        <div id="gridView">
+                            <h4 data-bind="text:$data.search.searchTitle"></h4>
+                            <ul>
+                                <!-- ko foreach:{data:$data.search.pageButtons} -->
+                                  <li style="padding: 0; margin-left: 2px;">
+                  
+                    <a href="javascript:void(0);" class="btn blue  darken-2 white-text btn-flat"
+                       data-bind="text:label"></a>                    
+                </li>
+                                <!--/ko-->
+                            </ul>
+                        </div>
+
                     </div>
                 </div>
             </section>
@@ -39,4 +55,5 @@
     <script src="dist/copley.app.navigation.js"></script>
 
 </body>
+
 </html>
