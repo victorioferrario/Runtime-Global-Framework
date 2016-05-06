@@ -31,18 +31,20 @@
                 <div class="static-content">
                     <div class="page-content fadeInUp animated-300 m-hide">
                         <h3>This is Main.</h3>
-                        <p data-bind="text:$data.title"></p>
+                        <p data-bind="text:title"></p>
                         <div id="gridView">
                             <h4 data-bind="text:$data.search.searchTitle"></h4>
-                            <ul>
-                                <!-- ko foreach:{data:$data.search.pageButtons} -->
-                                  <li style="padding: 0; margin-left: 2px;">
-                  
+                           
+                                test
+                                <span data-bind="text:ko.toJSON($data.search.pageButtons)"></span>
+                                <!-- ko foreach:{data:search.pageButtons} -->
+                                
+                  y
                     <a href="javascript:void(0);" class="btn blue  darken-2 white-text btn-flat"
-                       data-bind="text:label"></a>                    
-                </li>
+                       data-bind="text:$data.label"></a>                    
+     
                                 <!--/ko-->
-                            </ul>
+                       
                         </div>
 
                     </div>
