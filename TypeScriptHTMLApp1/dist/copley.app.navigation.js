@@ -1088,11 +1088,20 @@ var Views;
             _super.call(this);
             var self = this;
             self.title = ko.observable("Welcome");
+            self.isViewLoaded = ko.observable(false);
             self.search = new Views.Components.Grid.GridView();
             if (self.init()) {
                 self.layout = new Views.Controls.MasterLayout();
             }
         }
+        Page.prototype.getCount = function (data) {
+            if (data.search.isLoaded()) {
+                return data.search.pageButtons.length;
+            }
+            else {
+                return 0;
+            }
+        };
         Page.prototype.init = function () {
             var self = this;
             self.appContext.addEventListener(Models.Events.dataLoaded, function (arg) {
@@ -1122,9 +1131,9 @@ var Views;
         // Search
         Page.prototype.searchLoaded = function () {
             var self = this;
-            console.log(self.appContext.payloadSearch);
+            //console.log(self.appContext.payloadSearch);
             // console.log("search loaded!~");
-            console.log(this);
+            console.log("methodCalled:searchLoaded");
             self.search.databind();
         };
         return Page;
@@ -1190,54 +1199,83 @@ var toggleFullScreen = function () {
     }
 };
 // Create loader
-$(document).ready(function () {
-    console.warn("ready");
-    $("#layout-static .static-content-wrapper").append("<div class='extrabar-underlay'></div>");
-    var app = new Views.Page();
-    $("#q").focus(function () {
-        $(".search-result-popout").addClass("active");
-        $("body").addClass("search-active");
-    });
-    $(".search-active-background").click(function () {
-        $(".search-result-popout").removeClass("active");
-        $("body").removeClass("search-active");
-    });
-    ko.applyBindings(app);
-});
-// Clean up loader
-$(window).load(function () {
-    setTimeout(function () {
-        $('.page-loader').addClass('fadeOut animated-500').on('webkitAnimationEnd mozAnimationEnd oAnimationEnd oanimationend animationend', function () {
-            $(".page-loader").remove();
-        });
-    }, 1900);
-    setTimeout(function () {
-        $(".page-content").removeClass("m-hide");
-    }, 2000);
-    // Pop overs
-    var options = {
-        html: true
-    };
-    for (var i = 1; i < 4; i++) {
-        switch (i) {
-            case 1:
-                for (var k = 0; k < 5; k++) {
-                    $("#menu" + i + "_link" + k).popover(options);
-                }
-                break;
-            case 2:
-                for (var k = 0; k < 4; k++) {
-                    $("#menu" + i + "_link" + k).popover(options);
-                }
-                break;
-            case 3:
-                for (var k = 0; k < 1; k++) {
-                    $("#menu" + i + "_link" + k).popover(options);
-                }
-                break;
+// $(document).ready(() => {
+//     console.warn("ready");
+//     $("#layout-static .static-content-wrapper").append(
+//         "<div class='extrabar-underlay'></div>");
+//     const app = new Views.Page();
+//     $("#q").focus(function () {
+//         $(".search-result-popout").addClass("active");
+//         $("body").addClass("search-active")
+//     });
+//     $(".search-active-background").click(function () {
+//         $(".search-result-popout").removeClass("active");
+//         $("body").removeClass("search-active")
+//     });
+//     ko.applyBindings(app);
+// });
+// // Clean up loader
+// $(window).load(() => {
+//     setTimeout(() => {
+//         $('.page-loader').addClass('fadeOut animated-500').on('webkitAnimationEnd mozAnimationEnd oAnimationEnd oanimationend animationend', function () {
+//             $(".page-loader").remove();
+//         });
+//     }, 1900);
+//     setTimeout(() => {
+//         $(".page-content").removeClass("m-hide");
+//     }, 2000);
+//     // Pop overs
+//     let options = {
+//         html: true
+//     }
+//     for (let i = 1; i < 4; i++) {
+//         switch (i) {
+//             case 1:
+//                 for (let k = 0; k < 5; k++) {
+//                     $(`#menu${i}_link${k}`).popover(options);
+//                 }
+//                 break;
+//             case 2:
+//                 for (let k = 0; k < 4; k++) {
+//                     $(`#menu${i}_link${k}`).popover(options);
+//                 }
+//                 break;
+//             case 3:
+//                 for (let k = 0; k < 1; k++) {
+//                     $(`#menu${i}_link${k}`).popover(options);
+//                 }
+//                 break;
+//         }
+//     }
+// });
+var Models;
+(function (Models) {
+    (function (SearchItemContextType) {
+        SearchItemContextType[SearchItemContextType["Normal"] = 0] = "Normal";
+        SearchItemContextType[SearchItemContextType["Header"] = 1] = "Header";
+        SearchItemContextType[SearchItemContextType["Splitter"] = 2] = "Splitter";
+    })(Models.SearchItemContextType || (Models.SearchItemContextType = {}));
+    var SearchItemContextType = Models.SearchItemContextType;
+    var SearchItemContext = (function () {
+        function SearchItemContext(data) {
+            var self = this;
+            if (data !== null) {
+                self.id = data.id;
+                self.f_name = data.f_name;
+                self.l_name = data.l_name;
+                self.avatar = data.avatar;
+                self.remote_account = data.remote_account;
+                self.fullname = self.f_name + " " + self.l_name;
+                self.type = SearchItemContextType.Normal;
+            }
+            else {
+                self.type = SearchItemContextType.Splitter;
+            }
         }
-    }
-});
+        return SearchItemContext;
+    }());
+    Models.SearchItemContext = SearchItemContext;
+})(Models || (Models = {}));
 var System;
 (function (System) {
     var Singleton = (function () {
@@ -1252,6 +1290,143 @@ var System;
         return Singleton;
     }());
 })(System || (System = {}));
+var _this = this;
+/// <reference path="../../typings/tsd.d.ts" />
+var Temp;
+(function (Temp) {
+    var service = (function () {
+        function service() {
+        }
+        service.loadJson = function (url) {
+            return $.getJSON(url !== "" ? url : "data.json");
+        };
+        return service;
+    }());
+    Temp.service = service;
+    var TestContext = (function (_super) {
+        __extends(TestContext, _super);
+        function TestContext() {
+            _super.call(this);
+            this.isLoadedSearch = false;
+        }
+        TestContext.prototype.initialize = function () {
+            var self = this;
+        };
+        TestContext.prototype.loadSearhResults = function () {
+            var self = this;
+            Services.Http.loadJson("data-search.json").fail(function () {
+                Q.reject("Error Loading Search");
+                return null;
+            }).done(function (result) {
+                self.isLoadedSearch = true;
+                self.payloadSearch = result;
+                Q.resolve(result);
+            }).always(function () {
+                return Q.resolve(self.payloadSearch);
+            });
+            return null;
+        };
+        return TestContext;
+    }(Core.EventDispatcher));
+    Temp.TestContext = TestContext;
+    var SearchContext = (function () {
+        //#endregion
+        function SearchContext() {
+            var self = this;
+            self.items = ko.observableArray();
+            self.isReady = ko.observable(false);
+            self.query = ko.observable("");
+            self.exactMatchCount = ko.observable(0);
+            self.partialMatchCount = ko.observable(0);
+            self.queryFilter = ko.computed(function () {
+                var temp = self.query();
+                if (self.items().length > 0) {
+                    self.items.removeAll();
+                }
+                if (self.datasource !== undefined) {
+                    // sort alphabetically   
+                    var tempHead = new Models.SearchItemContext(null);
+                    tempHead.type = Models.SearchItemContextType.Header;
+                    self.items.push(tempHead);
+                    self.datasource.sort(function (left, right) {
+                        return left.f_name == right.f_name ? 0 : (left.f_name < right.f_name ? -1 : 1);
+                    });
+                    // exact match: f_name
+                    self.datasource.forEach(function (name) {
+                        var temp_f_name = name.f_name.substr(0, self.query().length);
+                        if (temp_f_name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
+                            console.log(name.f_name);
+                            self.items.push(name);
+                        }
+                    });
+                    // exact match: l_name
+                    self.datasource.forEach(function (name) {
+                        var temp_l_name = name.l_name.substr(0, self.query().length);
+                        if (temp_l_name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
+                            self.items.push(name);
+                        }
+                    });
+                    self.exactMatchCount(self.items().length);
+                    self.items.push(new Models.SearchItemContext(null));
+                    // partial match
+                    var k_1 = 0;
+                    self.datasource.forEach(function (person) {
+                        var temp_f_name = person.f_name.substr(0, self.query().length).toLowerCase();
+                        var temp_l_name = person.l_name.substr(0, self.query().length).toLowerCase();
+                        if (temp_f_name.indexOf(self.query().toLowerCase()) === -1
+                            && temp_l_name.indexOf(self.query().toLowerCase()) === -1 &&
+                            person.fullname.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
+                            self.items.push(person);
+                            k_1++;
+                        }
+                    });
+                    self.partialMatchCount(k_1);
+                }
+            });
+        }
+        SearchContext.prototype.populateControl = function (data) {
+            var self = this;
+            console.log("hello");
+            self.datasource = [];
+            data.results.forEach(function (item) {
+                self.datasource.push(new Models.SearchItemContext(item));
+            });
+            self.isReady(true);
+            //self.query.subscribe(self.search);
+        };
+        SearchContext.prototype.search = function (value) {
+            var self = this;
+        };
+        return SearchContext;
+    }());
+    Temp.SearchContext = SearchContext;
+    var PageContext = (function () {
+        function PageContext() {
+            var self = this;
+            self.grid = new SearchContext();
+            self.testContext = new TestContext();
+            self.testContext.addEventListener(Models.Events.searchLoaded, function (arg) {
+                self.searchLoaded();
+            });
+            Q.all([self.testContext.loadSearhResults()]).then(function () {
+                if (self.testContext.isLoadedSearch) {
+                    self.testContext.dispatchEvent(new Core.Event(Models.Events.searchLoaded, self.testContext.payloadSearch));
+                }
+            });
+            self.testContext.initialize();
+        }
+        PageContext.prototype.searchLoaded = function () {
+            var self = this;
+            self.grid.populateControl(self.testContext.payloadSearch);
+        };
+        return PageContext;
+    }());
+    Temp.PageContext = PageContext;
+})(Temp || (Temp = {}));
+var appTest = new Temp.PageContext();
+$(document).ready(function () {
+    ko.applyBindings(_this.appTest);
+});
 /// <reference path="../../ref.d.ts" />
 var Views;
 (function (Views) {
@@ -1482,6 +1657,8 @@ var Views;
                 __extends(GridViewModel, _super);
                 function GridViewModel() {
                     _super.call(this, "gridView");
+                    var self = this;
+                    self.isLoaded = ko.observable(false);
                 }
                 GridViewModel.prototype.databind = function () {
                     console.log("search:databind");
@@ -1493,8 +1670,8 @@ var Views;
                     }
                 };
                 GridViewModel.prototype.createChildControls = function () {
+                    var _this = this;
                     var self = this;
-                    console.log("search:createChildControls");
                     self.metrics = new Grid.GridMetrics(self.datasource.results.length);
                     self.contextSearch = ko.observable("");
                     self.items = ko.observableArray([]);
@@ -1508,30 +1685,14 @@ var Views;
                     self.currentPage = ko.observable(0);
                     self.itemsPerPageCount = ko.observable(10);
                     self.pageButtons = ko.observableArray([]);
-                    console.log("search:createChildControls:end");
                     for (var i = 0; i < self.totalPages(); i++) {
                         self.pageButtons.push(new Grid.GridPagerButton(self.currentPage(), i + 1));
                     }
                     self.pageButtons().forEach(function (item) {
                         console.log(item);
                     });
-                    console.log("search:createChildControls:end");
-                    return true;
-                };
-                return GridViewModel;
-            }(Session.Base));
-            Grid.GridViewModel = GridViewModel;
-            var GridView = (function (_super) {
-                __extends(GridView, _super);
-                function GridView() {
-                    _super.call(this);
-                    var self = this;
-                    self.searchTitle = ko.observable("Search Title");
-                }
-                GridView.prototype.handlerReady = function () {
-                    var _this = this;
-                    console.info("ready");
-                    var self = this;
+                    self.isLoaded(true);
+                    console.log("set is loaded", self.isLoaded());
                     self.watchItemsPerPageCount = ko.pureComputed(function () {
                         self.metrics.update(self.itemsPerPageCount());
                         return " " + self.itemsPerPageCount().toString();
@@ -1553,25 +1714,26 @@ var Views;
                     });
                     self.pagedItems = ko.computed(function () {
                         if (!self.isSorting()) {
-                            return self.datasource.results.slice(_this.firstItemOnPage() - 1, self.lastItemOnPage());
+                            return self.datasource.results.slice(self.firstItemOnPage() - 1, self.lastItemOnPage());
                         }
                         else {
                             return self.filteredRows().slice(self.firstItemOnPage() - 1, self.lastItemOnPage());
                         }
                     });
+                    console.log("self.datasource.results", self.datasource.results);
                     self.filteredRows = ko.computed(function () {
-                        var tttt = typeof _this.datasource.results !== "function" ? _this.datasource.results : _this.datasource.results;
-                        var rows = tttt, search = _this.contextSearch().toLowerCase();
+                        var tttt = typeof self.datasource.results !== "function" ? self.datasource.results : _this.datasource.results;
+                        var rows = tttt, search = self.contextSearch().toLowerCase();
                         if (search === '') {
                             $("#pagerButton-Container").show();
                             return rows.slice();
                         }
                         if (search !== '') {
-                            _this.currentPage(1);
+                            self.currentPage(1);
                             $("#pagerButton-Container").hide();
                         }
                         return ko.utils.arrayFilter(rows, function (row) {
-                            var v = row["DTUTC_Created"];
+                            var v = row["f_name"];
                             v = ko.unwrap(v);
                             if (v) {
                                 if ($.isNumeric(v)) {
@@ -1590,12 +1752,7 @@ var Views;
                             return false;
                         });
                     }).extend({ throttle: 1 });
-                    var standardSort = function (a, b, sortProperty) {
-                        var propA = ko.unwrap(a[sortProperty]), propB = ko.unwrap(b[sortProperty]);
-                        if (propA === propB)
-                            return 0;
-                        return propA < propB ? 1 : -1;
-                    };
+                    console.log("self.filteredRows ", self.filteredRows());
                     self.isFirstSort = ko.observable(0);
                     self.sortedRows = ko.computed(function () {
                         self.pageSize(self.metrics.limit);
@@ -1606,9 +1763,10 @@ var Views;
                         if (sortProperty === "") {
                             return sorted;
                         }
-                        var sort = function (a, b) { return standardSort(a, b, sortProperty) * sortDirection; };
+                        var sort = function (a, b) { return self.standardSort(a, b, sortProperty) * sortDirection; };
                         return sorted.sort(sort);
                     }).extend({ throttle: 10 });
+                    console.log("self.filteredRows ", self.sortedRows());
                     self.rows = ko.computed({
                         read: function () {
                             var sortedRows = self.sortedRows();
@@ -1616,7 +1774,31 @@ var Views;
                         },
                         deferEvaluation: true
                     });
+                    console.log("self.sortedRows", self.sortedRows());
+                    console.log("self.datasource.results", self.rows());
                     self.sortColumn("f_name");
+                    return true;
+                };
+                GridViewModel.prototype.standardSort = function (a, b, sortProperty) {
+                    var propA = ko.unwrap(a[sortProperty]), propB = ko.unwrap(b[sortProperty]);
+                    if (propA === propB)
+                        return 0;
+                    return propA < propB ? 1 : -1;
+                };
+                ;
+                return GridViewModel;
+            }(Session.Base));
+            Grid.GridViewModel = GridViewModel;
+            var GridView = (function (_super) {
+                __extends(GridView, _super);
+                function GridView() {
+                    _super.call(this);
+                    var self = this;
+                    self.searchTitle = ko.observable("Search Title");
+                }
+                GridView.prototype.handlerReady = function () {
+                    console.log("ready");
+                    var self = this;
                 };
                 GridView.prototype.onSortCommand = function (column) {
                     var self = this;

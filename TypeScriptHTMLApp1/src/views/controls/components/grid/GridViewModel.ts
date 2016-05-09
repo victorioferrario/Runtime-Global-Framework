@@ -9,11 +9,16 @@ namespace Views.Components.Grid {
 
         constructor() {
             super("gridView");
+            const self = this;
+            self.isLoaded = ko.observable(false);
         }
+        
         databind() {
             console.log("search:databind");
             const self = this;
+            
             self.datasource = self.appContext.payloadSearch;
+            
             if (self.createChildControls()) {
                 console.log("databind:before:dispatchEvent") ;             
                 self.dispatchEvent(
@@ -23,8 +28,8 @@ namespace Views.Components.Grid {
         }
         createChildControls() {
 
-            const self = this;
-            console.log("search:createChildControls");
+            const self = this;           
+            
             self.metrics = new GridMetrics(
                 self.datasource.results.length);
 
@@ -49,10 +54,9 @@ namespace Views.Components.Grid {
 
             self.currentPage = ko.observable(0);
 
-            self.itemsPerPageCount = ko.observable(10);
-            self.pageButtons = ko.observableArray([]);
-            console.log("search:createChildControls:end");
-            
+            self.itemsPerPageCount = ko.observable(10);            
+            self.pageButtons = ko.observableArray([]);           
+                        
             for (var i = 0; i < self.totalPages(); i++) {
                 self.pageButtons.push(
                     new GridPagerButton(self.currentPage(), i + 1));
@@ -61,56 +65,11 @@ namespace Views.Components.Grid {
                 console.log(item);
             });
             
-            console.log("search:createChildControls:end");
-            return true;
-        }
-
-        contextSearch: KnockoutObservable<string>;
-        itemsPerPageCount: KnockoutObservable<number>;
-
-        metrics: IGridMetrics;
-        rows: KnockoutObservable<any>;
-        items: KnockoutObservableArray<any>;
-
-        pageSize: KnockoutObservable<number>;
-        isSorting: KnockoutObservable<boolean>;
-        totalCount: KnockoutObservable<number>;
-        totalPages: KnockoutObservable<number>;
-        currentPage: KnockoutObservable<number>;
-        pageButtons: KnockoutObservableArray<any>;
-
-        sortColumn: KnockoutObservable<any>;
-        sortDesc: KnockoutObservable<boolean>;
-    }
-
-    export class GridView extends GridViewModel {
-
-        rows: KnockoutComputed<number>;
-
-        isBack: KnockoutComputed<string>;
-        isNext: KnockoutComputed<string>;
-
-        sortedRows: KnockoutComputed<any>;
-        pagedItems: KnockoutComputed<any>;
-        filteredRows: KnockoutComputed<any>;
-        isFirstSort: KnockoutObservable<number>;
-        lastItemOnPage: KnockoutComputed<number>;
-        firstItemOnPage: KnockoutComputed<number>;
-        watchItemsPerPageCount: KnockoutComputed<string>;
-        searchTitle:KnockoutObservable<string>;         
-        constructor() {
-            super();
-            const self = this;
-            self.searchTitle = ko.observable("Search Title");           
-                    
-        }
-
-        handlerReady() {
-            console.info("ready");
-            const self = this;
-            
-            self.watchItemsPerPageCount = ko.pureComputed(() => {
-                
+            self.isLoaded(true);
+               
+            console.log("set is loaded", self.isLoaded())
+                     
+            self.watchItemsPerPageCount = ko.pureComputed(() => {                
                 self.metrics.update(self.itemsPerPageCount());
                 return " " + self.itemsPerPageCount().toString();
                 
@@ -133,27 +92,26 @@ namespace Views.Components.Grid {
 
             self.pagedItems = ko.computed(() => {
                 if (!self.isSorting()) {
-                    return self.datasource.results.slice(this.firstItemOnPage() - 1, self.lastItemOnPage());
+                    return self.datasource.results.slice(self.firstItemOnPage() - 1, self.lastItemOnPage());
                 } else {
                     return self.filteredRows().slice(self.firstItemOnPage() - 1, self.lastItemOnPage());
                 }
             });
-
+            console.log("self.datasource.results",self.datasource.results);
             self.filteredRows = ko.computed(() => {
-                var tttt = typeof this.datasource.results !== "function" ? this.datasource.results : this.datasource.results;
+                var tttt = typeof self.datasource.results !== "function" ? self.datasource.results : this.datasource.results;
                 var rows = tttt,
-                    search = this.contextSearch().toLowerCase();
+                    search = self.contextSearch().toLowerCase();
                 if (search === '') {
                     $("#pagerButton-Container").show();
                     return rows.slice();
                 }
                 if (search !== '') {
-                    this.currentPage(1);
+                    self.currentPage(1);
                     $("#pagerButton-Container").hide();
-                }
-                
+                }                
                 return ko.utils.arrayFilter(rows, function (row:any) {
-                    var v = row["DTUTC_Created"];
+                    var v = row["f_name"];
                     v = ko.unwrap(v);
                     if (v) {
                         if ($.isNumeric(v)) {
@@ -172,13 +130,11 @@ namespace Views.Components.Grid {
                     return false;
                 });
             }).extend({ throttle: 1 });
-            var standardSort = (a:any, b:any, sortProperty:any) => {
-                var propA = ko.unwrap(a[sortProperty]),
-                    propB = ko.unwrap(b[sortProperty]);
-                if (propA === propB)
-                    return 0;
-                return propA < propB ? 1 : -1;
-            };
+            
+            console.log("self.filteredRows ",self.filteredRows());          
+             
+            
+            
             self.isFirstSort = ko.observable(0);
             self.sortedRows = ko.computed(() => {
                 self.pageSize(self.metrics.limit);
@@ -190,11 +146,14 @@ namespace Views.Components.Grid {
                 if (sortProperty === "") {
                     return sorted;
                 }
-                let sort = (a:any, b:any) => standardSort(a, b, sortProperty) * sortDirection;
+                let sort = (a:any, b:any) => self.standardSort(a, b, sortProperty) * sortDirection;
                 
                 return sorted.sort(sort);   
                              
-            }).extend({ throttle: 10 });            
+            }).extend({ throttle: 10 });       
+            
+                 console.log("self.filteredRows ",self.sortedRows());     
+                 
             self.rows = ko.computed({
                 read: () => {
                     var sortedRows = self.sortedRows();
@@ -203,8 +162,72 @@ namespace Views.Components.Grid {
                 },
                 deferEvaluation: true
             });
+            console.log("self.sortedRows",self.sortedRows());
+            
+            console.log("self.datasource.results",self.rows());
             
             self.sortColumn("f_name");
+
+            
+            return true;
+        }
+
+        standardSort (a:any, b:any, sortProperty:any) {
+                var propA = ko.unwrap(a[sortProperty]),
+                    propB = ko.unwrap(b[sortProperty]);
+                if (propA === propB)
+                    return 0;
+                return propA < propB ? 1 : -1;
+            };
+        contextSearch: KnockoutObservable<string>;
+        itemsPerPageCount: KnockoutObservable<number>;
+
+        metrics: IGridMetrics;
+        rows: KnockoutObservable<any>;
+        items: KnockoutObservableArray<any>;
+
+        pageSize: KnockoutObservable<number>;
+        isSorting: KnockoutObservable<boolean>;
+        totalCount: KnockoutObservable<number>;
+        totalPages: KnockoutObservable<number>;
+        currentPage: KnockoutObservable<number>;
+        pageButtons: KnockoutObservableArray<any>;
+
+        sortColumn: KnockoutObservable<any>;
+        sortDesc: KnockoutObservable<boolean>;
+        
+        isLoaded:KnockoutObservable<boolean>;       
+       
+
+        isBack: KnockoutComputed<string>;
+        isNext: KnockoutComputed<string>;
+
+        sortedRows: KnockoutComputed<any>;
+        pagedItems: KnockoutComputed<any>;
+        filteredRows: KnockoutComputed<any>;
+        isFirstSort: KnockoutObservable<number>;
+        lastItemOnPage: KnockoutComputed<number>;
+        firstItemOnPage: KnockoutComputed<number>;
+        watchItemsPerPageCount: KnockoutComputed<string>;
+        searchTitle:KnockoutObservable<string>;        
+    }
+
+    export class GridView extends GridViewModel {
+
+         
+        constructor() {
+            super();
+            const self = this;
+            self.searchTitle = ko.observable("Search Title");           
+                    
+        }
+
+        handlerReady() {
+            console.log("ready");            
+            const self = this;   
+                        
+            
+         
         }        
         onSortCommand(column: string) {
             var self = this;

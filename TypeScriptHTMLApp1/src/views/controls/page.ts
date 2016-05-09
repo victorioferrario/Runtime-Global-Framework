@@ -5,17 +5,27 @@ namespace Views {
         title: KnockoutObservable<string>;
         search: Views.Components.Grid.GridView;
         layout: Controls.MasterLayout;
-
+        
         constructor() {
             super();
             const self = this;
             self.title = ko.observable("Welcome");
+            self.isViewLoaded = ko.observable(false);
             self.search = new Views.Components.Grid.GridView();
             if (self.init()) {
                 self.layout = new Controls.MasterLayout();
             }
         }
-
+        
+        getCount(data:any){
+            if(data.search.isLoaded()){              
+                
+            return  data.search.pageButtons.length;
+              }else{
+                  return 0;
+              }
+        }
+                
         init() {
             const self = this;
             self.appContext.addEventListener(
@@ -31,7 +41,7 @@ namespace Views {
                     self.searchLoaded();
                 });
             self.search.addEventListener(
-                Views.Components.Grid.StaticGridEvents.ready, () => {
+                Views.Components.Grid.StaticGridEvents.ready, () => {                   
                     self.search.handlerReady();
             });    
             return true;
@@ -54,11 +64,14 @@ namespace Views {
         // Search
         searchLoaded() {
             const self = this;
-            console.log(self.appContext.payloadSearch);
+            //console.log(self.appContext.payloadSearch);
             // console.log("search loaded!~");
-            console.log(this)
-            self.search.databind();
+            console.log("methodCalled:searchLoaded");
+            self.search.databind();        
+            
+            
         }
+        isViewLoaded:KnockoutObservable<boolean>;
     }
 
     export class SearchContext extends Session.BaseView {
@@ -126,55 +139,56 @@ var toggleFullScreen = () => {
     }
 }
 // Create loader
-$(document).ready(() => {
-    console.warn("ready");
-    $("#layout-static .static-content-wrapper").append(
-        "<div class='extrabar-underlay'></div>");
-    const app = new Views.Page();
+// $(document).ready(() => {
+//     console.warn("ready");
+//     $("#layout-static .static-content-wrapper").append(
+//         "<div class='extrabar-underlay'></div>");
+        
+//     const app = new Views.Page();
 
-    $("#q").focus(function () {
-        $(".search-result-popout").addClass("active");
-        $("body").addClass("search-active")
-    });
-    $(".search-active-background").click(function () {
-        $(".search-result-popout").removeClass("active");
-        $("body").removeClass("search-active")
-    });
+//     $("#q").focus(function () {
+//         $(".search-result-popout").addClass("active");
+//         $("body").addClass("search-active")
+//     });
+//     $(".search-active-background").click(function () {
+//         $(".search-result-popout").removeClass("active");
+//         $("body").removeClass("search-active")
+//     });
 
-    ko.applyBindings(app);
+//     ko.applyBindings(app);
 
-});
-// Clean up loader
-$(window).load(() => {
-    setTimeout(() => {
-        $('.page-loader').addClass('fadeOut animated-500').on('webkitAnimationEnd mozAnimationEnd oAnimationEnd oanimationend animationend', function () {
-            $(".page-loader").remove();
-        });
-    }, 1900);
-    setTimeout(() => {
-        $(".page-content").removeClass("m-hide");
-    }, 2000);
-    // Pop overs
-    let options = {
-        html: true
-    }
-    for (let i = 1; i < 4; i++) {
-        switch (i) {
-            case 1:
-                for (let k = 0; k < 5; k++) {
-                    $(`#menu${i}_link${k}`).popover(options);
-                }
-                break;
-            case 2:
-                for (let k = 0; k < 4; k++) {
-                    $(`#menu${i}_link${k}`).popover(options);
-                }
-                break;
-            case 3:
-                for (let k = 0; k < 1; k++) {
-                    $(`#menu${i}_link${k}`).popover(options);
-                }
-                break;
-        }
-    }
-});
+// });
+// // Clean up loader
+// $(window).load(() => {
+//     setTimeout(() => {
+//         $('.page-loader').addClass('fadeOut animated-500').on('webkitAnimationEnd mozAnimationEnd oAnimationEnd oanimationend animationend', function () {
+//             $(".page-loader").remove();
+//         });
+//     }, 1900);
+//     setTimeout(() => {
+//         $(".page-content").removeClass("m-hide");
+//     }, 2000);
+//     // Pop overs
+//     let options = {
+//         html: true
+//     }
+//     for (let i = 1; i < 4; i++) {
+//         switch (i) {
+//             case 1:
+//                 for (let k = 0; k < 5; k++) {
+//                     $(`#menu${i}_link${k}`).popover(options);
+//                 }
+//                 break;
+//             case 2:
+//                 for (let k = 0; k < 4; k++) {
+//                     $(`#menu${i}_link${k}`).popover(options);
+//                 }
+//                 break;
+//             case 3:
+//                 for (let k = 0; k < 1; k++) {
+//                     $(`#menu${i}_link${k}`).popover(options);
+//                 }
+//                 break;
+//         }
+//     }
+// });

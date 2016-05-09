@@ -187,7 +187,7 @@ body {
 .search-result-popout.active{
     top:1px;
     opacity: 1;
-    background:#1976d2;
+    background:#fff;
     border-color:#1976d2;
     border-top:solid 0 #fff!important;
      transition-duration: 200ms; 
@@ -199,7 +199,7 @@ body {
         z-index: 2002; 
 }
 
-body .search-active-background {
+body.search-active-background {
     position: fixed;
     left:0;right:0;top:66px;
     bottom:0;
