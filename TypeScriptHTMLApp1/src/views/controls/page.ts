@@ -58,7 +58,7 @@ namespace Views {
                     self.appContext.payloadMenu,
                     self.appContext.payloadUser);
                     
-            
+              self.appContext..loadSearhResults();
         }
 
         dataLoaded2() {

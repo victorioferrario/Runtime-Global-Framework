@@ -1298,6 +1298,7 @@ var Views;
             var self = this;
             console.log("isEventCall_DataLoaded is :", self.isEventCalled_DataLoaded);
             self.layout.databind(self.appContext.payloadMenu, self.appContext.payloadUser);
+            self.appContext..loadSearhResults();
         };
         Page.prototype.dataLoaded2 = function () {
             var self = this;
