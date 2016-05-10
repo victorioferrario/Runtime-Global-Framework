@@ -2,58 +2,61 @@
 namespace Views {
 
     export class Page extends Session.BaseView {
+
         title: KnockoutObservable<string>;
-        search: Views.Components.Grid.GridView;
         layout: Controls.MasterLayout;
-        
+
         constructor() {
             super();
             const self = this;
+            console.log("MENU");
+            self.appContext.target = this;
             self.title = ko.observable("Welcome");
             self.isViewLoaded = ko.observable(false);
-            self.search = new Views.Components.Grid.GridView();
             if (self.init()) {
-                self.layout = new Controls.MasterLayout();
+                self.layout
+                    = new Controls.MasterLayout();
             }
         }
-        
-        getCount(data:any){
-            if(data.search.isLoaded()){              
-                
-            return  data.search.pageButtons.length;
-              }else{
-                  return 0;
-              }
+
+        getCount(data: any) {
+            if (data.search.isLoaded()) {
+                return data.search.pageButtons.length;
+            } else {
+                return 0;
+            }
         }
-                
         init() {
             const self = this;
+            
             self.appContext.addEventListener(
                 Models.Events.dataLoaded, (arg: any) => {
                     self.dataLoaded();
                 });
+                
             self.appContext.addEventListener(
                 Models.Events.notificationsLoaded, (arg: any) => {
                     self.dataLoaded2();
                 });
+                
             self.appContext.addEventListener(
                 Models.Events.searchLoaded, (arg: any) => {
                     self.searchLoaded();
                 });
-            self.search.addEventListener(
-                Views.Components.Grid.StaticGridEvents.ready, () => {                   
-                    self.search.handlerReady();
-            });    
+            self.appContext.initialize();
             return true;
         }
 
         //Responses.
-
+        isEventCalled_DataLoaded: boolean = false;
         dataLoaded() {
             const self = this;
-            self.layout.databind(
-                self.appContext.payloadMenu,
-                self.appContext.payloadUser);
+            console.log("isEventCall_DataLoaded is :", self.isEventCalled_DataLoaded);
+          
+                self.layout.databind(
+                    self.appContext.payloadMenu,
+                    self.appContext.payloadUser);
+            
         }
 
         dataLoaded2() {
@@ -64,14 +67,11 @@ namespace Views {
         // Search
         searchLoaded() {
             const self = this;
-            //console.log(self.appContext.payloadSearch);
-            // console.log("search loaded!~");
             console.log("methodCalled:searchLoaded");
-            self.search.databind();        
-            
-            
+            self.layout.header.leftControl.searchControl.handlerReady();
+            ko.applyBindings(self);
         }
-        isViewLoaded:KnockoutObservable<boolean>;
+        isViewLoaded: KnockoutObservable<boolean>;
     }
 
     export class SearchContext extends Session.BaseView {
@@ -87,6 +87,7 @@ namespace Views {
 
         createChildControls() {
             const self = this;
+
             $("#q").focus(function () {
                 $(".search-result-popout").addClass("active");
                 $("body").addClass("search-active")
@@ -96,7 +97,6 @@ namespace Views {
                 $("body").removeClass("search-active")
             });
         }
-
 
     }
 
@@ -138,57 +138,58 @@ var toggleFullScreen = () => {
         }
     }
 }
-// Create loader
-// $(document).ready(() => {
-//     console.warn("ready");
-//     $("#layout-static .static-content-wrapper").append(
-//         "<div class='extrabar-underlay'></div>");
-        
-//     const app = new Views.Page();
 
-//     $("#q").focus(function () {
-//         $(".search-result-popout").addClass("active");
-//         $("body").addClass("search-active")
-//     });
-//     $(".search-active-background").click(function () {
-//         $(".search-result-popout").removeClass("active");
-//         $("body").removeClass("search-active")
-//     });
 
-//     ko.applyBindings(app);
+$(document).ready(() => {
+    console.warn("ready");
+    $("#layout-static .static-content-wrapper").append(
+        "<div class='extrabar-underlay'></div>");
 
-// });
+    const app = new Views.Page();
+
+    $("#q").focus(function () {
+        $(".search-result-popout").addClass("active");
+        $("body").addClass("search-active")
+    });
+    $(".search-active-background").click(function () {
+        $(".search-result-popout").removeClass("active");
+        $("body").removeClass("search-active")
+    });
+
+    //ko.applyBindings(app);
+
+});
 // // Clean up loader
-// $(window).load(() => {
-//     setTimeout(() => {
-//         $('.page-loader').addClass('fadeOut animated-500').on('webkitAnimationEnd mozAnimationEnd oAnimationEnd oanimationend animationend', function () {
-//             $(".page-loader").remove();
-//         });
-//     }, 1900);
-//     setTimeout(() => {
-//         $(".page-content").removeClass("m-hide");
-//     }, 2000);
-//     // Pop overs
-//     let options = {
-//         html: true
-//     }
-//     for (let i = 1; i < 4; i++) {
-//         switch (i) {
-//             case 1:
-//                 for (let k = 0; k < 5; k++) {
-//                     $(`#menu${i}_link${k}`).popover(options);
-//                 }
-//                 break;
-//             case 2:
-//                 for (let k = 0; k < 4; k++) {
-//                     $(`#menu${i}_link${k}`).popover(options);
-//                 }
-//                 break;
-//             case 3:
-//                 for (let k = 0; k < 1; k++) {
-//                     $(`#menu${i}_link${k}`).popover(options);
-//                 }
-//                 break;
-//         }
-//     }
-// });
+$(window).load(() => {
+    setTimeout(() => {
+        $('.page-loader').addClass('fadeOut animated-500').on('webkitAnimationEnd mozAnimationEnd oAnimationEnd oanimationend animationend', function () {
+            $(".page-loader").remove();
+        });
+    }, 1900);
+    setTimeout(() => {
+        $(".page-content").removeClass("m-hide");
+    }, 2000);
+    // Pop overs
+    let options = {
+        html: true
+    }
+    for (let i = 1; i < 4; i++) {
+        switch (i) {
+            case 1:
+                for (let k = 0; k < 5; k++) {
+                    $(`#menu${i}_link${k}`).popover(options);
+                }
+                break;
+            case 2:
+                for (let k = 0; k < 4; k++) {
+                    $(`#menu${i}_link${k}`).popover(options);
+                }
+                break;
+            case 3:
+                for (let k = 0; k < 1; k++) {
+                    $(`#menu${i}_link${k}`).popover(options);
+                }
+                break;
+        }
+    }
+});

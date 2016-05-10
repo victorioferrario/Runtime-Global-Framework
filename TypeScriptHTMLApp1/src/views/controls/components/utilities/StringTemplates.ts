@@ -17,9 +17,10 @@ namespace Views.Controls.Components.Utilities {
                 '    <span class="icon-bg" style="background: transparent !important;"><i class="material-icons">search</i></span></a></span>';
         }
         static searchInput() {
-            return '<div id="search-box">' +
-                '<div class="form-group is-empty"><input class="form-control" type="text" placeholder="Search..." id="search-input" style="background: #fff; opacity: .70; border-radius: 2px;color:#000"><span class="material-input"></span></div>' +
-                '</div>';
+            return `<div id="search-box">
+                <div class="form-group is-empty">
+                <input class="form-control" type="text" placeholder="Search..." id="search-input" data-bind="value: $data.grid.query, valueUpdate: 'keyup'" style="background: #fff; opacity: .70; border-radius: 2px;color:#000" /><span class="material-input"></span></div>
+                </div>`;
         }
         static rightMenuCloseSearch() {
             return '<li class="toolbar-icon-bg appear-on-search ov-h" id="trigger-search-close"><a class="toggle-fullscreen" id="button-search-close"><span class="icon-bg"><i class="material-icons">close</i></span><div class="ripple-container"></div></a> </li>';

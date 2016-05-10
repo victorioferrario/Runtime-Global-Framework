@@ -1,11 +1,12 @@
 /// <reference path="../ref.d.ts" />
+
 namespace Session {
     export class INotificationProps {
         alertCount: number;
         progRCount: number;
     }
     export class DataContext extends Core.EventDispatcher {
-
+        target: any;
         isLoadedMenu: boolean = false;
         isLoadedUser: boolean = false;
         isLoadedSearch: boolean = false;
@@ -19,9 +20,10 @@ namespace Session {
 
         iNotificatonProps: INotificationProps;
 
-        constructor() {
+        constructor(target?: any) {
             super();
             const self = this;
+            self.target = target;
             self.payloadMenu = { entity: null, list: null };
         }
         /**
@@ -36,6 +38,7 @@ namespace Session {
             }).done((result: Models.IMenuPayload) => {
                 self.isLoadedMenu = true;
                 self.payloadMenu = result;
+                self.loadUser();
                 Q.resolve(result);
             }).always(() => {
                 return Q.resolve(self.payloadMenu);
@@ -52,10 +55,21 @@ namespace Session {
             Services.Http.loadJson(AppContextSettings.userUrl).fail(() => {
                 Q.reject("Error Loading Data");
             }).done((result: Models.IUserPayload) => {
+
                 self.isLoadedUser = true;
+
                 self.payloadUser = result;
+
                 self.payloadMenu.entity = result.entity;
+
+                self.dispatchEvent(
+                    new Core.Event(Models.Events.dataLoaded, self.payloadMenu));
+
+                // self.dispatchEvent(
+                //     new Core.Event(Models.Events.userLoaded, self.payloadUser));
+
                 Q.resolve(result);
+
             }).always(() => {
                 return Q.resolve(self.payloadUser);
             });
@@ -71,18 +85,21 @@ namespace Session {
             Services.Http.loadJson(AppContextSettings.notificationUrl).fail(() => {
                 Q.reject("Error Loading Notifications");
             }).done((result: Models.INotificationsPayload) => {
-
                 self.isLoadedNotifications = true;
                 self.payloadNotifications = result;
-
                 self.iNotificatonProps = {
                     progRCount: result.notifications.progress_reports.length,
                     alertCount: result.notifications.alerts[0].count + result.notifications.alerts[1].count
                 }
+                self.dispatchEvent(
+                    new Core.Event(
+                        Models.Events.notificationsLoaded,
+                        self.payloadNotifications));
 
                 Q.resolve(result);
 
             }).always(() => {
+
                 return Q.resolve(self.payloadNotifications);
             });
             return null;
@@ -100,6 +117,10 @@ namespace Session {
             }).done((result: Models.ISearchResults) => {
                 self.isLoadedSearch = true;
                 self.payloadSearch = result;
+                self.dispatchEvent(
+                    new Core.Event(
+                        Models.Events.searchLoaded,
+                        self.payloadSearch));
                 Q.resolve(result);
             }).always(() => {
                 return Q.resolve(self.payloadSearch);
@@ -113,31 +134,30 @@ namespace Session {
          */
         initialize() {
             const self = this;
-            Q.all([self.loadMenu(), self.loadUser()]).then(() => {
+            Q.all([self.loadMenu()]).then(() => {
                 if (self.isLoadedMenu) {
-                    self.dispatchEvent(
-                        new Core.Event(Models.Events.dataLoaded, self.payloadMenu));
+                    console.log("isLoadedMenu");
                 }
-                if (self.isLoadedUser) {
-                    self.dispatchEvent(
-                        new Core.Event(Models.Events.userLoaded, self.payloadUser));
-                }
+                // if (self.isLoadedUser) {
+                //     self.dispatchEvent(
+                //         new Core.Event(Models.Events.userLoaded, self.payloadUser));
+                // }
             });
             Q.all([self.loadNotifications()]).then(() => {
-                if (self.isLoadedNotifications) {
-                    self.dispatchEvent(
-                        new Core.Event(
-                            Models.Events.notificationsLoaded,
-                            self.payloadNotifications));
-                }
+                // if (self.isLoadedNotifications) {
+                //     self.dispatchEvent(
+                //         new Core.Event(
+                //             Models.Events.notificationsLoaded,
+                //             self.payloadNotifications));
+                // }
             });
             Q.all([self.loadSearhResults()]).then(() => {
-                if (self.isLoadedSearch) {
-                    self.dispatchEvent(
-                        new Core.Event(
-                            Models.Events.searchLoaded,
-                            self.payloadSearch));
-                }
+                // if (self.isLoadedSearch) {
+                //     self.dispatchEvent(
+                //         new Core.Event(
+                //             Models.Events.searchLoaded,
+                //             self.payloadSearch));
+                // }
             });
         }
     }
@@ -167,18 +187,24 @@ namespace Session {
     }
     export class AppContext extends DataContext {
         private isLoaded: boolean = false;
+
         private static instance: Session.AppContext;
-        constructor() {
-            super();
+
+        constructor(target?: any) {
+            super(target);
             const self = this;
-            self.initialize();
         }
-        static getInstance() {
+        static getInstance(target?: any) {
             if (this.instance === null || this.instance === undefined) {
+
                 this.instance = new Session.AppContext();
+                if (target !== null) {
+                    this.instance.target = target;
+                }
             }
             return this.instance;
         }
+
     }
 
 

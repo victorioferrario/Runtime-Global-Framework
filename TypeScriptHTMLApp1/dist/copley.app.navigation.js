@@ -93,13 +93,14 @@ var Session;
     Session.INotificationProps = INotificationProps;
     var DataContext = (function (_super) {
         __extends(DataContext, _super);
-        function DataContext() {
+        function DataContext(target) {
             _super.call(this);
             this.isLoadedMenu = false;
             this.isLoadedUser = false;
             this.isLoadedSearch = false;
             this.isLoadedNotifications = false;
             var self = this;
+            self.target = target;
             self.payloadMenu = { entity: null, list: null };
         }
         /**
@@ -114,6 +115,7 @@ var Session;
             }).done(function (result) {
                 self.isLoadedMenu = true;
                 self.payloadMenu = result;
+                self.loadUser();
                 Q.resolve(result);
             }).always(function () {
                 return Q.resolve(self.payloadMenu);
@@ -133,6 +135,9 @@ var Session;
                 self.isLoadedUser = true;
                 self.payloadUser = result;
                 self.payloadMenu.entity = result.entity;
+                self.dispatchEvent(new Core.Event(Models.Events.dataLoaded, self.payloadMenu));
+                // self.dispatchEvent(
+                //     new Core.Event(Models.Events.userLoaded, self.payloadUser));
                 Q.resolve(result);
             }).always(function () {
                 return Q.resolve(self.payloadUser);
@@ -155,6 +160,7 @@ var Session;
                     progRCount: result.notifications.progress_reports.length,
                     alertCount: result.notifications.alerts[0].count + result.notifications.alerts[1].count
                 };
+                self.dispatchEvent(new Core.Event(Models.Events.notificationsLoaded, self.payloadNotifications));
                 Q.resolve(result);
             }).always(function () {
                 return Q.resolve(self.payloadNotifications);
@@ -174,6 +180,7 @@ var Session;
             }).done(function (result) {
                 self.isLoadedSearch = true;
                 self.payloadSearch = result;
+                self.dispatchEvent(new Core.Event(Models.Events.searchLoaded, self.payloadSearch));
                 Q.resolve(result);
             }).always(function () {
                 return Q.resolve(self.payloadSearch);
@@ -187,23 +194,30 @@ var Session;
          */
         DataContext.prototype.initialize = function () {
             var self = this;
-            Q.all([self.loadMenu(), self.loadUser()]).then(function () {
+            Q.all([self.loadMenu()]).then(function () {
                 if (self.isLoadedMenu) {
-                    self.dispatchEvent(new Core.Event(Models.Events.dataLoaded, self.payloadMenu));
+                    console.log("isLoadedMenu");
                 }
-                if (self.isLoadedUser) {
-                    self.dispatchEvent(new Core.Event(Models.Events.userLoaded, self.payloadUser));
-                }
+                // if (self.isLoadedUser) {
+                //     self.dispatchEvent(
+                //         new Core.Event(Models.Events.userLoaded, self.payloadUser));
+                // }
             });
             Q.all([self.loadNotifications()]).then(function () {
-                if (self.isLoadedNotifications) {
-                    self.dispatchEvent(new Core.Event(Models.Events.notificationsLoaded, self.payloadNotifications));
-                }
+                // if (self.isLoadedNotifications) {
+                //     self.dispatchEvent(
+                //         new Core.Event(
+                //             Models.Events.notificationsLoaded,
+                //             self.payloadNotifications));
+                // }
             });
             Q.all([self.loadSearhResults()]).then(function () {
-                if (self.isLoadedSearch) {
-                    self.dispatchEvent(new Core.Event(Models.Events.searchLoaded, self.payloadSearch));
-                }
+                // if (self.isLoadedSearch) {
+                //     self.dispatchEvent(
+                //         new Core.Event(
+                //             Models.Events.searchLoaded,
+                //             self.payloadSearch));
+                // }
             });
         };
         return DataContext;
@@ -246,15 +260,17 @@ var Session;
     Session.AppContextSettings = AppContextSettings;
     var AppContext = (function (_super) {
         __extends(AppContext, _super);
-        function AppContext() {
-            _super.call(this);
+        function AppContext(target) {
+            _super.call(this, target);
             this.isLoaded = false;
             var self = this;
-            self.initialize();
         }
-        AppContext.getInstance = function () {
+        AppContext.getInstance = function (target) {
             if (this.instance === null || this.instance === undefined) {
                 this.instance = new Session.AppContext();
+                if (target !== null) {
+                    this.instance.target = target;
+                }
             }
             return this.instance;
         };
@@ -313,9 +329,7 @@ var Views;
                             '    <span class="icon-bg" style="background: transparent !important;"><i class="material-icons">search</i></span></a></span>';
                     };
                     StringTemplates.searchInput = function () {
-                        return '<div id="search-box">' +
-                            '<div class="form-group is-empty"><input class="form-control" type="text" placeholder="Search..." id="search-input" style="background: #fff; opacity: .70; border-radius: 2px;color:#000"><span class="material-input"></span></div>' +
-                            '</div>';
+                        return "<div id=\"search-box\">\n                <div class=\"form-group is-empty\">\n                <input class=\"form-control\" type=\"text\" placeholder=\"Search...\" id=\"search-input\" data-bind=\"value: $data.grid.query, valueUpdate: 'keyup'\" style=\"background: #fff; opacity: .70; border-radius: 2px;color:#000\" /><span class=\"material-input\"></span></div>\n                </div>";
                     };
                     StringTemplates.rightMenuCloseSearch = function () {
                         return '<li class="toolbar-icon-bg appear-on-search ov-h" id="trigger-search-close"><a class="toggle-fullscreen" id="button-search-close"><span class="icon-bg"><i class="material-icons">close</i></span><div class="ripple-container"></div></a> </li>';
@@ -453,9 +467,12 @@ var Views;
     (function (Controls) {
         var Components;
         (function (Components) {
-            var SearchControl = (function () {
+            var SearchControl = (function (_super) {
+                __extends(SearchControl, _super);
                 function SearchControl() {
+                    _super.call(this);
                     var self = this;
+                    self.grid = new SearchResults();
                     self.el = $("<div/>", {
                         id: "search-box"
                     });
@@ -466,7 +483,9 @@ var Views;
                         id: "search-input",
                         class: "form-control",
                         placeholder: "Search...",
-                        attr: {},
+                        attr: {
+                            "data-bind": "value: $data.layout.header.leftControl.searchControl.grid.query, valueUpdate: 'keyup'"
+                        },
                         blur: function (evt) {
                             console.log(evt);
                         }
@@ -479,6 +498,11 @@ var Views;
                         $("body #topnav").toggleClass("search-active");
                     });
                 }
+                SearchControl.prototype.handlerReady = function () {
+                    var self = this;
+                    console.log("handlerReady");
+                    self.grid.populateControl(self.appContext.payloadSearch);
+                };
                 SearchControl.prototype.render = function () {
                     var self = this;
                     return self.el;
@@ -487,9 +511,13 @@ var Views;
                     var self = this;
                     $("#search-input").focus();
                     $("body #topnav").toggleClass("search-active");
+                    $(".badge-custom").hide();
+                    $(".dropdown-menu-container").hide();
                     $("#button-search-close").click(function (evt) {
                         self.el.removeClass("active");
                         $("body #topnav").removeClass("search-active");
+                        $(".badge-custom").show();
+                        $(".dropdown-menu-container").show();
                     });
                 };
                 SearchControl.prototype.cleanEvent = function () {
@@ -497,8 +525,154 @@ var Views;
                     $("#button-search-close").off("click");
                 };
                 return SearchControl;
-            }());
+            }(Session.BaseView));
             Components.SearchControl = SearchControl;
+            var SearchResults = (function () {
+                //#endregion
+                function SearchResults() {
+                    var _this = this;
+                    var self = this;
+                    self.items = ko.observableArray();
+                    self.isReady = ko.observable(false);
+                    self.query = ko.observable("");
+                    self.allCount = ko.observable(0);
+                    self.exactMatchCount = ko.observable(0);
+                    self.partialMatchCount = ko.observable(0);
+                    self.isAllAvailable = ko.observable(false);
+                    self.isExactMatchAvailable = ko.observable(false);
+                    self.isPartialMatchAvailable = ko.observable(false);
+                    self.queryFilter = ko.computed(function () {
+                        var temp = self.query();
+                        if (self.items().length > 0) {
+                            self.items.removeAll();
+                        }
+                        console.log(temp);
+                        console.log(_this);
+                        if (self.datasource !== undefined) {
+                            console.log(temp, self.datasource);
+                            var tempHeadAll = new Models.SearchItemContext(null);
+                            tempHeadAll.type = Models.SearchItemContextType.All;
+                            self.items.push(tempHeadAll);
+                            if (self.query() === "") {
+                                //
+                                self.isAllAvailable(true);
+                                self.isExactMatchAvailable(false);
+                                self.allCount(self.datasource.length);
+                                //
+                                self.datasource.forEach(function (person) {
+                                    self.items.push(person);
+                                });
+                                //
+                                self.resetScroll();
+                            }
+                            else {
+                                //
+                                self.resetScroll();
+                                //
+                                var tempHead = new Models.SearchItemContext(null);
+                                tempHead.type = Models.SearchItemContextType.Header;
+                                self.items.push(tempHead);
+                                // sort alphabetically
+                                self.datasource.sort(function (left, right) {
+                                    return left.f_name == right.f_name ? 0 : (left.f_name < right.f_name ? -1 : 1);
+                                });
+                                if (isNaN(parseInt(temp))) {
+                                    // exact match: f_name
+                                    self.datasource.forEach(function (name) {
+                                        var f_name = name.f_name.substr(0, self.query().length);
+                                        if (f_name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
+                                            self.items.push(name);
+                                        }
+                                    });
+                                    // exact match: l_name
+                                    self.datasource.forEach(function (name) {
+                                        var l_name = name.l_name.substr(0, self.query().length);
+                                        if (l_name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
+                                            self.items.push(name);
+                                        }
+                                    });
+                                    //
+                                    self.isAllAvailable(false);
+                                    self.exactMatchCount(self.items().length - 2);
+                                    self.isExactMatchAvailable((self.items().length - 2) > 0);
+                                    // add splitter
+                                    self.items.push(new Models.SearchItemContext(null));
+                                    // partial match
+                                    var k_1 = 0;
+                                    self.datasource.forEach(function (person) {
+                                        var f_name = person.f_name.substr(0, self.query().length).toLowerCase();
+                                        var l_name = person.l_name.substr(0, self.query().length).toLowerCase();
+                                        if (f_name.indexOf(self.query().toLowerCase()) === -1
+                                            && l_name.indexOf(self.query().toLowerCase()) === -1
+                                            && person.fullname.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
+                                            self.items.push(person);
+                                            k_1++;
+                                        }
+                                    });
+                                    console.log(self.items());
+                                    self.partialMatchCount(k_1);
+                                    self.isPartialMatchAvailable(k_1 > 0);
+                                }
+                                else {
+                                    var id_1 = parseInt(self.query());
+                                    self.isExactMatchAvailable(false);
+                                    //
+                                    var tempHead_1 = new Models.SearchItemContext(null);
+                                    tempHead_1.type = Models.SearchItemContextType.SearchById;
+                                    self.items.push(tempHead_1);
+                                    //
+                                    self.datasource.forEach(function (student) {
+                                        console.log(id_1, student.id, id_1 + student.id);
+                                        if (id_1 === student.id) {
+                                            self.items.push(student);
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    });
+                }
+                SearchResults.prototype.resetScroll = function () {
+                    $(".search-result-popout").scrollTop(0);
+                };
+                SearchResults.prototype.populateControl = function (data) {
+                    var self = this;
+                    console.log("populateControl", data);
+                    self.datasource = [];
+                    data.results.forEach(function (item) {
+                        self.datasource.push(new Models.SearchItemContext(item));
+                    });
+                    self.isReady(true);
+                };
+                SearchResults.prototype.clear = function (data, event) {
+                    var self = this;
+                    self.query("");
+                    self.resetScroll();
+                    event.preventDefault();
+                };
+                SearchResults.prototype.clickHandler = function (data, event, action, id) {
+                    console.log("click", id);
+                    switch (action) {
+                        case 1:
+                            console.log("load profile");
+                            break;
+                        case 2:
+                            console.log("load timeline");
+                            break;
+                        case 3:
+                            console.log("load flags");
+                            break;
+                        case 4:
+                            console.log("load cases");
+                            break;
+                    }
+                };
+                SearchResults.prototype.search = function (value) {
+                    var self = this;
+                };
+                return SearchResults;
+            }());
+            Components.SearchResults = SearchResults;
         })(Components = Controls.Components || (Controls.Components = {}));
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
@@ -1086,12 +1260,16 @@ var Views;
         __extends(Page, _super);
         function Page() {
             _super.call(this);
+            //Responses.
+            this.isEventCalled_DataLoaded = false;
             var self = this;
+            console.log("MENU");
+            self.appContext.target = this;
             self.title = ko.observable("Welcome");
             self.isViewLoaded = ko.observable(false);
-            self.search = new Views.Components.Grid.GridView();
             if (self.init()) {
-                self.layout = new Views.Controls.MasterLayout();
+                self.layout
+                    = new Views.Controls.MasterLayout();
             }
         }
         Page.prototype.getCount = function (data) {
@@ -1113,14 +1291,12 @@ var Views;
             self.appContext.addEventListener(Models.Events.searchLoaded, function (arg) {
                 self.searchLoaded();
             });
-            self.search.addEventListener(Views.Components.Grid.StaticGridEvents.ready, function () {
-                self.search.handlerReady();
-            });
+            self.appContext.initialize();
             return true;
         };
-        //Responses.
         Page.prototype.dataLoaded = function () {
             var self = this;
+            console.log("isEventCall_DataLoaded is :", self.isEventCalled_DataLoaded);
             self.layout.databind(self.appContext.payloadMenu, self.appContext.payloadUser);
         };
         Page.prototype.dataLoaded2 = function () {
@@ -1131,10 +1307,9 @@ var Views;
         // Search
         Page.prototype.searchLoaded = function () {
             var self = this;
-            //console.log(self.appContext.payloadSearch);
-            // console.log("search loaded!~");
             console.log("methodCalled:searchLoaded");
-            self.search.databind();
+            self.layout.header.leftControl.searchControl.handlerReady();
+            ko.applyBindings(self);
         };
         return Page;
     }(Session.BaseView));
@@ -1198,62 +1373,62 @@ var toggleFullScreen = function () {
         }
     }
 };
-// Create loader
-// $(document).ready(() => {
-//     console.warn("ready");
-//     $("#layout-static .static-content-wrapper").append(
-//         "<div class='extrabar-underlay'></div>");
-//     const app = new Views.Page();
-//     $("#q").focus(function () {
-//         $(".search-result-popout").addClass("active");
-//         $("body").addClass("search-active")
-//     });
-//     $(".search-active-background").click(function () {
-//         $(".search-result-popout").removeClass("active");
-//         $("body").removeClass("search-active")
-//     });
-//     ko.applyBindings(app);
-// });
+$(document).ready(function () {
+    console.warn("ready");
+    $("#layout-static .static-content-wrapper").append("<div class='extrabar-underlay'></div>");
+    var app = new Views.Page();
+    $("#q").focus(function () {
+        $(".search-result-popout").addClass("active");
+        $("body").addClass("search-active");
+    });
+    $(".search-active-background").click(function () {
+        $(".search-result-popout").removeClass("active");
+        $("body").removeClass("search-active");
+    });
+    //ko.applyBindings(app);
+});
 // // Clean up loader
-// $(window).load(() => {
-//     setTimeout(() => {
-//         $('.page-loader').addClass('fadeOut animated-500').on('webkitAnimationEnd mozAnimationEnd oAnimationEnd oanimationend animationend', function () {
-//             $(".page-loader").remove();
-//         });
-//     }, 1900);
-//     setTimeout(() => {
-//         $(".page-content").removeClass("m-hide");
-//     }, 2000);
-//     // Pop overs
-//     let options = {
-//         html: true
-//     }
-//     for (let i = 1; i < 4; i++) {
-//         switch (i) {
-//             case 1:
-//                 for (let k = 0; k < 5; k++) {
-//                     $(`#menu${i}_link${k}`).popover(options);
-//                 }
-//                 break;
-//             case 2:
-//                 for (let k = 0; k < 4; k++) {
-//                     $(`#menu${i}_link${k}`).popover(options);
-//                 }
-//                 break;
-//             case 3:
-//                 for (let k = 0; k < 1; k++) {
-//                     $(`#menu${i}_link${k}`).popover(options);
-//                 }
-//                 break;
-//         }
-//     }
-// });
+$(window).load(function () {
+    setTimeout(function () {
+        $('.page-loader').addClass('fadeOut animated-500').on('webkitAnimationEnd mozAnimationEnd oAnimationEnd oanimationend animationend', function () {
+            $(".page-loader").remove();
+        });
+    }, 1900);
+    setTimeout(function () {
+        $(".page-content").removeClass("m-hide");
+    }, 2000);
+    // Pop overs
+    var options = {
+        html: true
+    };
+    for (var i = 1; i < 4; i++) {
+        switch (i) {
+            case 1:
+                for (var k = 0; k < 5; k++) {
+                    $("#menu" + i + "_link" + k).popover(options);
+                }
+                break;
+            case 2:
+                for (var k = 0; k < 4; k++) {
+                    $("#menu" + i + "_link" + k).popover(options);
+                }
+                break;
+            case 3:
+                for (var k = 0; k < 1; k++) {
+                    $("#menu" + i + "_link" + k).popover(options);
+                }
+                break;
+        }
+    }
+});
 var Models;
 (function (Models) {
     (function (SearchItemContextType) {
         SearchItemContextType[SearchItemContextType["Normal"] = 0] = "Normal";
         SearchItemContextType[SearchItemContextType["Header"] = 1] = "Header";
         SearchItemContextType[SearchItemContextType["Splitter"] = 2] = "Splitter";
+        SearchItemContextType[SearchItemContextType["SearchById"] = 3] = "SearchById";
+        SearchItemContextType[SearchItemContextType["All"] = 4] = "All";
     })(Models.SearchItemContextType || (Models.SearchItemContextType = {}));
     var SearchItemContextType = Models.SearchItemContextType;
     var SearchItemContext = (function () {
@@ -1263,9 +1438,9 @@ var Models;
                 self.id = data.id;
                 self.f_name = data.f_name;
                 self.l_name = data.l_name;
-                self.avatar = data.avatar;
                 self.remote_account = data.remote_account;
                 self.fullname = self.f_name + " " + self.l_name;
+                self.avatar = data.avatar === null ? "<i class=\"material-icons\">account_circle</i>" : "<img src=\"" + data.avatar + "\" \n                style=\"margin-top:-5px;width: 30px!important;height: 30px!important;margin-left: 10px;\" class=\"thumb img-responsive img-circle\" alt=\"" + self.fullname + "\"/>account_circle</i>";
                 self.type = SearchItemContextType.Normal;
             }
             else {
@@ -1290,7 +1465,6 @@ var System;
         return Singleton;
     }());
 })(System || (System = {}));
-var _this = this;
 /// <reference path="../../typings/tsd.d.ts" />
 var Temp;
 (function (Temp) {
@@ -1336,63 +1510,132 @@ var Temp;
             self.items = ko.observableArray();
             self.isReady = ko.observable(false);
             self.query = ko.observable("");
+            self.allCount = ko.observable(0);
             self.exactMatchCount = ko.observable(0);
             self.partialMatchCount = ko.observable(0);
+            self.isAllAvailable = ko.observable(false);
+            self.isExactMatchAvailable = ko.observable(false);
+            self.isPartialMatchAvailable = ko.observable(false);
             self.queryFilter = ko.computed(function () {
                 var temp = self.query();
                 if (self.items().length > 0) {
                     self.items.removeAll();
                 }
                 if (self.datasource !== undefined) {
-                    // sort alphabetically   
-                    var tempHead = new Models.SearchItemContext(null);
-                    tempHead.type = Models.SearchItemContextType.Header;
-                    self.items.push(tempHead);
-                    self.datasource.sort(function (left, right) {
-                        return left.f_name == right.f_name ? 0 : (left.f_name < right.f_name ? -1 : 1);
-                    });
-                    // exact match: f_name
-                    self.datasource.forEach(function (name) {
-                        var temp_f_name = name.f_name.substr(0, self.query().length);
-                        if (temp_f_name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
-                            console.log(name.f_name);
-                            self.items.push(name);
-                        }
-                    });
-                    // exact match: l_name
-                    self.datasource.forEach(function (name) {
-                        var temp_l_name = name.l_name.substr(0, self.query().length);
-                        if (temp_l_name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
-                            self.items.push(name);
-                        }
-                    });
-                    self.exactMatchCount(self.items().length);
-                    self.items.push(new Models.SearchItemContext(null));
-                    // partial match
-                    var k_1 = 0;
-                    self.datasource.forEach(function (person) {
-                        var temp_f_name = person.f_name.substr(0, self.query().length).toLowerCase();
-                        var temp_l_name = person.l_name.substr(0, self.query().length).toLowerCase();
-                        if (temp_f_name.indexOf(self.query().toLowerCase()) === -1
-                            && temp_l_name.indexOf(self.query().toLowerCase()) === -1 &&
-                            person.fullname.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
+                    var tempHeadAll = new Models.SearchItemContext(null);
+                    tempHeadAll.type = Models.SearchItemContextType.All;
+                    self.items.push(tempHeadAll);
+                    if (self.query() === "") {
+                        //
+                        self.isAllAvailable(true);
+                        self.isExactMatchAvailable(false);
+                        self.allCount(self.datasource.length);
+                        //
+                        self.datasource.forEach(function (person) {
                             self.items.push(person);
-                            k_1++;
+                        });
+                        //
+                        self.resetScroll();
+                    }
+                    else {
+                        //
+                        self.resetScroll();
+                        //
+                        var tempHead = new Models.SearchItemContext(null);
+                        tempHead.type = Models.SearchItemContextType.Header;
+                        self.items.push(tempHead);
+                        // sort alphabetically
+                        self.datasource.sort(function (left, right) {
+                            return left.f_name == right.f_name ? 0 : (left.f_name < right.f_name ? -1 : 1);
+                        });
+                        if (isNaN(parseInt(temp))) {
+                            // exact match: f_name
+                            self.datasource.forEach(function (name) {
+                                var f_name = name.f_name.substr(0, self.query().length);
+                                if (f_name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
+                                    self.items.push(name);
+                                }
+                            });
+                            // exact match: l_name
+                            self.datasource.forEach(function (name) {
+                                var l_name = name.l_name.substr(0, self.query().length);
+                                if (l_name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
+                                    self.items.push(name);
+                                }
+                            });
+                            //
+                            self.isAllAvailable(false);
+                            self.exactMatchCount(self.items().length - 2);
+                            self.isExactMatchAvailable((self.items().length - 2) > 0);
+                            // add splitter
+                            self.items.push(new Models.SearchItemContext(null));
+                            // partial match
+                            var k_2 = 0;
+                            self.datasource.forEach(function (person) {
+                                var f_name = person.f_name.substr(0, self.query().length).toLowerCase();
+                                var l_name = person.l_name.substr(0, self.query().length).toLowerCase();
+                                if (f_name.indexOf(self.query().toLowerCase()) === -1
+                                    && l_name.indexOf(self.query().toLowerCase()) === -1
+                                    && person.fullname.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
+                                    self.items.push(person);
+                                    k_2++;
+                                }
+                            });
+                            self.partialMatchCount(k_2);
+                            self.isPartialMatchAvailable(k_2 > 0);
                         }
-                    });
-                    self.partialMatchCount(k_1);
+                        else {
+                            var id_2 = parseInt(self.query());
+                            self.isExactMatchAvailable(false);
+                            //
+                            var tempHead_2 = new Models.SearchItemContext(null);
+                            tempHead_2.type = Models.SearchItemContextType.SearchById;
+                            self.items.push(tempHead_2);
+                            //
+                            self.datasource.forEach(function (student) {
+                                console.log(id_2, student.id, id_2 + student.id);
+                                if (id_2 === student.id) {
+                                    self.items.push(student);
+                                }
+                            });
+                        }
+                    }
                 }
             });
         }
+        SearchContext.prototype.resetScroll = function () {
+            $(".search-result-popout").scrollTop(0);
+        };
         SearchContext.prototype.populateControl = function (data) {
             var self = this;
-            console.log("hello");
             self.datasource = [];
             data.results.forEach(function (item) {
                 self.datasource.push(new Models.SearchItemContext(item));
             });
             self.isReady(true);
-            //self.query.subscribe(self.search);
+        };
+        SearchContext.prototype.clear = function (data, event) {
+            var self = this;
+            self.query("");
+            self.resetScroll();
+            event.preventDefault();
+        };
+        SearchContext.prototype.clickHandler = function (data, event, action, id) {
+            console.log("click", id);
+            switch (action) {
+                case 1:
+                    console.log("load profile");
+                    break;
+                case 2:
+                    console.log("load timeline");
+                    break;
+                case 3:
+                    console.log("load flags");
+                    break;
+                case 4:
+                    console.log("load cases");
+                    break;
+            }
         };
         SearchContext.prototype.search = function (value) {
             var self = this;
@@ -1425,7 +1668,7 @@ var Temp;
 })(Temp || (Temp = {}));
 var appTest = new Temp.PageContext();
 $(document).ready(function () {
-    ko.applyBindings(_this.appTest);
+    // ko.applyBindings(this.appTest);
 });
 /// <reference path="../../ref.d.ts" />
 var Views;

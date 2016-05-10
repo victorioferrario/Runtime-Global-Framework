@@ -25,31 +25,45 @@
             -webkit-align-items: center;
             -webkit-box-align: center;
             align-items: center;
-         
             list-style: none;
             margin: 0!important;
             -webkit-margin-after: 0!important;
             -webkit-margin-before: 0!important;
-             background:#fff;
-             transition-duration: 200ms;
+            background: #fff;
+            transition-duration: 200ms;
         }
-        .list:hover{
-            background:rgba(112,211,255,.96);
+        
+        .list:hover {
+            background: rgba(112, 211, 255, .96);
         }
-        .list > li  {
-           color:#000;
+        
+        .list > li {
+            color: #000;
             margin: 0!important;
             -webkit-margin-after: 0!important;
-            -webkit-margin-before: 0!important;transition-duration: 300ms;
+            -webkit-margin-before: 0!important;
+            transition-duration: 300ms;
         }
-        .list > li:hover  {
-           
+        
+        .list > li:hover {
             margin: 0!important;
             -webkit-margin-after: 0!important;
             -webkit-margin-before: 0!important;
         }
+        
+        .item_0 {
+            width: 50px;
+            height: 45px;
+            flex-grow: 0;
+            margin: 0;
+            padding-top: 10px;
+            text-align: center;
+            line-height: 35px;
+            font-size: 1.5em;
+            color: #000;
+        }
+        
         .item_1 {
-            
             width: 100px;
             height: 45px;
             margin: 0;
@@ -68,7 +82,6 @@
         }
         
         .item_2 {
-            
             width: 100px;
             height: 45px;
             flex-grow: 0;
@@ -89,13 +102,62 @@
             padding-top: 0!important;
             margin-top: 1px!important;
         }
-        .search-result-list-link:link,.search-result-list-link:visited{
-            background:#fff;
-            transition-duration: 300ms;
+        
+        .search-result-list-item-header {
+            height: 30px!important;
+            padding-top: 7px!important;
+            background: rgba(3, 155, 229, .9) !important;
+            padding-left: 5px;
+            font-weight: 500;
+            color: #FFF;
+            border-bottom: solid 1px #0d47a1;
+        }
+        
+        .search-result-list-link {
+            /*cursor: pointer;*/
+        }
+        
+        .search-result-list-link:link,
+        .search-result-list-link:visited {
+            background: #fff;
+            transition-duration: 500ms;
             text-decoration: none;
         }
-        .search-result-list-link:hover{
-            background:rgba(112,211,255,.96);
+        
+        a.item-link {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        a.item-link:link,
+        a.item-link:visited {
+            color: #1565c0;
+        }
+        
+        a.item-link:hover {}
+        
+        a.item-name-link {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+        
+        a.item-name-link:link,
+        a.item-name-link:visited {
+            color: #1565c0;
+        }
+        
+        a.item-name-link:hover {}
+        
+        .search-result-list-link:hover {
+            background: #bbdefb;
+            /*background: rgba(112, 211, 255, .16);*/
+        }
+        
+        @media only screen and (max-width: 660px) {
+            .hide-small {
+                display: none;
+                visibility: 0;
+            }
         }
     </style>
 </head>
@@ -105,10 +167,11 @@
         <div class="devsite-top-logo-row-wrapper">
             <form style="position:relative;">
                 <div style="position:relative; width:80%;margin:auto;">
-                    <span style="position:absolute;right:20px; top:20px;">
-                        <a href="javascript:void(0)" style="font-size:22px; color:#FFF!important">x</a></span>
-                </div>                
-                <input placeholder="Search" type="text" class="devsite-search-field devsite-search-query" id="q" name="q" value="" autocomplete="off" data-bind="value: $data.grid.query, valueUpdate: 'keyup'">
+                    <span style="position:absolute;right:12px; top:17px;">                        
+                        <a href="javascript:void(0)" style="font-size:22px; color:#FFF!important" data-bind="click:function(data,event){ return $data.grid.clear(data,event);}"><i class="material-icons">cancel</i></a></span>
+                </div>
+                <input placeholder="Search" type="text" 
+                class="devsite-search-field devsite-search-query" id="q" name="q" value="" autocomplete="off" data-bind="value: $data.grid.query, valueUpdate: 'keyup'">
                 <div style="width: 80%; margin: auto;">
                 </div>
             </form>
@@ -116,32 +179,57 @@
     </header>
     <header class="search-active--wrapper" style="z-index:20001!important;top:46px;">
         <div class="search-result-popout active">
-            <ul data-bind="foreach: { data: $data.grid.items , as: 'person' }" class="search-results">
-                <!-- ko if: person.type === 0 -->
-                <li class="search-result-list-item">
-                    <a href="javascript:void(0);" class="search-result-list-link">
-                        <ul class="list">
-                            <li class="item_1"> <span data-bind="text: person.f_name"></span>&nbsp;<span data-bind="text: person.l_name"></span></li>
-                            <li class="item_2">Timeline</li>
-                            <li class="item_2">3</li>
-                        </ul>
-                    </a>
-                </li>
-                <!-- /ko -->
-                <!-- ko if: person.type === 2 -->
-                <li class="search-result-list-item" style="border-bottom:solid 1px #000">
-                    <div style="padding:15px;padding-left:5px;font-weight:500;color:#000">
-                        Partial Matches
-                    </div>
-                </li>
-                <!-- /ko -->
-            </ul>
-            <i class="material-icons" style="font-size:148px;opacity:.155;color:#fff;position:absolute;bottom:45px;right:45px;">search</i>
+            <ul data-bind="template: { name: 'template_row_search__item', foreach: $data.grid.items , as: 'person' }" class="search-results"></ul>
         </div>
         <div class="search-active-background"></div>
     </header>
     <script src="dist/vendor.js"></script>
     <script src="dist/copley.app.navigation.js"></script>
+    <script id="template_row_search__item" type="text/html">    
+        <!-- ko template:{name:"template_row__search__headers"} --> <!-- /ko -->                     
+        <!-- ko if: person.type === 0 -->
+            <!-- ko template:{name:"template_row__search__person"} --><!-- /ko -->
+        <!-- /ko -->                      
+    </script>
+    <script id="template_row__search__person" type="text/html">
+        <li class="search-result-list-item ">                  
+                <ul class="list search-result-list-link waves-effect waves-light">
+                    <li class="item_0" data-bind="html:person.avatar"></li>
+                    <li class="item_1"> 
+                        <a href="javascript:void(0);" class="item-name-link" data-bind="click:function(data,event){ return $parent.grid.clickHandler(data,event,1,person.id); }">
+                        <span data-bind="text: person.f_name"></span>&nbsp;<span data-bind="text: person.l_name"></span></a></li>                            
+                    <li class="item_2"><a href="javascipt:void(0)" class="item-link"  data-bind="click:function(data,event){ return $parent.grid.clickHandler(data,event,2,person.id); }">Timeline</a></li>
+                    <li class="item_2 hide-small">
+                        <a href="javascript:void(0);" class="item-link"  data-bind="click:function(data,event){ return $parent.grid.clickHandler(data,event,3,person.id); }">Flags(2)</a>
+                        </li>
+                    <li class="item_2 hide-small">
+                        <a href="javascript:void(0);" class="item-link"  data-bind="click:function(data,event){ return $parent.grid.clickHandler(data,event,4,person.id); }">Cases(2)</a>
+                        </li>
+                </ul>                
+        </li>    
+    </script>
+    <script id="template_row__search__headers" type="text/html">
+                <!-- ko if: person.type === 1 -->
+                <li class="search-result-list-item-header" data-bind="visible:$parent.grid.isAllAvailable">
+                    All Students <span data-bind="text:$parent.grid.allCount"></span>
+                </li>
+                <!-- /ko -->
+                <!-- ko if: person.type === 1 -->
+                <li class="search-result-list-item-header" data-bind="visible:$parent.grid.isExactMatchAvailable">
+                    Exact Matches <span data-bind="text:$parent.grid.exactMatchCount"></span>
+                </li>
+                <!-- /ko -->
+                <!-- ko if: person.type === 2 -->
+                <li class="search-result-list-item-header" data-bind="visible:$parent.grid.isPartialMatchAvailable">
+                    Partial Matches <span data-bind="text:$parent.grid.partialMatchCount"></span>
+                </li>
+                <!-- /ko -->
+                <!-- ko if: person.type === 3 -->
+                <li class="search-result-list-item-header">
+                    Search By Id Results
+                </li>
+                <!-- /ko -->
+    </script>
 </body>
 
 </html>

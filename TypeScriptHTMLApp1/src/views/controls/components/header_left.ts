@@ -37,6 +37,7 @@ namespace Views.Controls.Components {
                 href: "javascript:void(0);",
                 "class": "navbar-brand navbar-blue"
             });
+            
             self.searchControl = new Views.Controls.Components.SearchControl();
 
             self.smallLogo = elementGenerator.createImage(props.small);
@@ -44,6 +45,7 @@ namespace Views.Controls.Components {
 
             self.lnk.append(self.smallLogo);
             self.lnk.append(self.largeLogo);
+            
 
         }
 
