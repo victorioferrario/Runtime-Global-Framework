@@ -87,15 +87,17 @@ namespace Session {
             }).done((result: Models.INotificationsPayload) => {
                 self.isLoadedNotifications = true;
                 self.payloadNotifications = result;
+              
                 self.iNotificatonProps = {
                     progRCount: result.notifications.progress_reports.length,
                     alertCount: result.notifications.alerts[0].count + result.notifications.alerts[1].count
                 }
+                
                 self.dispatchEvent(
                     new Core.Event(
                         Models.Events.notificationsLoaded,
                         self.payloadNotifications));
-
+                      
                 Q.resolve(result);
 
             }).always(() => {
@@ -115,8 +117,10 @@ namespace Session {
                 Q.reject("Error Loading Search");
                 return null;
             }).done((result: Models.ISearchResults) => {
+                
                 self.isLoadedSearch = true;
                 self.payloadSearch = result;
+                
                 self.dispatchEvent(
                     new Core.Event(
                         Models.Events.searchLoaded,
@@ -151,14 +155,14 @@ namespace Session {
                 //             self.payloadNotifications));
                 // }
             });
-            Q.all([self.loadSearhResults()]).then(() => {
-                // if (self.isLoadedSearch) {
-                //     self.dispatchEvent(
-                //         new Core.Event(
-                //             Models.Events.searchLoaded,
-                //             self.payloadSearch));
-                // }
-            });
+            // Q.all([]).then(() => {
+            //     // if (self.isLoadedSearch) {
+            //     //     self.dispatchEvent(
+            //     //         new Core.Event(
+            //     //             Models.Events.searchLoaded,
+            //     //             self.payloadSearch));
+            //     // }
+            // });
         }
     }
     export class Trace {
@@ -194,6 +198,9 @@ namespace Session {
             super(target);
             const self = this;
         }
+        
+        
+        
         static getInstance(target?: any) {
             if (this.instance === null || this.instance === undefined) {
 

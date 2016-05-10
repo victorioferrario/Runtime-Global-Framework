@@ -16,6 +16,7 @@ namespace Views {
             if (self.init()) {
                 self.layout
                     = new Controls.MasterLayout();
+                     self.appContext.initialize();
             }
         }
 
@@ -43,7 +44,7 @@ namespace Views {
                 Models.Events.searchLoaded, (arg: any) => {
                     self.searchLoaded();
                 });
-            self.appContext.initialize();
+           
             return true;
         }
 
@@ -56,6 +57,7 @@ namespace Views {
                 self.layout.databind(
                     self.appContext.payloadMenu,
                     self.appContext.payloadUser);
+                    
             
         }
 
