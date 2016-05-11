@@ -16,6 +16,7 @@ namespace Views {
         }
         toggle() {
             const self = this;
+            console.log(self.sideBarWrapper.hasClass(self.toggleCss))
             if (!self.sideBarWrapper.hasClass(self.toggleCss)) {
                 self.topBar.addClass(self.toggleCss);
                 self.menusWrapper.addClass(self.toggleCss);

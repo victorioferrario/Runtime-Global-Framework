@@ -21,14 +21,15 @@ namespace Views.Controls.Components {
 
         el: JQuery;
         lnk: JQuery;
+        elSearchContainer: JQuery;
 
         smallLogo: HTMLImageElement;
         largeLogo: HTMLImageElement;
-
-        searchControl: Views.Controls.Components.SearchControl;
-
+        
+        
+        searchControl: Views.Controls.Components.SearchControl;        
+        
         constructor(props: IBrandControlProps) {
-
             const self = this;
             self.el = $("<div/>", {
                 "class": props.className
@@ -38,15 +39,14 @@ namespace Views.Controls.Components {
                 "class": "navbar-brand navbar-blue"
             });
             
-            self.searchControl = new Views.Controls.Components.SearchControl();
+            self.searchControl = new Views.Controls.Components.SearchControl(self);
 
             self.smallLogo = elementGenerator.createImage(props.small);
             self.largeLogo = elementGenerator.createImage(props.large);
 
             self.lnk.append(self.smallLogo);
-            self.lnk.append(self.largeLogo);
-            
-
+            self.lnk.append(self.largeLogo);           
+                        
         }
 
         render() {
@@ -61,5 +61,7 @@ namespace Views.Controls.Components {
             return self.el;
         }
     }
+    
+    
 
 }

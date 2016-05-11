@@ -11,25 +11,168 @@
 
     <link href="dist/vendor.css" rel="stylesheet" />
     <link href="dist/defaultInstance.css" rel="stylesheet" />
-    
+
     <style>
-        #search-input:focus{
-            box-shadow:none!important;
-            
+        #search-input:focus {
+            box-shadow: none!important;
+        }
+    </style>
+    <link href="styles/search.css" rel="stylesheet" />
+    <style>
+    
+        
+        .list {
+            margin: auto;
+            width: 100%;
+            -webkit-display: -webkit-box;
+            -webkit-display: -webkit-flex;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-align: center;
+            -webkit-align-items: center;
+            -webkit-box-align: center;
+            align-items: center;
+            list-style: none;
+            margin: 0!important;
+            -webkit-margin-after: 0!important;
+            -webkit-margin-before: 0!important;
+            background: #fff;
+            transition-duration: 200ms;
         }
         
+        .list:hover {
+            background: rgba(112, 211, 255, .96);
+        }
+        
+        .list > li {
+            color: #000;
+            margin: 0!important;
+            -webkit-margin-after: 0!important;
+            -webkit-margin-before: 0!important;
+            transition-duration: 300ms;
+        }
+        
+        .list > li:hover {
+            margin: 0!important;
+            -webkit-margin-after: 0!important;
+            -webkit-margin-before: 0!important;
+        }
+        
+        .item_0 {
+            width: 50px;
+            height: 45px;
+            flex-grow: 0;
+            margin: 0;
+            padding-top: 10px;
+            text-align: center;
+            line-height: 35px;
+            font-size: 1.5em;
+            color: #000;
+        }
+        
+        .item_1 {
+            width: 100px;
+            height: 45px;
+            margin: 0;
+            text-align: left;
+            line-height: 35px;
+            font-weight: 300;
+            font-size: 1.5em;
+            color: #000;
+            flex-grow: 2;
+            -ms-flex-align: center;
+            -webkit-align-items: center;
+            -webkit-box-align: center;
+            align-items: center;
+            padding-top: 5px;
+            padding-left: 8px;
+        }
+        
+        .item_2 {
+            width: 100px;
+            height: 45px;
+            flex-grow: 0;
+            margin: 0;
+            padding-top: 5px;
+            text-align: center;
+            line-height: 35px;
+            font-size: 1.5em;
+            color: #000;
+        }
+        
+        .search-results {
+            margin: 0!important;
+            list-style: none;
+        }
+        
+        .search-result-list-item {
+            padding-top: 0!important;
+            margin-top: 1px!important;
+        }
+        
+        .search-result-list-item-header {
+            height: 30px!important;
+            padding-top: 7px!important;
+            background: #01579b!important;
+            padding-left: 5px;
+            font-weight: 500;
+            color: #FFF;
+            border-bottom: solid 1px #0d47a1;
+        }
+        
+        .search-result-list-link {
+            /*cursor: pointer;*/
+        }
+        
+        .search-result-list-link:link,
+        .search-result-list-link:visited {
+            background: #fff;
+            transition-duration: 500ms;
+            text-decoration: none;
+        }
+        
+        a.item-link {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        a.item-link:link,
+        a.item-link:visited {
+            color: #1565c0;
+        }
+        
+        a.item-link:hover {}
+        
+        a.item-name-link {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+        
+        a.item-name-link:link,
+        a.item-name-link:visited {
+            color: #1565c0;
+        }
+        
+        a.item-name-link:hover {}
+        
+        .search-result-list-link:hover {
+            background: #bbdefb;
+            /*background: rgba(112, 211, 255, .16);*/
+        }
+        
+        @media only screen and (max-width: 660px) {
+            .hide-small {
+                display: none;
+                visibility: 0;
+            }
+        }
     </style>
 </head>
 
-<body id="page">
+<body id="page" >
 
     <header id="topnav" class="navbar navbar-fixed-top navbar-blue" role="banner"></header>
-    <header class="search-active--wrapper" style="z-index:20001!important;top:46px;">
-        <div class="search-result-popout active">
-            <ul data-bind="template: { name: 'template_row_search__item', foreach: $data.layout.header.leftControl.searchControl.grid.items , as: 'person' }" class="search-results"></ul>
-        </div>
-        <div class="search-active-background"></div>
-    </header>
     <aside class="user-aside-1"></aside>
     <aside class="user-aside-2"></aside>
 

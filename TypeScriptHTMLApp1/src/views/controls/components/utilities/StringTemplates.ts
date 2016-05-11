@@ -8,12 +8,12 @@ namespace Views.Controls.Components.Utilities {
         
         static toggleMenu() {
             return '<span id="trigger-sidebar" class="toolbar-trigger toolbar-icon-bg stay-on-search">' +
-                '<a data-toggle="tooltips" data-placement="right" title="Toggle Sidebar" class="waves-effect waves-light" id="btn-toggle">' +
+                '<a data-toggle="tooltips" data-placement="right" title="Toggle Sidebar" class="waves-effect waves-light" id="btn-toggle" href="javascript:window.onClickTest();">' +
                 '   <span class="icon-bg" style="background: transparent !important;"><i class="material-icons">menu</i></span></a></span>';
         }
         static toggleSearch() {
             return '<span id="trigger-search" class="toolbar-trigger toolbar-icon-bg ov-h">' +
-                '<a data-toggle="tooltips" id="toggle-search" data-placement="right" title="Toggle Sidebar" class="waves-effect waves-light">' +
+                '<a data-toggle="tooltips" id="toggle-search" data-placement="right" title="Toggle Sidebar" class="waves-effect waves-light" href="javascript:window.onClickTest();">' +
                 '    <span class="icon-bg" style="background: transparent !important;"><i class="material-icons">search</i></span></a></span>';
         }
         static searchInput() {

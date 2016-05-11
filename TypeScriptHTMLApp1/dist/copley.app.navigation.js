@@ -109,18 +109,15 @@ var Session;
          * @return Q.Promise< Models.IMenuPayload>
          */
         DataContext.prototype.loadMenu = function () {
+            var _this = this;
             var self = this;
             Services.Http.loadJson(AppContextSettings.menuUrl).fail(function () {
-                Q.reject("Error Loading Data");
+                self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_ERROR, _this));
             }).done(function (result) {
                 self.isLoadedMenu = true;
                 self.payloadMenu = result;
-                self.loadUser();
-                Q.resolve(result);
-            }).always(function () {
-                return Q.resolve(self.payloadMenu);
+                self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_MENU_LOADED, _this));
             });
-            return null;
         };
         /**
         * private Q.Promise to return json.
@@ -128,21 +125,16 @@ var Session;
         * @return Q.Promise<Models.IUserPayload>
         */
         DataContext.prototype.loadUser = function () {
+            var _this = this;
             var self = this;
             Services.Http.loadJson(AppContextSettings.userUrl).fail(function () {
-                Q.reject("Error Loading Data");
+                self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_ERROR, _this));
             }).done(function (result) {
                 self.isLoadedUser = true;
                 self.payloadUser = result;
                 self.payloadMenu.entity = result.entity;
-                self.dispatchEvent(new Core.Event(Models.Events.dataLoaded, self.payloadMenu));
-                // self.dispatchEvent(
-                //     new Core.Event(Models.Events.userLoaded, self.payloadUser));
-                Q.resolve(result);
-            }).always(function () {
-                return Q.resolve(self.payloadUser);
+                self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_USER_LOADED, _this));
             });
-            return null;
         };
         /**
         * private Q.Promise to return json.
@@ -150,9 +142,10 @@ var Session;
         * @return Q.Promise< Models.INotificationsPayload>
         */
         DataContext.prototype.loadNotifications = function () {
+            var _this = this;
             var self = this;
             Services.Http.loadJson(AppContextSettings.notificationUrl).fail(function () {
-                Q.reject("Error Loading Notifications");
+                self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_ERROR, _this));
             }).done(function (result) {
                 self.isLoadedNotifications = true;
                 self.payloadNotifications = result;
@@ -160,12 +153,8 @@ var Session;
                     progRCount: result.notifications.progress_reports.length,
                     alertCount: result.notifications.alerts[0].count + result.notifications.alerts[1].count
                 };
-                self.dispatchEvent(new Core.Event(Models.Events.notificationsLoaded, self.payloadNotifications));
-                Q.resolve(result);
-            }).always(function () {
-                return Q.resolve(self.payloadNotifications);
+                self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_NOTIFICATIONS_LOADED, _this));
             });
-            return null;
         };
         /**
          * private Q.Promise to return json.
@@ -173,53 +162,64 @@ var Session;
          * @return Q.Promise< Models.IResults>
          */
         DataContext.prototype.loadSearhResults = function () {
+            var _this = this;
             var self = this;
             Services.Http.loadJson(AppContextSettings.searchUrl).fail(function () {
-                Q.reject("Error Loading Search");
-                return null;
+                self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_ERROR, _this));
             }).done(function (result) {
                 self.isLoadedSearch = true;
                 self.payloadSearch = result;
-                self.dispatchEvent(new Core.Event(Models.Events.searchLoaded, self.payloadSearch));
-                Q.resolve(result);
-            }).always(function () {
-                return Q.resolve(self.payloadSearch);
+                self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_SEARCH_LOADED, _this));
             });
-            return null;
         };
         /**
          * public Q.method to fire all the async calls into a queue.
          * @method initialize
          * @return null, when each data call is complete, it broadcasts an event.
          */
+        DataContext.prototype.handlerMenu = function () {
+            var self = this;
+            self.loadUser();
+        };
+        DataContext.prototype.handlerUser = function () {
+            var self = this;
+            self.loadNotifications();
+        };
+        DataContext.prototype.handlerSearch = function () {
+            var self = this;
+            self.removeEventListener(AppContext.APP_CONTEXT_MENU_LOADED, self.handlerMenu);
+            self.removeEventListener(AppContext.APP_CONTEXT_USER_LOADED, self.handlerUser);
+            self.removeEventListener(AppContext.APP_CONTEXT_NOTIFICATIONS_LOADED, self.handlerNotifications);
+            self.dispatchEvent(new Core.Event(Models.Events.searchLoaded, self.payloadSearch));
+        };
+        DataContext.prototype.handlerNotifications = function () {
+            var self = this;
+            self.dispatchEvent(new Core.Event(Models.Events.dataLoaded, self.payloadMenu));
+            self.dispatchEvent(new Core.Event(Models.Events.userLoaded, self.payloadUser));
+            self.dispatchEvent(new Core.Event(Models.Events.notificationsLoaded, self.payloadNotifications));
+            self.loadSearhResults();
+        };
         DataContext.prototype.initialize = function () {
             var self = this;
-            Q.all([self.loadMenu()]).then(function () {
-                if (self.isLoadedMenu) {
-                    console.log("isLoadedMenu");
-                }
-                // if (self.isLoadedUser) {
-                //     self.dispatchEvent(
-                //         new Core.Event(Models.Events.userLoaded, self.payloadUser));
-                // }
+            self.addEventListener(AppContext.APP_CONTEXT_MENU_LOADED, function (arg) {
+                self.handlerMenu();
             });
-            Q.all([self.loadNotifications()]).then(function () {
-                // if (self.isLoadedNotifications) {
-                //     self.dispatchEvent(
-                //         new Core.Event(
-                //             Models.Events.notificationsLoaded,
-                //             self.payloadNotifications));
-                // }
+            self.addEventListener(AppContext.APP_CONTEXT_USER_LOADED, function (arg) {
+                self.handlerUser();
             });
-            // Q.all([]).then(() => {
-            //     // if (self.isLoadedSearch) {
-            //     //     self.dispatchEvent(
-            //     //         new Core.Event(
-            //     //             Models.Events.searchLoaded,
-            //     //             self.payloadSearch));
-            //     // }
-            // });
+            self.addEventListener(AppContext.APP_CONTEXT_SEARCH_LOADED, function (arg) {
+                self.handlerSearch();
+            });
+            self.addEventListener(AppContext.APP_CONTEXT_NOTIFICATIONS_LOADED, function (arg) {
+                self.handlerNotifications();
+            });
+            self.loadMenu();
         };
+        DataContext.APP_CONTEXT_ERROR = "APP_CONTEXT_ERROR";
+        DataContext.APP_CONTEXT_MENU_LOADED = "APP_CONTEXT_MENU_LOADED";
+        DataContext.APP_CONTEXT_USER_LOADED = "APP_CONTEXT_USER_LOADED";
+        DataContext.APP_CONTEXT_SEARCH_LOADED = "APP_CONTEXT_SEARCH_LOADED";
+        DataContext.APP_CONTEXT_NOTIFICATIONS_LOADED = "APP_CONTEXT_NOTIFICATIONS_LOADED";
         return DataContext;
     }(Core.EventDispatcher));
     Session.DataContext = DataContext;
@@ -264,6 +264,7 @@ var Session;
             _super.call(this, target);
             this.isLoaded = false;
             var self = this;
+            self.initialize();
         }
         AppContext.getInstance = function (target) {
             if (this.instance === null || this.instance === undefined) {
@@ -320,12 +321,12 @@ var Views;
                     }
                     StringTemplates.toggleMenu = function () {
                         return '<span id="trigger-sidebar" class="toolbar-trigger toolbar-icon-bg stay-on-search">' +
-                            '<a data-toggle="tooltips" data-placement="right" title="Toggle Sidebar" class="waves-effect waves-light" id="btn-toggle">' +
+                            '<a data-toggle="tooltips" data-placement="right" title="Toggle Sidebar" class="waves-effect waves-light" id="btn-toggle" href="javascript:window.onClickTest();">' +
                             '   <span class="icon-bg" style="background: transparent !important;"><i class="material-icons">menu</i></span></a></span>';
                     };
                     StringTemplates.toggleSearch = function () {
                         return '<span id="trigger-search" class="toolbar-trigger toolbar-icon-bg ov-h">' +
-                            '<a data-toggle="tooltips" id="toggle-search" data-placement="right" title="Toggle Sidebar" class="waves-effect waves-light">' +
+                            '<a data-toggle="tooltips" id="toggle-search" data-placement="right" title="Toggle Sidebar" class="waves-effect waves-light" href="javascript:window.onClickTest();">' +
                             '    <span class="icon-bg" style="background: transparent !important;"><i class="material-icons">search</i></span></a></span>';
                     };
                     StringTemplates.searchInput = function () {
@@ -469,10 +470,11 @@ var Views;
         (function (Components) {
             var SearchControl = (function (_super) {
                 __extends(SearchControl, _super);
-                function SearchControl() {
+                function SearchControl(parent) {
                     _super.call(this);
                     var self = this;
                     self.grid = new SearchResults();
+                    self.parent = parent;
                     self.el = $("<div/>", {
                         id: "search-box"
                     });
@@ -492,16 +494,20 @@ var Views;
                     });
                     self.elSearchWrapper.append(self.elSearchInput);
                     self.el.append(self.elSearchWrapper);
-                    $("#button-search-close").click(function (evt) {
-                        self.el.removeClass("active");
-                        self.elSearchInput.val("");
-                        $("body #topnav").toggleClass("search-active");
+                    $("#button-search-close").on("click", function (event) {
+                        event.preventDefault();
                     });
+                    ///
+                    // Search Container
+                    //
+                    self.searchResults = new SearchResultsContainer();
+                    self.parent.el.append(self.searchResults.render());
+                    //
                 }
                 SearchControl.prototype.handlerReady = function () {
                     var self = this;
-                    console.log("handlerReady");
                     self.grid.populateControl(self.appContext.payloadSearch);
+                    self.elements = new SearchControlElements();
                 };
                 SearchControl.prototype.render = function () {
                     var self = this;
@@ -509,28 +515,52 @@ var Views;
                 };
                 SearchControl.prototype.triggerEvent = function () {
                     var self = this;
-                    $("#search-input").focus();
-                    $("body #topnav").toggleClass("search-active");
-                    $(".badge-custom").hide();
-                    $(".dropdown-menu-container").hide();
-                    $("#button-search-close").click(function (evt) {
+                    self.grid.isDeactivated(false);
+                    if (self.elements === null || self.elements === undefined) {
+                    }
+                    self.elements.elementInput.focus();
+                    self.elements.elementDropdown.hide();
+                    self.elements.elementBadgeCustom.hide();
+                    self.elements.elementTopNav.toggleClass("search-active");
+                    self.elements.elementButtonClose.click(function (evt) {
+                        //
+                        self.grid.isDeactivated(true);
+                        //
                         self.el.removeClass("active");
-                        $("body #topnav").removeClass("search-active");
-                        $(".badge-custom").show();
-                        $(".dropdown-menu-container").show();
+                        // 
+                        self.elements.elementInput.val("");
+                        //
+                        self.elements.elementPopout.removeClass("active");
+                        self.elements.elementBody.removeClass("search-active");
+                        self.elements.elementTopNav.removeClass("search-active");
+                        self.elements.elementDropdown.show();
+                        self.elements.elementBadgeCustom.show();
                     });
                 };
                 SearchControl.prototype.cleanEvent = function () {
                     var self = this;
-                    $("#button-search-close").off("click");
+                    self.elements.elementButtonClose.off("click");
                 };
                 return SearchControl;
             }(Session.BaseView));
             Components.SearchControl = SearchControl;
+            var SearchControlElements = (function () {
+                function SearchControlElements() {
+                    var self = this;
+                    self.elementBody = $("body");
+                    self.elementInput = $("#search-input");
+                    self.elementTopNav = $("body #topnav");
+                    self.elementPopout = $(".search-result-popout");
+                    self.elementBadgeCustom = $(".badge-custom");
+                    self.elementDropdown = $(".dropdown-menu-container");
+                    self.elementButtonClose = $("#button-search-close");
+                }
+                return SearchControlElements;
+            }());
+            Components.SearchControlElements = SearchControlElements;
             var SearchResults = (function () {
                 //#endregion
                 function SearchResults() {
-                    var _this = this;
                     var self = this;
                     self.items = ko.observableArray();
                     self.isReady = ko.observable(false);
@@ -538,6 +568,7 @@ var Views;
                     self.allCount = ko.observable(0);
                     self.exactMatchCount = ko.observable(0);
                     self.partialMatchCount = ko.observable(0);
+                    self.isDeactivated = ko.observable(true);
                     self.isAllAvailable = ko.observable(false);
                     self.isExactMatchAvailable = ko.observable(false);
                     self.isPartialMatchAvailable = ko.observable(false);
@@ -546,87 +577,87 @@ var Views;
                         if (self.items().length > 0) {
                             self.items.removeAll();
                         }
-                        console.log(temp);
-                        console.log(_this);
-                        if (self.datasource !== undefined) {
-                            console.log(temp, self.datasource);
-                            var tempHeadAll = new Models.SearchItemContext(null);
-                            tempHeadAll.type = Models.SearchItemContextType.All;
-                            self.items.push(tempHeadAll);
-                            if (self.query() === "") {
-                                //
-                                self.isAllAvailable(true);
-                                self.isExactMatchAvailable(false);
-                                self.allCount(self.datasource.length);
-                                //
-                                self.datasource.forEach(function (person) {
-                                    self.items.push(person);
-                                });
-                                //
-                                self.resetScroll();
-                            }
-                            else {
-                                //
-                                self.resetScroll();
-                                //
-                                var tempHead = new Models.SearchItemContext(null);
-                                tempHead.type = Models.SearchItemContextType.Header;
-                                self.items.push(tempHead);
-                                // sort alphabetically
-                                self.datasource.sort(function (left, right) {
-                                    return left.f_name == right.f_name ? 0 : (left.f_name < right.f_name ? -1 : 1);
-                                });
-                                if (isNaN(parseInt(temp))) {
-                                    // exact match: f_name
-                                    self.datasource.forEach(function (name) {
-                                        var f_name = name.f_name.substr(0, self.query().length);
-                                        if (f_name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
-                                            self.items.push(name);
-                                        }
-                                    });
-                                    // exact match: l_name
-                                    self.datasource.forEach(function (name) {
-                                        var l_name = name.l_name.substr(0, self.query().length);
-                                        if (l_name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
-                                            self.items.push(name);
-                                        }
-                                    });
-                                    //
-                                    self.isAllAvailable(false);
-                                    self.exactMatchCount(self.items().length - 2);
-                                    self.isExactMatchAvailable((self.items().length - 2) > 0);
-                                    // add splitter
-                                    self.items.push(new Models.SearchItemContext(null));
-                                    // partial match
-                                    var k_1 = 0;
-                                    self.datasource.forEach(function (person) {
-                                        var f_name = person.f_name.substr(0, self.query().length).toLowerCase();
-                                        var l_name = person.l_name.substr(0, self.query().length).toLowerCase();
-                                        if (f_name.indexOf(self.query().toLowerCase()) === -1
-                                            && l_name.indexOf(self.query().toLowerCase()) === -1
-                                            && person.fullname.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
+                        if (!self.isDeactivated()) {
+                            if (self.query().length > 0) {
+                                if (self.datasource !== undefined) {
+                                    var tempHeadAll = new Models.SearchItemContext(null);
+                                    tempHeadAll.type = Models.SearchItemContextType.All;
+                                    self.items.push(tempHeadAll);
+                                    if (self.query() === "") {
+                                        //
+                                        self.isAllAvailable(true);
+                                        self.isExactMatchAvailable(false);
+                                        self.allCount(self.datasource.length);
+                                        //
+                                        self.datasource.forEach(function (person) {
                                             self.items.push(person);
-                                            k_1++;
+                                        });
+                                        //
+                                        self.resetScroll();
+                                    }
+                                    else {
+                                        //
+                                        self.resetScroll();
+                                        //
+                                        var tempHead = new Models.SearchItemContext(null);
+                                        tempHead.type = Models.SearchItemContextType.Header;
+                                        self.items.push(tempHead);
+                                        // sort alphabetically
+                                        self.datasource.sort(function (left, right) {
+                                            return left.f_name == right.f_name ? 0 : (left.f_name < right.f_name ? -1 : 1);
+                                        });
+                                        if (isNaN(parseInt(temp))) {
+                                            // exact match: f_name
+                                            self.datasource.forEach(function (name) {
+                                                var f_name = name.f_name.substr(0, self.query().length);
+                                                if (f_name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
+                                                    self.items.push(name);
+                                                }
+                                            });
+                                            // exact match: l_name
+                                            self.datasource.forEach(function (name) {
+                                                var l_name = name.l_name.substr(0, self.query().length);
+                                                if (l_name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
+                                                    self.items.push(name);
+                                                }
+                                            });
+                                            //
+                                            self.isAllAvailable(false);
+                                            self.exactMatchCount(self.items().length - 2);
+                                            self.isExactMatchAvailable((self.items().length - 2) > 0);
+                                            // add splitter
+                                            self.items.push(new Models.SearchItemContext(null));
+                                            // partial match
+                                            var k_1 = 0;
+                                            self.datasource.forEach(function (person) {
+                                                var f_name = person.f_name.substr(0, self.query().length).toLowerCase();
+                                                var l_name = person.l_name.substr(0, self.query().length).toLowerCase();
+                                                if (f_name.indexOf(self.query().toLowerCase()) === -1
+                                                    && l_name.indexOf(self.query().toLowerCase()) === -1
+                                                    && person.fullname.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
+                                                    self.items.push(person);
+                                                    k_1++;
+                                                }
+                                            });
+                                            self.partialMatchCount(k_1);
+                                            self.isPartialMatchAvailable(k_1 > 0);
                                         }
-                                    });
-                                    console.log(self.items());
-                                    self.partialMatchCount(k_1);
-                                    self.isPartialMatchAvailable(k_1 > 0);
-                                }
-                                else {
-                                    var id_1 = parseInt(self.query());
-                                    self.isExactMatchAvailable(false);
-                                    //
-                                    var tempHead_1 = new Models.SearchItemContext(null);
-                                    tempHead_1.type = Models.SearchItemContextType.SearchById;
-                                    self.items.push(tempHead_1);
-                                    //
-                                    self.datasource.forEach(function (student) {
-                                        console.log(id_1, student.id, id_1 + student.id);
-                                        if (id_1 === student.id) {
-                                            self.items.push(student);
+                                        else {
+                                            var id_1 = parseInt(self.query());
+                                            self.isExactMatchAvailable(false);
+                                            //
+                                            var tempHead_1 = new Models.SearchItemContext(null);
+                                            tempHead_1.type = Models.SearchItemContextType.SearchById;
+                                            self.items.push(tempHead_1);
+                                            //
+                                            self.datasource.forEach(function (student) {
+                                                console.log(id_1, student.id, id_1 + student.id);
+                                                if (id_1 === student.id) {
+                                                    self.items.push(student);
+                                                }
+                                            });
                                         }
-                                    });
+                                    }
                                 }
                             }
                         }
@@ -673,6 +704,32 @@ var Views;
                 return SearchResults;
             }());
             Components.SearchResults = SearchResults;
+            var SearchResultsContainer = (function (_super) {
+                __extends(SearchResultsContainer, _super);
+                function SearchResultsContainer() {
+                    _super.call(this);
+                    var self = this;
+                    self.el = $("<article/>", {
+                        "class": "search-active--wrapper"
+                    });
+                    self.elPopout = $("<div/>", {
+                        class: "search-result-popout"
+                    });
+                    self.elUl = $("<ul/>", {
+                        class: "search-results",
+                        "data-bind": "template: { name: 'template_row_search__item', foreach: $data.layout.header.leftControl.searchControl.grid.items , as: 'person' }"
+                    });
+                    self.elPopout.append(self.elUl);
+                }
+                SearchResultsContainer.prototype.render = function () {
+                    var self = this;
+                    self.el.append(self.elPopout);
+                    self.el.append("<div class=\"search-active-background\"></div>");
+                    return self.el;
+                };
+                return SearchResultsContainer;
+            }(Session.BaseView));
+            Components.SearchResultsContainer = SearchResultsContainer;
         })(Components = Controls.Components || (Controls.Components = {}));
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
@@ -734,7 +791,7 @@ var Views;
                         href: "javascript:void(0);",
                         "class": "navbar-brand navbar-blue"
                     });
-                    self.searchControl = new Views.Controls.Components.SearchControl();
+                    self.searchControl = new Views.Controls.Components.SearchControl(self);
                     self.smallLogo = elementGenerator.createImage(props.small);
                     self.largeLogo = elementGenerator.createImage(props.large);
                     self.lnk.append(self.smallLogo);
@@ -1136,39 +1193,6 @@ var Views;
             Head.prototype.render = function () {
                 var self = this;
             };
-            //ddMenu: JQuery;
-            //ddMenuTrigger: JQuery;
-            //ddMenuBackground: JQuery;
-            //initTrigger() {
-            //    const self = this;
-            //    const jqueryArray = [
-            //        self.ddMenu,
-            //        self.ddMenuTrigger,
-            //        self.ddMenuBackground];
-            //    self.ddMenuTrigger.on("click", (event) => {
-            //        if (!self.ddMenu.hasClass("open")) {
-            //            self.toggleArrayClass(true, jqueryArray, "open");
-            //            setTimeout(() => {
-            //                self.ddMenuBackground.on("mouseenter", (evt: any) => {
-            //                    self.toggleArrayClass(false, jqueryArray, "open");
-            //                });
-            //            }, 1000);
-            //        } else {
-            //            self.ddMenuBackground.off("mouseenter", () => {
-            //            });
-            //            self.toggleArrayClass(false, jqueryArray, "open");
-            //        }
-            //    });
-            //}
-            //toggleArrayClass(direction: boolean, items: Array<JQuery>, cssClass: string) {
-            //    items.forEach((item: JQuery) => {
-            //        if (direction) {
-            //            item.addClass(cssClass);
-            //        } else {
-            //            item.removeClass(cssClass);
-            //        }
-            //    });
-            //}
             Head.prototype.toggle = function () {
                 var self = this;
                 var topBar = $(".navbar-brand"), toggleCss = "toggle-icon";
@@ -1235,9 +1259,10 @@ var Views;
             }
             MasterLayout.prototype.addOtherElements = function () {
                 var self = this;
-                // ToDo: See Search Top
+                // ToDo: See Search Top            
+                self.userMenuControl
+                    = new Views.Controls.Components.ProfileMenu();
                 self.searchTemp = new Views.PageButtons(self);
-                self.userMenuControl = new Views.Controls.Components.ProfileMenu();
             };
             MasterLayout.prototype.addNotificationPanels = function () {
                 var self = this;
@@ -1247,6 +1272,21 @@ var Views;
                 var self = this;
                 self.main.databind(data);
                 self.header.databind({ payload: data2 });
+            };
+            MasterLayout.prototype.toggle = function () {
+                var self = this;
+                self.toggleBody();
+                self.header.toggle();
+                self.main.sideNav.toggle();
+            };
+            MasterLayout.prototype.toggleBody = function () {
+                var body = $("body"), cssClass = "toggle-icon";
+                if (!body.hasClass(cssClass)) {
+                    body.addClass(cssClass);
+                }
+                else {
+                    body.removeClass(cssClass);
+                }
             };
             return MasterLayout;
         }(Session.BaseView));
@@ -1263,14 +1303,10 @@ var Views;
             //Responses.
             this.isEventCalled_DataLoaded = false;
             var self = this;
-            console.log("MENU");
-            self.appContext.target = this;
-            self.title = ko.observable("Welcome");
-            self.isViewLoaded = ko.observable(false);
             if (self.init()) {
-                self.layout
-                    = new Views.Controls.MasterLayout();
-                self.appContext.initialize();
+                console.log("MENU");
+                self.isViewLoaded = ko.observable(false);
+                self.layout = new Views.Controls.MasterLayout();
             }
         }
         Page.prototype.getCount = function (data) {
@@ -1298,10 +1334,10 @@ var Views;
             var self = this;
             console.log("isEventCall_DataLoaded is :", self.isEventCalled_DataLoaded);
             self.layout.databind(self.appContext.payloadMenu, self.appContext.payloadUser);
-            self.appContext..loadSearhResults();
         };
         Page.prototype.dataLoaded2 = function () {
             var self = this;
+            console.log("dataloaded2");
             self.layout.addOtherElements();
             self.layout.addNotificationPanels();
         };
@@ -1310,6 +1346,7 @@ var Views;
             var self = this;
             console.log("methodCalled:searchLoaded");
             self.layout.header.leftControl.searchControl.handlerReady();
+            //self.layout.searchTemp.init();
             ko.applyBindings(self);
         };
         return Page;
@@ -1347,16 +1384,19 @@ var Views;
             self.search = $("#search-box");
             self.searchButton = $("#trigger-search");
             self.buttonToggle = $("#btn-toggle");
+            console.log(self.buttonToggle);
+            console.warn("ARE YOU CALL:ING ME");
             self.init();
         }
         PageButtons.prototype.init = function () {
             var self = this;
             self.buttonToggle.on("click", function (evt) {
-                self.parent.header.toggle();
-                self.parent.main.sideNav.toggle();
+                self.parent.toggle();
             });
             self.searchButton.on("click", function (evt) {
                 self.search.addClass("active");
+                $("body").addClass("search-active");
+                $(".search-result-popout").addClass("active");
                 self.parent.header.leftControl.searchControl.triggerEvent();
             });
         };
@@ -1373,6 +1413,9 @@ var toggleFullScreen = function () {
             screenfull.exit();
         }
     }
+};
+var onClickTest = function () {
+    console.log("test");
 };
 $(document).ready(function () {
     console.warn("ready");
@@ -1466,211 +1509,222 @@ var System;
         return Singleton;
     }());
 })(System || (System = {}));
-/// <reference path="../../typings/tsd.d.ts" />
-var Temp;
-(function (Temp) {
-    var service = (function () {
-        function service() {
-        }
-        service.loadJson = function (url) {
-            return $.getJSON(url !== "" ? url : "data.json");
-        };
-        return service;
-    }());
-    Temp.service = service;
-    var TestContext = (function (_super) {
-        __extends(TestContext, _super);
-        function TestContext() {
-            _super.call(this);
-            this.isLoadedSearch = false;
-        }
-        TestContext.prototype.initialize = function () {
-            var self = this;
-        };
-        TestContext.prototype.loadSearhResults = function () {
-            var self = this;
-            Services.Http.loadJson("data-search.json").fail(function () {
-                Q.reject("Error Loading Search");
-                return null;
-            }).done(function (result) {
-                self.isLoadedSearch = true;
-                self.payloadSearch = result;
-                Q.resolve(result);
-            }).always(function () {
-                return Q.resolve(self.payloadSearch);
-            });
-            return null;
-        };
-        return TestContext;
-    }(Core.EventDispatcher));
-    Temp.TestContext = TestContext;
-    var SearchContext = (function () {
-        //#endregion
-        function SearchContext() {
-            var self = this;
-            self.items = ko.observableArray();
-            self.isReady = ko.observable(false);
-            self.query = ko.observable("");
-            self.allCount = ko.observable(0);
-            self.exactMatchCount = ko.observable(0);
-            self.partialMatchCount = ko.observable(0);
-            self.isAllAvailable = ko.observable(false);
-            self.isExactMatchAvailable = ko.observable(false);
-            self.isPartialMatchAvailable = ko.observable(false);
-            self.queryFilter = ko.computed(function () {
-                var temp = self.query();
-                if (self.items().length > 0) {
-                    self.items.removeAll();
-                }
-                if (self.datasource !== undefined) {
-                    var tempHeadAll = new Models.SearchItemContext(null);
-                    tempHeadAll.type = Models.SearchItemContextType.All;
-                    self.items.push(tempHeadAll);
-                    if (self.query() === "") {
-                        //
-                        self.isAllAvailable(true);
-                        self.isExactMatchAvailable(false);
-                        self.allCount(self.datasource.length);
-                        //
-                        self.datasource.forEach(function (person) {
-                            self.items.push(person);
-                        });
-                        //
-                        self.resetScroll();
-                    }
-                    else {
-                        //
-                        self.resetScroll();
-                        //
-                        var tempHead = new Models.SearchItemContext(null);
-                        tempHead.type = Models.SearchItemContextType.Header;
-                        self.items.push(tempHead);
-                        // sort alphabetically
-                        self.datasource.sort(function (left, right) {
-                            return left.f_name == right.f_name ? 0 : (left.f_name < right.f_name ? -1 : 1);
-                        });
-                        if (isNaN(parseInt(temp))) {
-                            // exact match: f_name
-                            self.datasource.forEach(function (name) {
-                                var f_name = name.f_name.substr(0, self.query().length);
-                                if (f_name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
-                                    self.items.push(name);
-                                }
-                            });
-                            // exact match: l_name
-                            self.datasource.forEach(function (name) {
-                                var l_name = name.l_name.substr(0, self.query().length);
-                                if (l_name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
-                                    self.items.push(name);
-                                }
-                            });
-                            //
-                            self.isAllAvailable(false);
-                            self.exactMatchCount(self.items().length - 2);
-                            self.isExactMatchAvailable((self.items().length - 2) > 0);
-                            // add splitter
-                            self.items.push(new Models.SearchItemContext(null));
-                            // partial match
-                            var k_2 = 0;
-                            self.datasource.forEach(function (person) {
-                                var f_name = person.f_name.substr(0, self.query().length).toLowerCase();
-                                var l_name = person.l_name.substr(0, self.query().length).toLowerCase();
-                                if (f_name.indexOf(self.query().toLowerCase()) === -1
-                                    && l_name.indexOf(self.query().toLowerCase()) === -1
-                                    && person.fullname.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
-                                    self.items.push(person);
-                                    k_2++;
-                                }
-                            });
-                            self.partialMatchCount(k_2);
-                            self.isPartialMatchAvailable(k_2 > 0);
-                        }
-                        else {
-                            var id_2 = parseInt(self.query());
-                            self.isExactMatchAvailable(false);
-                            //
-                            var tempHead_2 = new Models.SearchItemContext(null);
-                            tempHead_2.type = Models.SearchItemContextType.SearchById;
-                            self.items.push(tempHead_2);
-                            //
-                            self.datasource.forEach(function (student) {
-                                console.log(id_2, student.id, id_2 + student.id);
-                                if (id_2 === student.id) {
-                                    self.items.push(student);
-                                }
-                            });
-                        }
-                    }
-                }
-            });
-        }
-        SearchContext.prototype.resetScroll = function () {
-            $(".search-result-popout").scrollTop(0);
-        };
-        SearchContext.prototype.populateControl = function (data) {
-            var self = this;
-            self.datasource = [];
-            data.results.forEach(function (item) {
-                self.datasource.push(new Models.SearchItemContext(item));
-            });
-            self.isReady(true);
-        };
-        SearchContext.prototype.clear = function (data, event) {
-            var self = this;
-            self.query("");
-            self.resetScroll();
-            event.preventDefault();
-        };
-        SearchContext.prototype.clickHandler = function (data, event, action, id) {
-            console.log("click", id);
-            switch (action) {
-                case 1:
-                    console.log("load profile");
-                    break;
-                case 2:
-                    console.log("load timeline");
-                    break;
-                case 3:
-                    console.log("load flags");
-                    break;
-                case 4:
-                    console.log("load cases");
-                    break;
-            }
-        };
-        SearchContext.prototype.search = function (value) {
-            var self = this;
-        };
-        return SearchContext;
-    }());
-    Temp.SearchContext = SearchContext;
-    var PageContext = (function () {
-        function PageContext() {
-            var self = this;
-            self.grid = new SearchContext();
-            self.testContext = new TestContext();
-            self.testContext.addEventListener(Models.Events.searchLoaded, function (arg) {
-                self.searchLoaded();
-            });
-            Q.all([self.testContext.loadSearhResults()]).then(function () {
-                if (self.testContext.isLoadedSearch) {
-                    self.testContext.dispatchEvent(new Core.Event(Models.Events.searchLoaded, self.testContext.payloadSearch));
-                }
-            });
-            self.testContext.initialize();
-        }
-        PageContext.prototype.searchLoaded = function () {
-            var self = this;
-            self.grid.populateControl(self.testContext.payloadSearch);
-        };
-        return PageContext;
-    }());
-    Temp.PageContext = PageContext;
-})(Temp || (Temp = {}));
-var appTest = new Temp.PageContext();
-$(document).ready(function () {
-    // ko.applyBindings(this.appTest);
-});
+// /// <reference path="../../typings/tsd.d.ts" />
+// namespace Temp {
+//     export class service {
+//         static loadJson(url?: string): JQueryXHR {
+//             return $.getJSON(url !== "" ? url : "data.json");
+//         }
+//     }
+//     export class TestContext extends Core.EventDispatcher {
+//         isLoadedSearch: boolean = false;
+//         payloadSearch: Models.ISearchResults;
+//         constructor() {
+//             super();
+//         }
+//         initialize() {
+//             const self = this;
+//         }
+//         loadSearhResults(): Q.Promise<Models.ISearchResults> {
+//             const self = this;
+//             Services.Http.loadJson("data-search.json").fail(() => {
+//                 Q.reject("Error Loading Search");
+//                 return null;
+//             }).done((result: Models.ISearchResults) => {
+//                 self.isLoadedSearch = true;
+//                 self.payloadSearch = result;
+//                 Q.resolve(result);
+//             }).always(() => {
+//                 return Q.resolve(self.payloadSearch);
+//             });
+//             return null;
+//         }
+//     }
+//     export class SearchContext {
+//         datasource: any;
+//         items: KnockoutObservableArray<any>;
+//         totalCount: KnockoutObservable<number>;
+//         //                
+//         query: KnockoutObservable<string>;
+//         queryFilter: KnockoutComputed<any>;
+//         //
+//         isReady: KnockoutObservable<boolean>;
+//         allCount: KnockoutObservable<number>;
+//         exactMatchCount: KnockoutObservable<number>;
+//         partialMatchCount: KnockoutObservable<number>;
+//         isAllAvailable: KnockoutObservable<boolean>;
+//         isExactMatchAvailable: KnockoutObservable<boolean>;
+//         isPartialMatchAvailable: KnockoutObservable<boolean>;
+//         //#endregion
+//         constructor() {
+//             const self = this;
+//             self.items = ko.observableArray();
+//             self.isReady = ko.observable(false);
+//             self.query = ko.observable("");
+//             self.allCount = ko.observable(0);
+//             self.exactMatchCount = ko.observable(0);
+//             self.partialMatchCount = ko.observable(0);
+//             self.isAllAvailable = ko.observable(false);
+//             self.isExactMatchAvailable = ko.observable(false);
+//             self.isPartialMatchAvailable = ko.observable(false);
+//             self.queryFilter = ko.computed(() => {
+//                 let temp = self.query();
+//                 if (self.items().length > 0) {
+//                     self.items.removeAll();
+//                 }
+//                 if (self.datasource !== undefined) {
+//                     let tempHeadAll = new Models.SearchItemContext(null);
+//                     tempHeadAll.type = Models.SearchItemContextType.All;
+//                     self.items.push(tempHeadAll);
+//                     if (self.query() === "") {
+//                         //
+//                         self.isAllAvailable(true);
+//                         self.isExactMatchAvailable(false);       
+//                         self.allCount(self.datasource.length);
+//                         //
+//                         self.datasource.forEach((person: Models.ISearchItemContext) => {
+//                             self.items.push(person);
+//                         });
+//                         //
+//                         self.resetScroll();
+//                         //
+//                     } else {
+//                         //
+//                         self.resetScroll();
+//                         //
+//                         let tempHead = new Models.SearchItemContext(null);
+//                         tempHead.type = Models.SearchItemContextType.Header;
+//                         self.items.push(tempHead);
+//                         // sort alphabetically
+//                         self.datasource.sort(function (left: Models.ISearchItemContext, right: Models.ISearchItemContext) {
+//                             return left.f_name == right.f_name ? 0 : (left.f_name < right.f_name ? -1 : 1)
+//                         });
+//                         if (isNaN(parseInt(temp))) {
+//                             // exact match: f_name
+//                             self.datasource.forEach((name: Models.ISearchItemContext) => {
+//                                 let f_name = name.f_name.substr(0, self.query().length);
+//                                 if (f_name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
+//                                     self.items.push(name);
+//                                 }
+//                             });
+//                             // exact match: l_name
+//                             self.datasource.forEach((name: Models.ISearchItemContext) => {
+//                                 let l_name = name.l_name.substr(0, self.query().length);
+//                                 if (l_name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
+//                                     self.items.push(name);
+//                                 }
+//                             });
+//                             //
+//                             self.isAllAvailable(false);
+//                             self.exactMatchCount(self.items().length - 2);
+//                             self.isExactMatchAvailable((self.items().length - 2) > 0);
+//                             // add splitter
+//                             self.items.push(new Models.SearchItemContext(null));
+//                             // partial match
+//                             let k: number = 0;
+//                             self.datasource.forEach((person: Models.ISearchItemContext) => {
+//                                 let f_name = person.f_name.substr(
+//                                     0, self.query().length).toLowerCase();
+//                                 let l_name = person.l_name.substr(
+//                                     0, self.query().length).toLowerCase();
+//                                 if (
+//                                     f_name.indexOf(self.query().toLowerCase()) === -1 
+//                                     && l_name.indexOf(self.query().toLowerCase()) === -1 
+//                                     && person.fullname.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
+//                                     self.items.push(person);
+//                                     k++;
+//                                 }
+//                             });
+//                             self.partialMatchCount(k);
+//                             self.isPartialMatchAvailable(k > 0);
+//                         } else {
+//                             let id = parseInt(self.query());
+//                             self.isExactMatchAvailable(false);
+//                             //
+//                             let tempHead = new Models.SearchItemContext(null);
+//                             tempHead.type = Models.SearchItemContextType.SearchById;
+//                             self.items.push(tempHead);
+//                             //
+//                             self.datasource.forEach((student: Models.ISearchItemContext) => {
+//                                 console.log(id, student.id, id + student.id);
+//                                 if (id === student.id) {
+//                                     self.items.push(student);
+//                                 }
+//                             });
+//                         }
+//                     }
+//                 }
+//             });
+//         }
+//         resetScroll() {
+//             $(".search-result-popout").scrollTop(0);
+//         }
+//         populateControl(data: any) {
+//             const self = this;
+//             self.datasource = [];
+//             data.results.forEach((item: Models.ISearchItem) => {
+//                 self.datasource.push(new Models.SearchItemContext(item));
+//             });
+//             self.isReady(true);
+//         }
+//         clear(data: any, event: Event) {
+//             const self = this;
+//             self.query("");
+//             self.resetScroll();
+//             event.preventDefault();
+//         }
+//         clickHandler(data: any, event: Event, action: number, id: number) {
+//             console.log("click", id);
+//             switch (action) {
+//                 case 1:
+//                     console.log("load profile");
+//                     break;
+//                 case 2:
+//                     console.log("load timeline");
+//                     break;
+//                 case 3:
+//                     console.log("load flags");
+//                     break;
+//                 case 4:
+//                     console.log("load cases");
+//                     break;
+//             }
+//         }
+//         search(value: string) {
+//             const self = this;
+//         }
+//     }
+//     export class PageContext {
+//         testContext: TestContext;
+//         constructor() {
+//             const self = this;
+//             self.grid = new SearchContext();
+//             self.testContext = new TestContext();
+//             self.testContext.addEventListener(
+//                 Models.Events.searchLoaded, (arg: any) => {
+//                     self.searchLoaded();
+//                 });
+//             Q.all([self.testContext.loadSearhResults()]).then(() => {
+//                 if (self.testContext.isLoadedSearch) {
+//                     self.testContext.dispatchEvent(
+//                         new Core.Event(
+//                             Models.Events.searchLoaded,
+//                             self.testContext.payloadSearch));
+//                 }
+//             });
+//             self.testContext.initialize();
+//         }
+//         grid: SearchContext;
+//         searchLoaded() {
+//             const self = this;
+//             self.grid.populateControl(self.testContext.payloadSearch);
+//         }
+//     }
+// }
+// let appTest = new Temp.PageContext();
+// $(document).ready(() => {
+//    // ko.applyBindings(this.appTest);
+// });
 /// <reference path="../../ref.d.ts" />
 var Views;
 (function (Views) {
@@ -1685,6 +1739,7 @@ var Views;
         }
         SideNavBase.prototype.toggle = function () {
             var self = this;
+            console.log(self.sideBarWrapper.hasClass(self.toggleCss));
             if (!self.sideBarWrapper.hasClass(self.toggleCss)) {
                 self.topBar.addClass(self.toggleCss);
                 self.menusWrapper.addClass(self.toggleCss);
@@ -1747,6 +1802,106 @@ var Views;
         })(Shared = Controls.Shared || (Controls.Shared = {}));
     })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
+// namespace Views.Controls.Components.Forms {
+//     export class AutoCompleteControl {
+//         isInputFocused: KnockoutObservable<boolean>;
+//         isInputFocusedComputed: KnockoutComputed<boolean>;
+//         selectedItemList: KnockoutObservableArray<any>;
+//         selectedItem: KnockoutObservable<any>;
+//         selectedItemValue: KnockoutObservable<any>;
+//         constructor() {
+//             const self = this;
+//             self.initBindHandler();
+//             self.selectedItem = ko.observable("");
+//             self.selectedItemValue = ko.observable("");
+//             self.selectedItemList = ko.observableArray();
+//             self.isInputFocused = ko.observable(false);
+//             self.isInputFocusedComputed = ko.computed(() => {
+//                 if (self.selectedItemList().length > 0) {
+//                 } else if (self.selectedItemList().length === 0) {
+//                 }
+//                 if (this.isInputFocused()) {
+//                     return true;
+//                 } else {
+//                     return false;
+//                 }
+//             });
+//         }
+//         searchOnFocus(data: any, event: any) {
+//             console.log(data);
+//         }
+//         searchOnBlur(data: any, event: any) {
+//             console.log(data);
+//         }
+//         initBindHandler() {
+//             var self = this;
+//             ko.bindingHandlers.autoComplete = {
+//                 init(element, valueAccessor, allBiindings, viewModel, bindingContext) {
+//                     var settings = valueAccessor();
+//                     var selectedItem = settings.selected;
+//                     var updateElementValueWithLabel = (event:any, ui:any) => {
+//                         event.preventDefault();
+//                         $(element).val(ui.item.label);
+//                         if (typeof ui.item !== "undefined") { selectedItem(ui.item); }
+//                     };
+//                     $(element).autocomplete({
+//                         minLength: 3,
+//                         source(request:any, response:any) {
+//                             let arrayResult = [
+//                                 {
+//                                     label: "Hello",
+//                                     value: 1
+//                                 },
+//                                 {
+//                                     label: "Hello",
+//                                     value: 1
+//                                 }, {
+//                                     label: "Hello",
+//                                     value: 1
+//                                 }, {
+//                                     label: "Hello",
+//                                     value: 1
+//                                 }, {
+//                                     label: "Hello",
+//                                     value: 1
+//                                 }, {
+//                                     label: "Hello",
+//                                     value: 1
+//                                 }, {
+//                                     label: "Hello",
+//                                     value: 1
+//                                 }
+//                             ];
+//                             response(arrayResult);
+//                         },
+//                         select(event:any, ui:any) {
+//                             if (ui.item) {
+//                                 updateElementValueWithLabel(event, ui);
+//                             }
+//                         },
+//                         focus(event:any, ui:any) {
+//                             console.log("focus");
+//                             if (ui.item) {
+//                                 updateElementValueWithLabel(event, ui);
+//                             }
+//                         },
+//                         change(event:any, ui:any) {
+//                             if (ui.item) {
+//                                 updateElementValueWithLabel(event, ui);
+//                             }
+//                         }
+//                     });
+//                 }
+//             };
+//         }
+//     }
+// }
+// // let searchApp = window["searchApp"] || {};
+// // window["searchApp"].autoCompleteControl = new Views.Controls.Components.Forms.AutoCompleteControl();
+// // $(document).ready(() => {    
+// //     console.log(window["searchApp"].autoCompleteControl)
+// //     ko.applyBindings(window["searchApp"]);
+// // }); 
 var Views;
 (function (Views) {
     var Components;
@@ -1975,103 +2130,3 @@ var Views;
         })(Grid = Components.Grid || (Components.Grid = {}));
     })(Components = Views.Components || (Views.Components = {}));
 })(Views || (Views = {}));
-// namespace Views.Controls.Components.Forms {
-//     export class AutoCompleteControl {
-//         isInputFocused: KnockoutObservable<boolean>;
-//         isInputFocusedComputed: KnockoutComputed<boolean>;
-//         selectedItemList: KnockoutObservableArray<any>;
-//         selectedItem: KnockoutObservable<any>;
-//         selectedItemValue: KnockoutObservable<any>;
-//         constructor() {
-//             const self = this;
-//             self.initBindHandler();
-//             self.selectedItem = ko.observable("");
-//             self.selectedItemValue = ko.observable("");
-//             self.selectedItemList = ko.observableArray();
-//             self.isInputFocused = ko.observable(false);
-//             self.isInputFocusedComputed = ko.computed(() => {
-//                 if (self.selectedItemList().length > 0) {
-//                 } else if (self.selectedItemList().length === 0) {
-//                 }
-//                 if (this.isInputFocused()) {
-//                     return true;
-//                 } else {
-//                     return false;
-//                 }
-//             });
-//         }
-//         searchOnFocus(data: any, event: any) {
-//             console.log(data);
-//         }
-//         searchOnBlur(data: any, event: any) {
-//             console.log(data);
-//         }
-//         initBindHandler() {
-//             var self = this;
-//             ko.bindingHandlers.autoComplete = {
-//                 init(element, valueAccessor, allBiindings, viewModel, bindingContext) {
-//                     var settings = valueAccessor();
-//                     var selectedItem = settings.selected;
-//                     var updateElementValueWithLabel = (event:any, ui:any) => {
-//                         event.preventDefault();
-//                         $(element).val(ui.item.label);
-//                         if (typeof ui.item !== "undefined") { selectedItem(ui.item); }
-//                     };
-//                     $(element).autocomplete({
-//                         minLength: 3,
-//                         source(request:any, response:any) {
-//                             let arrayResult = [
-//                                 {
-//                                     label: "Hello",
-//                                     value: 1
-//                                 },
-//                                 {
-//                                     label: "Hello",
-//                                     value: 1
-//                                 }, {
-//                                     label: "Hello",
-//                                     value: 1
-//                                 }, {
-//                                     label: "Hello",
-//                                     value: 1
-//                                 }, {
-//                                     label: "Hello",
-//                                     value: 1
-//                                 }, {
-//                                     label: "Hello",
-//                                     value: 1
-//                                 }, {
-//                                     label: "Hello",
-//                                     value: 1
-//                                 }
-//                             ];
-//                             response(arrayResult);
-//                         },
-//                         select(event:any, ui:any) {
-//                             if (ui.item) {
-//                                 updateElementValueWithLabel(event, ui);
-//                             }
-//                         },
-//                         focus(event:any, ui:any) {
-//                             console.log("focus");
-//                             if (ui.item) {
-//                                 updateElementValueWithLabel(event, ui);
-//                             }
-//                         },
-//                         change(event:any, ui:any) {
-//                             if (ui.item) {
-//                                 updateElementValueWithLabel(event, ui);
-//                             }
-//                         }
-//                     });
-//                 }
-//             };
-//         }
-//     }
-// }
-// // let searchApp = window["searchApp"] || {};
-// // window["searchApp"].autoCompleteControl = new Views.Controls.Components.Forms.AutoCompleteControl();
-// // $(document).ready(() => {    
-// //     console.log(window["searchApp"].autoCompleteControl)
-// //     ko.applyBindings(window["searchApp"]);
-// // }); 

@@ -20,13 +20,15 @@ namespace Views.Controls {
             const self = this;
             self.main = new Views.Controls.Main();
             self.header = new Views.Controls.Head();
+          
         }
 
         addOtherElements() {
             const self = this;
-             // ToDo: See Search Top
-             self.searchTemp = new PageButtons(self);
-             self.userMenuControl = new Views.Controls.Components.ProfileMenu();
+             // ToDo: See Search Top            
+             self.userMenuControl 
+                = new Views.Controls.Components.ProfileMenu();
+                  self.searchTemp = new PageButtons(self);
         }
         addNotificationPanels() {
             const self = this;
@@ -43,8 +45,23 @@ namespace Views.Controls {
                 { payload: data2 }
             );
 
+        }      
+        toggle(){
+            const self = this;
+            self.toggleBody();
+            self.header.toggle();
+            self.main.sideNav.toggle();    
+        }  
+        toggleBody(){
+            let body = $("body"),
+             cssClass = "toggle-icon";
+            if(!body.hasClass(cssClass)){
+                body.addClass(cssClass);
+            }else{
+                body.removeClass(cssClass);
+            }
+                
         }
-
     }
 
 }

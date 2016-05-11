@@ -34,12 +34,15 @@
 
             self.aside1.append(result1);
             self.aside2.append(result2);
+            
             return true;
         }
         init() {
+            
             const self = this;
             self.buttons = new AsideButtons(self);
             self.elUnderlay = $(".extrabar-underlay");
+            
         }
         hide() {
             const self = this;

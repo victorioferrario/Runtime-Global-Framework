@@ -1,85 +1,123 @@
 /// <reference path="../../../../typings/tsd.d.ts" />
-namespace Views.Controls.Components{
-    export class SearchControl extends Session.BaseView {        
+namespace Views.Controls.Components {
+    export class SearchControl extends Session.BaseView {
         el: JQuery;
-        search:JQuery;
-        grid:SearchResults;
-        searchButton:JQuery;
-        elSearchInput:JQuery;
-        elSearchWrapper:JQuery;
-        constructor(){
+        search: JQuery;
+        grid: SearchResults;
+        searchButton: JQuery;
+        elSearchInput: JQuery;
+        elSearchWrapper: JQuery;
+        elements: SearchControlElements;
+        parent: Views.Controls.Components.BrandControl;
+        searchResults: SearchResultsContainer;
+        constructor(parent: Views.Controls.Components.BrandControl) {
             super();
-            const self = this;       
-            
-            self.grid = new SearchResults(); 
-               
+            const self = this;
+            self.grid = new SearchResults();
+            self.parent = parent;
             self.el = $("<div/>",
-            {
-                id: "search-box"
-            });
-            
+                {
+                    id: "search-box"
+                });
             self.elSearchWrapper = $("<div/>", {
                 class: "form-group is-empty"
             });
-            
             self.elSearchInput = $("<input/>",
-            {
-                id: "search-input",
-                class:"form-control",             
-                placeholder : "Search...",
-                attr:{ 
-                    "data-bind" :"value: $data.layout.header.leftControl.searchControl.grid.query, valueUpdate: 'keyup'"                
-                },
-                blur: (evt:any)=> {
-                    console.log(evt);                 
-                }
-            });            
-            
-            self.elSearchWrapper.append(
-                self.elSearchInput);
-                
-            self.el.append(
-                self.elSearchWrapper);      
-                
-            $("#button-search-close").click((evt)=>{                
-                self.el.removeClass("active"); 
-                  self.elSearchInput.val("");   
-                $("body #topnav").toggleClass("search-active");      
-            }) ;
-        }  
-        handlerReady(){
-            const self = this;
-            console.log("handlerReady");
-            self.grid.populateControl(self.appContext.payloadSearch);    
-        }   
-        render(){
-            const self =this;
-            return self.el;
-        }   
-        triggerEvent(){  
-            const self = this; 
-            
-                  
-            $("#search-input").focus();     
-            $("body #topnav").toggleClass("search-active");                
-            $(".badge-custom").hide();   
-            $(".dropdown-menu-container").hide();                       
-            $("#button-search-close").click((evt)=> {            
-                self.el.removeClass("active");
-                $("body #topnav").removeClass("search-active");       
-                $(".badge-custom").show();       
-                $(".dropdown-menu-container").show();     
-            }) ;
+                {
+                    id: "search-input",
+                    class: "form-control",
+                    placeholder: "Search...",
+                    attr: {
+                        "data-bind": "value: $data.layout.header.leftControl.searchControl.grid.query, valueUpdate: 'keyup'"
+                    },
+                    blur: (evt: any) => {
+                        console.log(evt);
+                    }
+                });
+            self.elSearchWrapper.append(self.elSearchInput);
+
+            self.el.append(self.elSearchWrapper);
+
+            $("#button-search-close").on("click", (event: Event) => {
+                event.preventDefault();
+            });
+            ///
+            // Search Container
+            //
+            self.searchResults = new SearchResultsContainer();
+            self.parent.el.append(self.searchResults.render());
+            //
         }
-        cleanEvent(){
+
+        handlerReady() {
             const self = this;
-            $("#button-search-close").off("click");
+            self.grid.populateControl(
+                self.appContext.payloadSearch);
+            self.elements = new SearchControlElements();
+        }
+        render() {
+            const self = this;
+            return self.el;
+        }
+        triggerEvent() {
+
+            const self = this;
+            self.grid.isDeactivated(false);
+            if (self.elements === null || self.elements === undefined) {
+
+            }
+
+            self.elements.elementInput.focus();
+            self.elements.elementDropdown.hide();
+            self.elements.elementBadgeCustom.hide();
+
+            self.elements.elementTopNav.toggleClass("search-active");
+
+            self.elements.elementButtonClose.click((evt) => {
+                //
+                self.grid.isDeactivated(true);
+                //
+                self.el.removeClass("active");
+                // 
+                self.elements.elementInput.val("");
+                //
+                self.elements.elementPopout.removeClass("active");
+                self.elements.elementBody.removeClass("search-active");
+                self.elements.elementTopNav.removeClass("search-active");
+
+                self.elements.elementDropdown.show();
+                self.elements.elementBadgeCustom.show();
+
+            });
+        }
+        cleanEvent() {
+            const self = this;
+            self.elements.elementButtonClose.off("click");
+        }
+    }
+    export class SearchControlElements {
+        elementBody: JQuery;
+        elementInput: JQuery;
+        elementTopNav: JQuery;
+        elementPopout: JQuery;
+        elementDropdown: JQuery;
+        elementBadgeCustom: JQuery;
+        elementButtonClose: JQuery;
+        constructor() {
+            const self = this;
+            self.elementBody = $("body");
+            self.elementInput = $("#search-input");
+            self.elementTopNav = $("body #topnav");
+            self.elementPopout = $(".search-result-popout");
+            self.elementBadgeCustom = $(".badge-custom");
+            self.elementDropdown = $(".dropdown-menu-container");
+            self.elementButtonClose = $("#button-search-close");
         }
     }
     export class SearchResults {
 
         datasource: any;
-        
+
         items: KnockoutObservableArray<any>;
         totalCount: KnockoutObservable<number>;
         //                
@@ -92,12 +130,14 @@ namespace Views.Controls.Components{
         exactMatchCount: KnockoutObservable<number>;
         partialMatchCount: KnockoutObservable<number>;
 
+        isDeactivated: KnockoutObservable<boolean>;
         isAllAvailable: KnockoutObservable<boolean>;
         isExactMatchAvailable: KnockoutObservable<boolean>;
         isPartialMatchAvailable: KnockoutObservable<boolean>;
-        
+
         //#endregion
         constructor() {
+
             const self = this;
 
             self.items = ko.observableArray();
@@ -109,104 +149,102 @@ namespace Views.Controls.Components{
             self.exactMatchCount = ko.observable(0);
             self.partialMatchCount = ko.observable(0);
 
+
+            self.isDeactivated = ko.observable(true);
+
             self.isAllAvailable = ko.observable(false);
             self.isExactMatchAvailable = ko.observable(false);
             self.isPartialMatchAvailable = ko.observable(false);
 
             self.queryFilter = ko.computed(() => {
-                
+
                 let temp = self.query();
                 if (self.items().length > 0) {
                     self.items.removeAll();
                 }
-                
-                console.log(temp);
-                console.log(this)
-                if (self.datasource !== undefined) {
-                    
-                    console.log(temp,self.datasource)
-                    
-                    let tempHeadAll = new Models.SearchItemContext(null);
-                    tempHeadAll.type = Models.SearchItemContextType.All;
-                    self.items.push(tempHeadAll);
-                    
-                    
-                    if (self.query() === "") {
-                        //
-                        self.isAllAvailable(true);
-                        self.isExactMatchAvailable(false);       
-                        self.allCount(self.datasource.length);
-                        //
-                        self.datasource.forEach((person: Models.ISearchItemContext) => {
-                            self.items.push(person);
-                        });
-                        //
-                        self.resetScroll();
-                        //
-                    } else {
-                        //
-                        self.resetScroll();
-                        //
-                        let tempHead = new Models.SearchItemContext(null);
-                        tempHead.type = Models.SearchItemContextType.Header;
-                        self.items.push(tempHead);
-                        // sort alphabetically
-                        self.datasource.sort(function (left: Models.ISearchItemContext, right: Models.ISearchItemContext) {
-                            return left.f_name == right.f_name ? 0 : (left.f_name < right.f_name ? -1 : 1)
-                        });
-                        if (isNaN(parseInt(temp))) {
-                            // exact match: f_name
-                            self.datasource.forEach((name: Models.ISearchItemContext) => {
-                                let f_name = name.f_name.substr(0, self.query().length);
-                                if (f_name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
-                                    self.items.push(name);
-                                }
-                            });
-                            // exact match: l_name
-                            self.datasource.forEach((name: Models.ISearchItemContext) => {
-                                let l_name = name.l_name.substr(0, self.query().length);
-                                if (l_name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
-                                    self.items.push(name);
-                                }
-                            });
-                            //
-                            self.isAllAvailable(false);
-                            self.exactMatchCount(self.items().length - 2);
-                            self.isExactMatchAvailable((self.items().length - 2) > 0);
-                            // add splitter
-                            self.items.push(new Models.SearchItemContext(null));
-                            // partial match
-                            let k: number = 0;
-                            self.datasource.forEach((person: Models.ISearchItemContext) => {
-                                let f_name = person.f_name.substr(
-                                    0, self.query().length).toLowerCase();
-                                let l_name = person.l_name.substr(
-                                    0, self.query().length).toLowerCase();
-                                if (
-                                    f_name.indexOf(self.query().toLowerCase()) === -1 
-                                    && l_name.indexOf(self.query().toLowerCase()) === -1 
-                                    && person.fullname.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
+                if (!self.isDeactivated()) {
+                    if (self.query().length > 0) {
+                        if (self.datasource !== undefined) {
+                            let tempHeadAll = new Models.SearchItemContext(null);
+                            tempHeadAll.type = Models.SearchItemContextType.All;
+                            self.items.push(tempHeadAll);
+                            if (self.query() === "") {
+                                //
+                                self.isAllAvailable(true);
+                                self.isExactMatchAvailable(false);
+                                self.allCount(self.datasource.length);
+                                //
+                                self.datasource.forEach((person: Models.ISearchItemContext) => {
                                     self.items.push(person);
-                                    k++;
+                                });
+                                //
+                                self.resetScroll();
+                                //
+                            } else {
+                                //
+                                self.resetScroll();
+                                //
+                                let tempHead = new Models.SearchItemContext(null);
+                                tempHead.type = Models.SearchItemContextType.Header;
+                                self.items.push(tempHead);
+                                // sort alphabetically
+                                self.datasource.sort(function (left: Models.ISearchItemContext, right: Models.ISearchItemContext) {
+                                    return left.f_name == right.f_name ? 0 : (left.f_name < right.f_name ? -1 : 1)
+                                });
+                                if (isNaN(parseInt(temp))) {
+                                    // exact match: f_name
+                                    self.datasource.forEach((name: Models.ISearchItemContext) => {
+                                        let f_name = name.f_name.substr(0, self.query().length);
+                                        if (f_name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
+                                            self.items.push(name);
+                                        }
+                                    });
+                                    // exact match: l_name
+                                    self.datasource.forEach((name: Models.ISearchItemContext) => {
+                                        let l_name = name.l_name.substr(0, self.query().length);
+                                        if (l_name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
+                                            self.items.push(name);
+                                        }
+                                    });
+                                    //
+                                    self.isAllAvailable(false);
+                                    self.exactMatchCount(self.items().length - 2);
+                                    self.isExactMatchAvailable((self.items().length - 2) > 0);
+                                    // add splitter
+                                    self.items.push(new Models.SearchItemContext(null));
+                                    // partial match
+                                    let k: number = 0;
+                                    self.datasource.forEach((person: Models.ISearchItemContext) => {
+                                        let f_name = person.f_name.substr(
+                                            0, self.query().length).toLowerCase();
+                                        let l_name = person.l_name.substr(
+                                            0, self.query().length).toLowerCase();
+                                        if (
+                                            f_name.indexOf(self.query().toLowerCase()) === -1
+                                            && l_name.indexOf(self.query().toLowerCase()) === -1
+                                            && person.fullname.toLowerCase().indexOf(self.query().toLowerCase()) >= 0) {
+                                            self.items.push(person);
+                                            k++;
+                                        }
+                                    });
+                                    self.partialMatchCount(k);
+                                    self.isPartialMatchAvailable(k > 0);
+                                } else {
+                                    let id = parseInt(self.query());
+                                    self.isExactMatchAvailable(false);
+                                    //
+                                    let tempHead = new Models.SearchItemContext(null);
+                                    tempHead.type = Models.SearchItemContextType.SearchById;
+                                    self.items.push(tempHead);
+                                    //
+                                    self.datasource.forEach((student: Models.ISearchItemContext) => {
+                                        console.log(id, student.id, id + student.id);
+                                        if (id === student.id) {
+                                            self.items.push(student);
+                                        }
+                                    });
                                 }
-                            });
-                            console.log(self.items());
-                            self.partialMatchCount(k);
-                            self.isPartialMatchAvailable(k > 0);
-                        } else {
-                            let id = parseInt(self.query());
-                            self.isExactMatchAvailable(false);
-                            //
-                            let tempHead = new Models.SearchItemContext(null);
-                            tempHead.type = Models.SearchItemContextType.SearchById;
-                            self.items.push(tempHead);
-                            //
-                            self.datasource.forEach((student: Models.ISearchItemContext) => {
-                                console.log(id, student.id, id + student.id);
-                                if (id === student.id) {
-                                    self.items.push(student);
-                                }
-                            });
+                            }
                         }
                     }
                 }
@@ -217,12 +255,11 @@ namespace Views.Controls.Components{
         }
         populateControl(data: any) {
             const self = this;
-            console.log("populateControl",data);
-            self.datasource = [];            
+            console.log("populateControl", data);
+            self.datasource = [];
             data.results.forEach((item: Models.ISearchItem) => {
                 self.datasource.push(new Models.SearchItemContext(item));
             });
-            
             self.isReady(true);
         }
         clear(data: any, event: Event) {
@@ -251,5 +288,32 @@ namespace Views.Controls.Components{
         search(value: string) {
             const self = this;
         }
+    }
+    export class SearchResultsContainer extends Session.BaseView {
+        el: JQuery;
+        elUl: JQuery;
+        elPopout: JQuery;
+        constructor() {
+            super();
+            const self = this;
+            self.el = $("<article/>", {
+                "class": "search-active--wrapper"
+            });
+            self.elPopout = $("<div/>", {
+                class: "search-result-popout"
+            });
+            self.elUl = $("<ul/>", {
+                class: "search-results",
+                "data-bind": "template: { name: 'template_row_search__item', foreach: $data.layout.header.leftControl.searchControl.grid.items , as: 'person' }"
+            });
+            self.elPopout.append(self.elUl);
+        }
+        render() {
+            const self = this;
+            self.el.append(self.elPopout);
+            self.el.append(`<div class="search-active-background"></div>`)
+            return self.el;
+        }
+
     }
 }

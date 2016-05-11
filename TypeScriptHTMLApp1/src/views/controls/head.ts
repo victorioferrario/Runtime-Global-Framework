@@ -76,7 +76,6 @@ namespace Views.Controls {
         databind(data: IHeadProps) {
 
             const self = this;
-
             const logoProps: Views.Controls.Components.IBrandControlProps = {
                 className: "logo-area",
                 small: {
@@ -113,46 +112,10 @@ namespace Views.Controls {
         render() {
             const self = this;
         }
-
-        //ddMenu: JQuery;
-        //ddMenuTrigger: JQuery;
-        //ddMenuBackground: JQuery;
-
-        //initTrigger() {
-        //    const self = this;
-        //    const jqueryArray = [
-        //        self.ddMenu,
-        //        self.ddMenuTrigger,
-        //        self.ddMenuBackground];
-        //    self.ddMenuTrigger.on("click", (event) => {
-        //        if (!self.ddMenu.hasClass("open")) {
-        //            self.toggleArrayClass(true, jqueryArray, "open");
-        //            setTimeout(() => {
-        //                self.ddMenuBackground.on("mouseenter", (evt: any) => {
-        //                    self.toggleArrayClass(false, jqueryArray, "open");
-        //                });
-        //            }, 1000);
-        //        } else {
-        //            self.ddMenuBackground.off("mouseenter", () => {
-        //            });
-        //            self.toggleArrayClass(false, jqueryArray, "open");
-        //        }
-        //    });
-        //}
-
-        //toggleArrayClass(direction: boolean, items: Array<JQuery>, cssClass: string) {
-        //    items.forEach((item: JQuery) => {
-        //        if (direction) {
-        //            item.addClass(cssClass);
-        //        } else {
-        //            item.removeClass(cssClass);
-        //        }
-        //    });
-        //}
-
-        toggle() {
-            const self = this;
-            let topBar = $(".navbar-brand"), toggleCss = "toggle-icon";
+        toggle() {            
+            const self = this;            
+            let topBar = $(".navbar-brand"),           
+            toggleCss = "toggle-icon";
             if (!topBar.hasClass(toggleCss)) {
                 topBar.addClass(toggleCss);
             } else {
