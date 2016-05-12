@@ -54,13 +54,20 @@
             const self = this;
             switch (isAlerts) {
                 case true:
-                    self.toggleStatic(self.aside2, self.aside1, self.elUnderlay);
+                    self.toggleStatic(
+                        self.aside2, 
+                        self.aside1, 
+                        self.elUnderlay);
                     break;
                 case false:
-                    self.toggleStatic(self.aside1, self.aside2, self.elUnderlay);
+                    self.toggleStatic(
+                        self.aside1, 
+                        self.aside2, 
+                        self.elUnderlay);
                     break;
             }
         }
+        
         toggleStatic(asideToShow: JQuery, asideToHide: JQuery, asideUnderlay: JQuery) {
             if (!asideToShow.hasClass(AsideLayout.cssToggle)) {
                 asideToShow.addClass(AsideLayout.cssToggle);
@@ -73,13 +80,15 @@
         }
     }
 
-    export class AsideButtons {
+    export class AsideButtons extends Session.BaseView {
         parent: AsideLayout;
         buttonCloseAlerts: JQuery;
         buttonToggleAlerts: JQuery;
         buttonCloseReports: JQuery;
         buttonToggleReports: JQuery;
         constructor(ref: AsideLayout) {
+            super();
+            //
             const self = this;
             self.parent = ref;
             // Alerts
@@ -89,6 +98,11 @@
             self.buttonCloseReports = $("#buttonCloseProgressReports");
             self.buttonToggleReports = $("#button-toggle-aside_ProgressReports");
             // 
+            self.appContext.addEventListener(
+                Models.Events.EVENT_UI_TOGGLE_DROPDOWN, ()=>{
+                self.parent.hide();
+            });
+            //
             self.init();
         }
         init() {
@@ -99,11 +113,17 @@
             self.buttonCloseReports.on("click", (evt: any) => {
                 self.parent.hide();
             });
-            self.buttonToggleAlerts.on("click", (evt: any) => {
+            self.buttonToggleAlerts.on("click", (evt: any) => {                
                 self.parent.toggle(false);
+                self.appContext.dispatchEvent(
+                    new Core.Event(
+                        Models.Events.EVENT_UI_TOGGLE_ASIDE, self));
             });
             self.buttonToggleReports.on("click", (evt: any) => {
                 self.parent.toggle(true);
+                self.appContext.dispatchEvent(
+                    new Core.Event(
+                        Models.Events.EVENT_UI_TOGGLE_ASIDE, self));
             });
         }
     }

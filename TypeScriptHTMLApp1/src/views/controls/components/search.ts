@@ -34,17 +34,16 @@ namespace Views.Controls.Components {
                         console.log(evt);
                     }
                 });
-            self.elSearchWrapper.append(self.elSearchInput);
-
+            self.elSearchWrapper.append(
+                self.elSearchInput);
             self.el.append(self.elSearchWrapper);
-
             $("#button-search-close").on("click", (event: Event) => {
                 event.preventDefault();
             });
             ///
             // Search Container
             //
-            self.searchResults = new SearchResultsContainer();
+            self.searchResults = new SearchResultsContainer(self);
             self.parent.el.append(self.searchResults.render());
             //
         }
@@ -60,19 +59,25 @@ namespace Views.Controls.Components {
             return self.el;
         }
         triggerEvent() {
-
             const self = this;
-            self.grid.isDeactivated(false);
-            if (self.elements === null || self.elements === undefined) {
-
-            }
-
+            // Trigger hiding of all other panels or dropdowns.
+            self.appContext.dispatchEvent(
+                    new Core.Event(
+                        Models.Events.EVENT_UI_TOGGLE_ASIDE, self));
+                        
+            self.appContext.dispatchEvent(
+                    new Core.Event(
+                        Models.Events.EVENT_UI_TOGGLE_DROPDOWN, self));
+            //            
+            self.grid.isDeactivated(false);            
+            //
             self.elements.elementInput.focus();
             self.elements.elementDropdown.hide();
             self.elements.elementBadgeCustom.hide();
-
+            //
             self.elements.elementTopNav.toggleClass("search-active");
-
+            self.searchResults.el.removeClass("m-hide");            
+            //
             self.elements.elementButtonClose.click((evt) => {
                 //
                 self.grid.isDeactivated(true);
@@ -84,11 +89,29 @@ namespace Views.Controls.Components {
                 self.elements.elementPopout.removeClass("active");
                 self.elements.elementBody.removeClass("search-active");
                 self.elements.elementTopNav.removeClass("search-active");
-
+                //
                 self.elements.elementDropdown.show();
                 self.elements.elementBadgeCustom.show();
-
+                //
+                self.searchResults.el.addClass("m-hide");
             });
+        }
+        closeEvent() {
+            const self = this;
+            //
+            self.grid.isDeactivated(true);
+            //
+            self.el.removeClass("active");
+            // 
+            self.elements.elementInput.val("");
+            //
+            self.elements.elementPopout.removeClass("active");
+            self.elements.elementBody.removeClass("search-active");
+            self.elements.elementTopNav.removeClass("search-active");
+            //
+            self.elements.elementDropdown.show();
+            self.elements.elementBadgeCustom.show();
+            //
         }
         cleanEvent() {
             const self = this;
@@ -293,11 +316,14 @@ namespace Views.Controls.Components {
         el: JQuery;
         elUl: JQuery;
         elPopout: JQuery;
-        constructor() {
+        elBackground: JQuery;
+        parent:SearchControl;
+        constructor(parent:SearchControl) {
             super();
             const self = this;
+            self.parent = parent;
             self.el = $("<article/>", {
-                "class": "search-active--wrapper"
+                "class": "search-active--wrapper m-hide"
             });
             self.elPopout = $("<div/>", {
                 class: "search-result-popout"
@@ -306,12 +332,18 @@ namespace Views.Controls.Components {
                 class: "search-results",
                 "data-bind": "template: { name: 'template_row_search__item', foreach: $data.layout.header.leftControl.searchControl.grid.items , as: 'person' }"
             });
+            self.elBackground = $("<div/>", {
+                class: "search-active-background",
+                click: (evt: any) => {
+                    self.parent.closeEvent();
+                }
+            });
             self.elPopout.append(self.elUl);
         }
         render() {
             const self = this;
             self.el.append(self.elPopout);
-            self.el.append(`<div class="search-active-background"></div>`)
+            self.el.append(self.elBackground);
             return self.el;
         }
 

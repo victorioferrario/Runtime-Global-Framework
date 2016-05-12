@@ -13,6 +13,7 @@ namespace Session {
         isLoadedNotifications: boolean = false;
 
         payload: Models.IMenuPayload;
+        
         payloadMenu: Models.IMenuPayload;
         payloadUser: Models.IUserPayload;
         payloadSearch: Models.ISearchResults;
@@ -73,11 +74,13 @@ namespace Session {
         */
         private loadNotifications() {
             const self = this;
+            
             Services.Http.loadJson(AppContextSettings.notificationUrl).fail(() => {
                 self.dispatchEvent(
                     new Core.Event(
                         AppContext.APP_CONTEXT_ERROR, this));
             }).done((result: Models.INotificationsPayload) => {
+                
                 self.isLoadedNotifications = true;
                 self.payloadNotifications = result;
                 self.iNotificatonProps = {
@@ -147,11 +150,13 @@ namespace Session {
 
             self.loadSearhResults();
         }
+        
         private static APP_CONTEXT_ERROR = "APP_CONTEXT_ERROR";
         private static APP_CONTEXT_MENU_LOADED = "APP_CONTEXT_MENU_LOADED";
         private static APP_CONTEXT_USER_LOADED = "APP_CONTEXT_USER_LOADED";
         private static APP_CONTEXT_SEARCH_LOADED = "APP_CONTEXT_SEARCH_LOADED";
         private static APP_CONTEXT_NOTIFICATIONS_LOADED = "APP_CONTEXT_NOTIFICATIONS_LOADED";
+        
         initialize() {
             const self = this;        
             self.addEventListener(
@@ -229,6 +234,7 @@ namespace Session {
             self.appContext = Session.AppContext.getInstance();
         }
     }
+    
     export class Base extends BaseView {
         el: JQuery;
         appContext: AppContext;
@@ -236,6 +242,15 @@ namespace Session {
             super();
             const self = this;
             self.el = $(`#${id}`);
+        }
+    }
+    export class BaseSelector extends BaseView {
+        el: JQuery;
+        appContext: AppContext;
+        constructor(selector: string) {
+            super();
+            const self = this;
+            self.el = $(`.${selector}`);
         }
     }
     

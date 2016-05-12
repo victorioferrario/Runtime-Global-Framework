@@ -135,12 +135,12 @@
 // [@    -------------------------------------------------   @]
 
 /// <reference path="views/controls/aside.ts" />
-/// <reference path="session/base.ts" />
+
 /// <reference path="views/controls/head.ts" />
 /// <reference path="views/controls/main.ts" />
 /// <reference path="views/controls/master.ts" />
 /// <reference path="views/controls/page.ts" />
-/// <reference path="views/controls/SideNavElements.ts" />
+
 
 // [@    -------------------------------------------------   @]
 // [@    -------------------------------------------------   @]

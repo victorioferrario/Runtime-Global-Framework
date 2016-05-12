@@ -8,13 +8,14 @@
         constructor() {
             super("wrapper");
         }
-        databind(value: Models.IMenuPayload) {
+        databind() {
             const self = this;
-            self.content = new Content();
-            self.sideNav = new SideNav(value);
+            self.content = new Content();            
+            self.sideNav = new SideNav();          
         }
+        
     }
-    export class Content extends Session.Base {
+    export class Content extends Session.BaseSelector{
         elContent: JQuery;
         elPageLoader: Views.Controls.Shared.PageLoader;
         constructor() {
@@ -29,7 +30,6 @@
             }));
             self.elPageLoader = new Views.Controls.Shared.PageLoader();
             self.elContent.prepend(self.elPageLoader.render());
-            
         }
     }
 }

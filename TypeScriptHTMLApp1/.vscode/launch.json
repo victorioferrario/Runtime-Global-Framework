@@ -3,35 +3,17 @@
 	"configurations": [
 		{
 			"name": "Launch",
-			"type": "node",
+			"type": "chrome",
 			"request": "launch",
-			"program": "${workspaceRoot}/release/main.js",
-			"stopOnEntry": false,
-			"args": [],
-			"cwd": "${workspaceRoot}",
-			"preLaunchTask": null,
-			"runtimeExecutable": null,
-			"runtimeArgs": [
-				"--nolazy"
-			],
-			"env": {
-				"NODE_ENV": "development"
-			},
-			"externalConsole": false,
-			"sourceMaps": false,
-			"outDir": null
-		},
-		{
-			"name": "Attach",
-			"type": "node",
-			"request": "attach",
-			"port": 5858,
-			"address": "localhost",
-			"restart": false,
-			"sourceMaps": false,
-			"outDir": null,
-			"localRoot": "${workspaceRoot}",
-			"remoteRoot": null
-		}
+			"url": "http://localhost:3000/index2.html",
+            "webRoot": "${workspaceRoot}",
+            "sourceMaps": true
+		},        
+         {
+            "name": "Launch index.html (without sourcemaps)",
+            "type": "chrome",
+            "request": "launch",
+            "file": "${workspaceRoot}/index2.html"
+        }
 	]
 }

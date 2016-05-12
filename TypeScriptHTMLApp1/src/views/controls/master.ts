@@ -19,11 +19,15 @@ namespace Views.Controls {
             super();
             const self = this;
             self.main = new Views.Controls.Main();
-            self.header = new Views.Controls.Head();
-          
+            self.header = new Views.Controls.Head();          
         }
-
-        addOtherElements() {
+        databind(data: any, data2: any) {
+            const self = this;
+            self.main.databind();
+            self.header.databind();
+        }  
+        
+        addProfilePanel() {
             const self = this;
              // ToDo: See Search Top            
              self.userMenuControl 
@@ -35,17 +39,7 @@ namespace Views.Controls {
             self.aside = new Views.Controls.Aside();
         }
         
-        databind(data: any, data2: any) {
-            const self = this;
-
-            self.main.databind(
-                data);
-
-            self.header.databind(
-                { payload: data2 }
-            );
-
-        }      
+            
         toggle(){
             const self = this;
             self.toggleBody();

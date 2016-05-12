@@ -5,4 +5,4 @@ cd workearea/ts-menu/ts-menu/typescripthtmlapp1
 
 
 //  Start server 
-browser-sync start --server
+ext install JSDocTagComplete
