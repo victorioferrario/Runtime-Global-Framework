@@ -6,12 +6,37 @@ namespace Views.Controls.Components {
     import sTemplates = Components.Utilities.StringTemplates;
     import eTemplates = Components.Utilities.ElementTemplates;
     // ------->
+    /**
+     * (description)
+     * 
+     * @export
+     * @class RightMenu
+     * @extends {Session.BaseView}
+     */
     export class RightMenu extends Session.BaseView {
 
+        /**
+         * (description)
+         * 
+         * @type {JQuery}
+         */
         ulList: JQuery;
+        /**
+         * (description)
+         * 
+         * @type {Session.AppContext}
+         */
         appContext: Session.AppContext;
+        /**
+         * (description)
+         * 
+         * @type {(Array<JQuery | String>)}
+         */
         controlsList: Array<JQuery | String>;
 
+        /**
+         * Creates an instance of RightMenu.
+         */
         constructor() {
 
             super();
@@ -27,7 +52,6 @@ namespace Views.Controls.Components {
                 sTemplates.notificationMenuItem(iNotify.alertCount),
                 sTemplates.switchDepartmentsMenuItem()
             ];
-
             // @create ul
             self.ulList = eTemplates.ulMenu();
 
@@ -38,6 +62,11 @@ namespace Views.Controls.Components {
 
         }
 
+        /**
+         * (description)
+         * 
+         * @returns (description)
+         */
         render() {
             const self = this;
             $("#button-toggle-fullscreen").on("click", (event: any) => {
@@ -45,7 +74,12 @@ namespace Views.Controls.Components {
             });
             return self.ulList;
         }
-
+        
+        /**
+         * (description)
+         * 
+         * @param {*} event (description)
+         */
         onclickFullScreen(event: any) {
             if (screenfull.enabled) {
                 if (!screenfull.isFullscreen) {

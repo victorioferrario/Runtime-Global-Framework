@@ -868,8 +868,18 @@ var Views;
             var sTemplates = Components.Utilities.StringTemplates;
             var eTemplates = Components.Utilities.ElementTemplates;
             // ------->
+            /**
+             * (description)
+             *
+             * @export
+             * @class RightMenu
+             * @extends {Session.BaseView}
+             */
             var RightMenu = (function (_super) {
                 __extends(RightMenu, _super);
+                /**
+                 * Creates an instance of RightMenu.
+                 */
                 function RightMenu() {
                     _super.call(this);
                     var self = this;
@@ -889,6 +899,11 @@ var Views;
                         self.ulList.append(item);
                     });
                 }
+                /**
+                 * (description)
+                 *
+                 * @returns (description)
+                 */
                 RightMenu.prototype.render = function () {
                     var self = this;
                     $("#button-toggle-fullscreen").on("click", function (event) {
@@ -896,6 +911,11 @@ var Views;
                     });
                     return self.ulList;
                 };
+                /**
+                 * (description)
+                 *
+                 * @param {*} event (description)
+                 */
                 RightMenu.prototype.onclickFullScreen = function (event) {
                     if (screenfull.enabled) {
                         if (!screenfull.isFullscreen) {
@@ -918,8 +938,10 @@ var Views;
     (function (Controls) {
         var Components;
         (function (Components) {
-            var ProfileMenu = (function () {
+            var ProfileMenu = (function (_super) {
+                __extends(ProfileMenu, _super);
                 function ProfileMenu() {
+                    _super.call(this);
                     var self = this;
                     self.menu = $(".user-menu");
                     self.menuOpen = $("#user-menu-expand");
@@ -936,9 +958,32 @@ var Views;
                         ProfileMenu.toggleHide(self.menuOpen, self.menuClose, self.menu);
                     });
                     self.render();
+                    var controls = [
+                        $("#menu0_link0"),
+                        $("#menu0_link1"),
+                        $("#menu0_link2")
+                    ];
+                    controls.forEach(function (lnk) {
+                        lnk.on("click", function (evt) {
+                            var id = lnk.data("id");
+                            var target = lnk.data("target");
+                            switch (target) {
+                                case "VIEW_PROFILE":
+                                    document.location.href = "" + ProfileMenu.LINKS_VIEW_PROFILE + id;
+                                    break;
+                                case "EDIT_PROFILE":
+                                    document.location.href = "" + ProfileMenu.LINKS_EDIT_PROFILE + id;
+                                    break;
+                                case "PHONE":
+                                    document.location.href = "" + ProfileMenu.LINKS_UPDATE_PHONE + id;
+                                    break;
+                            }
+                        });
+                    });
                 };
                 ProfileMenu.prototype.render = function () {
-                    var result = "<a href=\"javascript:void(0)\" id=\"menu0_link0\"\n                       class=\"menu-item waves-effect waves-light\"><i class=\"material-icons menu-icon\">account_box</i><span class=\"menu-text\" title=\"Dashboard\">My Profile</span></a>\n                    <a href=\"javascript:void(0)\" id=\"menu0_link1\"\n                       class=\"menu-item waves-effect waves-light\"><i class=\"material-icons menu-icon\">edit</i><span class=\"menu-text\" title=\"Dashboard\">Edit Profile</span></a>\n                    <a href=\"javascript:void(0)\" id=\"menu0_link2\"\n                       class=\"menu-item waves-effect waves-light\"><i class=\"material-icons menu-icon\">phone_iphone</i><span class=\"menu-text\" title=\"Dashboard\">Update Phone</span></a>";
+                    var self = this;
+                    var result = "<a href=\"javascript:void(0)\" id=\"menu0_link0\" data-id=\"" + self.appContext.payloadUser.entity.user.id + "\" data-target=\"VIEW_PROFILE\"\n                       class=\"menu-item waves-effect waves-light\"><i class=\"material-icons menu-icon\">account_box</i><span class=\"menu-text\" title=\"My Profile\">My Profile</span></a>\n                    <a href=\"javascript:void(0)\" id=\"menu0_link1\" data-id=\"" + self.appContext.payloadUser.entity.user.id + "\" data-target=\"EDIT_PROFILE\"\n                       class=\"menu-item waves-effect waves-light\"><i class=\"material-icons menu-icon\">edit</i><span class=\"menu-text\" title=\"Dashboard\">Edit Profile</span></a>\n                    <a href=\"javascript:void(0)\" id=\"menu0_link2\" data-id=\"" + self.appContext.payloadUser.entity.user.id + "\" data-target=\"PHONE\"\n                       class=\"menu-item waves-effect waves-light\"><i class=\"material-icons menu-icon\">phone_iphone</i><span class=\"menu-text\" title=\"Dashboard\">Update Phone</span></a>";
                     this.menu.append(result);
                 };
                 ProfileMenu.toggleState = function (linkToShow, linkToHide, menu) {
@@ -960,8 +1005,11 @@ var Views;
                 };
                 ProfileMenu.cssExp = "expanded";
                 ProfileMenu.cssHide = "m-hide-opacity";
+                ProfileMenu.LINKS_UPDATE_PHONE = "profile/edit/phone/";
+                ProfileMenu.LINKS_VIEW_PROFILE = "profile/view/";
+                ProfileMenu.LINKS_EDIT_PROFILE = "profile/edit/";
                 return ProfileMenu;
-            }());
+            }(Session.BaseView));
             Components.ProfileMenu = ProfileMenu;
         })(Components = Controls.Components || (Controls.Components = {}));
     })(Controls = Views.Controls || (Views.Controls = {}));
