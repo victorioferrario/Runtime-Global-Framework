@@ -67,7 +67,7 @@
         {
           "icon": "reply_all",
           "label": "Logout",
-          "route": "#logout",
+          "route": "javascript:void(0);",
           "tooltip": "Logout"
         }
       ]

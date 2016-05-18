@@ -108,9 +108,11 @@ var Session;
         };
         DataStorage.removeItem = function (key) {
             localStorage.removeItem(key);
+            return true;
         };
         DataStorage.clear = function () {
-            localStorage.clear();
+            localStorage.clear();            
+            return true;
         };
         return DataStorage;
     }());
@@ -262,6 +264,9 @@ var Session;
             self.dispatchEvent(new Core.Event(Models.Events.userLoaded, self.payloadUser));
             self.dispatchEvent(new Core.Event(Models.Events.notificationsLoaded, self.payloadNotifications));
             self.loadSearhResults();
+        };
+        DataContext.prototype.logout = function () {
+            return DataStorage.clear();
         };
         DataContext.prototype.initialize = function () {
             var self = this;
@@ -1549,12 +1554,23 @@ var Views;
         // Search
         Page.prototype.searchLoaded = function () {
             var self = this;
-            //            
+            // Bind logout;            
+            //     
+            self.logoutButton = $("#menu3_link0");
+            self.logoutButton.on("click", function (evt) {
+                self.clickHandlerLogout();
+            });
             self.layout.header.leftControl.searchControl.handlerReady();
             //
             self.layout.main.sideNav.initializeTooltips();
             //
             ko.applyBindings(self);
+        };
+        Page.prototype.clickHandlerLogout = function () {
+            var self = this;
+            if (self.appContext.logout()) {
+                document.location.href = "/users/signout";
+            }
         };
         return Page;
     }(Session.BaseView));
@@ -1569,9 +1585,6 @@ var toggleFullScreen = function () {
             screenfull.exit();
         }
     }
-};
-var onClickTest = function () {
-    console.log("test");
 };
 $(document).ready(function () {
     console.warn("ready");

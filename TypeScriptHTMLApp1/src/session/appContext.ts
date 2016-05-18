@@ -17,10 +17,10 @@ namespace Session {
             return localStorage.getItem(key);
         }
         static removeItem(key: string) {
-            localStorage.removeItem(key);
+            localStorage.removeItem(key);return true;
         }
         static clear() {
-            localStorage.clear();
+            localStorage.clear();;return true;
         }
     }
 
@@ -221,7 +221,11 @@ namespace Session {
 
             self.loadSearhResults();
         }
-
+        
+        logout(){
+            return DataStorage.clear();
+        }
+        
         private static APP_CONTEXT_ERROR = "APP_CONTEXT_ERROR";
         private static APP_CONTEXT_MENU_LOADED = "APP_CONTEXT_MENU_LOADED";
         private static APP_CONTEXT_USER_LOADED = "APP_CONTEXT_USER_LOADED";
