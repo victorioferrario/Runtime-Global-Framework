@@ -14,7 +14,7 @@
         constructor(public props: IMenuItemProps) {
             const self = this;
             self.control = $("<a/>", {
-                href: "javascript:void(0)",
+                href: props.route,
                 id: props.menu + "_link" + props.index,
                 class: "menu-item waves-effect waves-light",
                 title: props.label,
@@ -26,7 +26,7 @@
                   "data-trigger":"hover"
                 },
                 click: (evt: any) => {
-                    console.log("this", this);
+                    //console.log("this", this);
                 }
             });
             self.control

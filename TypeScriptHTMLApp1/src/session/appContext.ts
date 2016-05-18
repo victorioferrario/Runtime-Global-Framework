@@ -1,9 +1,34 @@
 /// <reference path="../ref.d.ts" />
 
 namespace Session {
+
     export class INotificationProps {
         alertCount: number;
         progRCount: number;
+    }
+    export class DataStorage {
+        static setItem(key: string, value: any): boolean {
+            localStorage.setItem(key, JSON.stringify(value)); return true;
+        }
+        static getItem(key: string) {
+            return localStorage.getItem(key);
+        }
+        static getKey(key: string) {
+            return localStorage.getItem(key);
+        }
+        static removeItem(key: string) {
+            localStorage.removeItem(key);
+        }
+        static clear() {
+            localStorage.clear();
+        }
+    }
+
+    export class DataKeys {
+        static menu: string = "data:keys:payload:menu";
+        static user: string = "data:keys:payload:user";
+        static notifications: string = "data:keys:payload:notifications";
+        static search: string = "data:keys:payload:search";
     }
     export class DataContext extends Core.EventDispatcher {
         target: any;
@@ -13,7 +38,7 @@ namespace Session {
         isLoadedNotifications: boolean = false;
 
         payload: Models.IMenuPayload;
-        
+
         payloadMenu: Models.IMenuPayload;
         payloadUser: Models.IUserPayload;
         payloadSearch: Models.ISearchResults;
@@ -34,17 +59,34 @@ namespace Session {
          */
         private loadMenu() {
             const self = this;
-            Services.Http.loadJson(
-                AppContextSettings.menuUrl).fail(() => {
-                    self.dispatchEvent(
-                        new Core.Event(AppContext.APP_CONTEXT_ERROR, this));
-                }).done((result: Models.IMenuPayload) => {
-                    self.isLoadedMenu = true;
-                    self.payloadMenu = result;
-                    self.dispatchEvent(
-                        new Core.Event(
-                            AppContext.APP_CONTEXT_MENU_LOADED, this));
-                });
+            let local = JSON.parse(DataStorage.getItem(DataKeys.menu));
+            if (local !== undefined && local !== null) {
+                self.isLoadedMenu = true;
+                self.payloadMenu = local;
+                self.dispatchEvent(
+                    new Core.Event(
+                        AppContext.APP_CONTEXT_MENU_LOADED, self));
+
+
+            } else {
+                Services.Http.loadJson(
+                    AppContextSettings.menuUrl).fail(() => {
+                        self.dispatchEvent(
+                            new Core.Event(AppContext.APP_CONTEXT_ERROR, this));
+                    }).done((result: Models.IMenuPayload) => {
+                        //
+                        self.isLoadedMenu = true;
+                        self.payloadMenu = result;
+                        console.log(result)
+                        //
+                        DataStorage.setItem(
+                            DataKeys.menu, result);
+                        //
+                        self.dispatchEvent(
+                            new Core.Event(
+                                AppContext.APP_CONTEXT_MENU_LOADED, this));
+                    });
+            }
         }
         /**
         * private Q.Promise to return json.
@@ -53,19 +95,38 @@ namespace Session {
         */
         private loadUser() {
             const self = this;
-            Services.Http.loadJson(
-                AppContextSettings.userUrl).fail(() => {
-                    self.dispatchEvent(
-                        new Core.Event(
-                            AppContext.APP_CONTEXT_ERROR, this));
-                }).done((result: Models.IUserPayload) => {
-                    self.isLoadedUser = true;
-                    self.payloadUser = result;
-                    self.payloadMenu.entity = result.entity;
-                    self.dispatchEvent(
-                        new Core.Event(
-                            AppContext.APP_CONTEXT_USER_LOADED, this));
-                });
+            let local = JSON.parse(
+                DataStorage.getItem(DataKeys.user));
+            if (local !== undefined && local !== null) {
+
+                self.isLoadedUser = true;
+                self.payloadUser = local;
+                self.payloadMenu.entity = local.entity;
+
+                self.dispatchEvent(
+                    new Core.Event(
+                        AppContext.APP_CONTEXT_USER_LOADED, this));
+            } else {
+
+                Services.Http.loadJson(
+                    AppContextSettings.userUrl).fail(() => {
+                        self.dispatchEvent(
+                            new Core.Event(
+                                AppContext.APP_CONTEXT_ERROR, this));
+                    }).done((result: Models.IUserPayload) => {
+                        //
+                        self.isLoadedUser = true;
+                        self.payloadUser = result;
+                        self.payloadMenu.entity = result.entity;
+                        //
+                        DataStorage.setItem(
+                            DataKeys.user, result);
+                        //
+                        self.dispatchEvent(
+                            new Core.Event(
+                                AppContext.APP_CONTEXT_USER_LOADED, this));
+                    });
+            }
         }
         /**
         * private Q.Promise to return json.
@@ -74,23 +135,30 @@ namespace Session {
         */
         private loadNotifications() {
             const self = this;
-            
             Services.Http.loadJson(AppContextSettings.notificationUrl).fail(() => {
                 self.dispatchEvent(
                     new Core.Event(
-                        AppContext.APP_CONTEXT_ERROR, this));
+                        AppContext.APP_CONTEXT_ERROR, self));
             }).done((result: Models.INotificationsPayload) => {
-                
+
                 self.isLoadedNotifications = true;
                 self.payloadNotifications = result;
+
                 self.iNotificatonProps = {
-                    progRCount: result.notifications.progress_reports.length,
-                    alertCount: result.notifications.alerts[0].count + result.notifications.alerts[1].count
+                    progRCount: result.notifications.progress_reports !== null && result.notifications.progress_reports !== undefined ? result.notifications.progress_reports.length : 0,
+                    alertCount: result.notifications.alerts !== null
+                        && result.notifications.alerts !== undefined
+                        && result.notifications.alerts.length > 1 ?
+                        result.notifications.alerts[0].count + result.notifications.alerts[1].count : 0
                 }
+
+
+                //
                 self.dispatchEvent(
                     new Core.Event(
-                        AppContext.APP_CONTEXT_NOTIFICATIONS_LOADED, this));
+                        AppContext.APP_CONTEXT_NOTIFICATIONS_LOADED, self));
             });
+
         }
         /**
          * private Q.Promise to return json.
@@ -102,13 +170,13 @@ namespace Session {
             Services.Http.loadJson(AppContextSettings.searchUrl).fail(() => {
                 self.dispatchEvent(
                     new Core.Event(
-                        AppContext.APP_CONTEXT_ERROR, this));
+                        AppContext.APP_CONTEXT_ERROR, self));
             }).done((result: Models.ISearchResults) => {
                 self.isLoadedSearch = true;
                 self.payloadSearch = result;
                 self.dispatchEvent(
                     new Core.Event(
-                        AppContext.APP_CONTEXT_SEARCH_LOADED, this));
+                        AppContext.APP_CONTEXT_SEARCH_LOADED, self));
             });
         }
         /**
@@ -118,10 +186,13 @@ namespace Session {
          */
         handlerMenu() {
             const self = this;
+            console.log("menu", self.payloadMenu)
             self.loadUser();
         }
         handlerUser() {
             const self = this;
+            console.log("menu", self.payloadMenu);
+
             self.loadNotifications();
         }
         handlerSearch() {
@@ -150,15 +221,15 @@ namespace Session {
 
             self.loadSearhResults();
         }
-        
+
         private static APP_CONTEXT_ERROR = "APP_CONTEXT_ERROR";
         private static APP_CONTEXT_MENU_LOADED = "APP_CONTEXT_MENU_LOADED";
         private static APP_CONTEXT_USER_LOADED = "APP_CONTEXT_USER_LOADED";
         private static APP_CONTEXT_SEARCH_LOADED = "APP_CONTEXT_SEARCH_LOADED";
         private static APP_CONTEXT_NOTIFICATIONS_LOADED = "APP_CONTEXT_NOTIFICATIONS_LOADED";
-        
+
         initialize() {
-            const self = this;        
+            const self = this;
             self.addEventListener(
                 AppContext.APP_CONTEXT_MENU_LOADED, (arg: any) => {
                     self.handlerMenu();
@@ -234,7 +305,7 @@ namespace Session {
             self.appContext = Session.AppContext.getInstance();
         }
     }
-    
+
     export class Base extends BaseView {
         el: JQuery;
         appContext: AppContext;
@@ -253,6 +324,6 @@ namespace Session {
             self.el = $(`.${selector}`);
         }
     }
-    
+
 
 }

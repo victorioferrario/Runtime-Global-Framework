@@ -93,6 +93,38 @@ var Session;
         return INotificationProps;
     }());
     Session.INotificationProps = INotificationProps;
+    var DataStorage = (function () {
+        function DataStorage() {
+        }
+        DataStorage.setItem = function (key, value) {
+            localStorage.setItem(key, JSON.stringify(value));
+            return true;
+        };
+        DataStorage.getItem = function (key) {
+            return localStorage.getItem(key);
+        };
+        DataStorage.getKey = function (key) {
+            return localStorage.getItem(key);
+        };
+        DataStorage.removeItem = function (key) {
+            localStorage.removeItem(key);
+        };
+        DataStorage.clear = function () {
+            localStorage.clear();
+        };
+        return DataStorage;
+    }());
+    Session.DataStorage = DataStorage;
+    var DataKeys = (function () {
+        function DataKeys() {
+        }
+        DataKeys.menu = "data:keys:payload:menu";
+        DataKeys.user = "data:keys:payload:user";
+        DataKeys.notifications = "data:keys:payload:notifications";
+        DataKeys.search = "data:keys:payload:search";
+        return DataKeys;
+    }());
+    Session.DataKeys = DataKeys;
     var DataContext = (function (_super) {
         __extends(DataContext, _super);
         function DataContext(target) {
@@ -113,13 +145,26 @@ var Session;
         DataContext.prototype.loadMenu = function () {
             var _this = this;
             var self = this;
-            Services.Http.loadJson(AppContextSettings.menuUrl).fail(function () {
-                self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_ERROR, _this));
-            }).done(function (result) {
+            var local = JSON.parse(DataStorage.getItem(DataKeys.menu));
+            if (local !== undefined && local !== null) {
                 self.isLoadedMenu = true;
-                self.payloadMenu = result;
-                self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_MENU_LOADED, _this));
-            });
+                self.payloadMenu = local;
+                self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_MENU_LOADED, self));
+            }
+            else {
+                Services.Http.loadJson(AppContextSettings.menuUrl).fail(function () {
+                    self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_ERROR, _this));
+                }).done(function (result) {
+                    //
+                    self.isLoadedMenu = true;
+                    self.payloadMenu = result;
+                    console.log(result);
+                    //
+                    DataStorage.setItem(DataKeys.menu, result);
+                    //
+                    self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_MENU_LOADED, _this));
+                });
+            }
         };
         /**
         * private Q.Promise to return json.
@@ -129,14 +174,27 @@ var Session;
         DataContext.prototype.loadUser = function () {
             var _this = this;
             var self = this;
-            Services.Http.loadJson(AppContextSettings.userUrl).fail(function () {
-                self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_ERROR, _this));
-            }).done(function (result) {
+            var local = JSON.parse(DataStorage.getItem(DataKeys.user));
+            if (local !== undefined && local !== null) {
                 self.isLoadedUser = true;
-                self.payloadUser = result;
-                self.payloadMenu.entity = result.entity;
-                self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_USER_LOADED, _this));
-            });
+                self.payloadUser = local;
+                self.payloadMenu.entity = local.entity;
+                self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_USER_LOADED, this));
+            }
+            else {
+                Services.Http.loadJson(AppContextSettings.userUrl).fail(function () {
+                    self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_ERROR, _this));
+                }).done(function (result) {
+                    //
+                    self.isLoadedUser = true;
+                    self.payloadUser = result;
+                    self.payloadMenu.entity = result.entity;
+                    //
+                    DataStorage.setItem(DataKeys.user, result);
+                    //
+                    self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_USER_LOADED, _this));
+                });
+            }
         };
         /**
         * private Q.Promise to return json.
@@ -144,18 +202,21 @@ var Session;
         * @return Q.Promise< Models.INotificationsPayload>
         */
         DataContext.prototype.loadNotifications = function () {
-            var _this = this;
             var self = this;
             Services.Http.loadJson(AppContextSettings.notificationUrl).fail(function () {
-                self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_ERROR, _this));
+                self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_ERROR, self));
             }).done(function (result) {
                 self.isLoadedNotifications = true;
                 self.payloadNotifications = result;
                 self.iNotificatonProps = {
-                    progRCount: result.notifications.progress_reports.length,
-                    alertCount: result.notifications.alerts[0].count + result.notifications.alerts[1].count
+                    progRCount: result.notifications.progress_reports !== null && result.notifications.progress_reports !== undefined ? result.notifications.progress_reports.length : 0,
+                    alertCount: result.notifications.alerts !== null
+                        && result.notifications.alerts !== undefined
+                        && result.notifications.alerts.length > 1 ?
+                        result.notifications.alerts[0].count + result.notifications.alerts[1].count : 0
                 };
-                self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_NOTIFICATIONS_LOADED, _this));
+                //
+                self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_NOTIFICATIONS_LOADED, self));
             });
         };
         /**
@@ -164,14 +225,13 @@ var Session;
          * @return Q.Promise< Models.IResults>
          */
         DataContext.prototype.loadSearhResults = function () {
-            var _this = this;
             var self = this;
             Services.Http.loadJson(AppContextSettings.searchUrl).fail(function () {
-                self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_ERROR, _this));
+                self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_ERROR, self));
             }).done(function (result) {
                 self.isLoadedSearch = true;
                 self.payloadSearch = result;
-                self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_SEARCH_LOADED, _this));
+                self.dispatchEvent(new Core.Event(AppContext.APP_CONTEXT_SEARCH_LOADED, self));
             });
         };
         /**
@@ -181,10 +241,12 @@ var Session;
          */
         DataContext.prototype.handlerMenu = function () {
             var self = this;
+            console.log("menu", self.payloadMenu);
             self.loadUser();
         };
         DataContext.prototype.handlerUser = function () {
             var self = this;
+            console.log("menu", self.payloadMenu);
             self.loadNotifications();
         };
         DataContext.prototype.handlerSearch = function () {
@@ -519,6 +581,7 @@ var Views;
                 SearchControl.prototype.handlerReady = function () {
                     var self = this;
                     self.grid.populateControl(self.appContext.payloadSearch);
+                    console.log("search ready");
                     self.elements = new SearchControlElements();
                 };
                 SearchControl.prototype.render = function () {
@@ -532,13 +595,18 @@ var Views;
                     self.appContext.dispatchEvent(new Core.Event(Models.Events.EVENT_UI_TOGGLE_DROPDOWN, self));
                     //            
                     self.grid.isDeactivated(false);
-                    //
+                    //            
                     self.elements.elementInput.focus();
+                    //
                     self.elements.elementDropdown.hide();
+                    //
                     self.elements.elementBadgeCustom.hide();
                     //
                     self.elements.elementTopNav.toggleClass("search-active");
+                    //
                     self.searchResults.el.removeClass("m-hide");
+                    //
+                    SearchControl.toggleScrolling(true);
                     //
                     self.elements.elementButtonClose.click(function (evt) {
                         //
@@ -556,6 +624,8 @@ var Views;
                         self.elements.elementBadgeCustom.show();
                         //
                         self.searchResults.el.addClass("m-hide");
+                        //
+                        SearchControl.toggleScrolling(false);
                     });
                 };
                 SearchControl.prototype.closeEvent = function () {
@@ -574,11 +644,22 @@ var Views;
                     self.elements.elementDropdown.show();
                     self.elements.elementBadgeCustom.show();
                     //
+                    SearchControl.toggleScrolling(false);
                 };
                 SearchControl.prototype.cleanEvent = function () {
                     var self = this;
                     self.elements.elementButtonClose.off("click");
                 };
+                SearchControl.toggleScrolling = function (disableScrolling) {
+                    if (disableScrolling) {
+                        SearchControl.elementBody.addClass(SearchControl.cssRemovingScrolling);
+                    }
+                    else {
+                        SearchControl.elementBody.removeClass(SearchControl.cssRemovingScrolling);
+                    }
+                };
+                SearchControl.elementBody = $("body");
+                SearchControl.cssRemovingScrolling = "removeScrolling";
                 return SearchControl;
             }(Session.BaseView));
             Components.SearchControl = SearchControl;
@@ -720,19 +801,18 @@ var Views;
                     event.preventDefault();
                 };
                 SearchResults.prototype.clickHandler = function (data, event, action, id) {
-                    console.log("click", id);
                     switch (action) {
                         case 1:
-                            console.log("load profile");
+                            document.location.href = "/students/" + id + "/timeline";
                             break;
                         case 2:
-                            console.log("load timeline");
+                            document.location.href = "/students/" + id + "/timeline";
                             break;
                         case 3:
-                            console.log("load flags");
+                            document.location.href = "/students/" + id + "/flags";
                             break;
                         case 4:
-                            console.log("load cases");
+                            document.location.href = "/students/" + id + "/cases";
                             break;
                     }
                 };
@@ -810,6 +890,14 @@ var Views;
                 image.setAttribute("class", props.className);
                 return image;
             };
+            StaticElementBuilder.createH5 = function (props) {
+                var h5 = document.createElement("h5");
+                h5.setAttribute("title", props.alt);
+                h5.setAttribute("title", props.alt);
+                h5.setAttribute("class", props.className);
+                h5.appendChild(document.createTextNode(props.alt.substr(0, 1)));
+                return h5;
+            };
             return StaticElementBuilder;
         }());
         Controls.StaticElementBuilder = StaticElementBuilder;
@@ -837,7 +925,7 @@ var Views;
                         "class": "navbar-brand navbar-blue"
                     });
                     self.searchControl = new Views.Controls.Components.SearchControl(self);
-                    self.smallLogo = elementGenerator.createImage(props.small);
+                    self.smallLogo = elementGenerator.createH5(props.small);
                     self.largeLogo = elementGenerator.createImage(props.large);
                     self.lnk.append(self.smallLogo);
                     self.lnk.append(self.largeLogo);
@@ -1005,9 +1093,9 @@ var Views;
                 };
                 ProfileMenu.cssExp = "expanded";
                 ProfileMenu.cssHide = "m-hide-opacity";
-                ProfileMenu.LINKS_UPDATE_PHONE = "profile/edit/phone/";
-                ProfileMenu.LINKS_VIEW_PROFILE = "profile/view/";
-                ProfileMenu.LINKS_EDIT_PROFILE = "profile/edit/";
+                ProfileMenu.LINKS_UPDATE_PHONE = "/user_profile";
+                ProfileMenu.LINKS_VIEW_PROFILE = "/user_onboarding/phone_verification";
+                ProfileMenu.LINKS_EDIT_PROFILE = "/user_onboarding/basic_info";
                 return ProfileMenu;
             }(Session.BaseView));
             Components.ProfileMenu = ProfileMenu;
@@ -1055,11 +1143,10 @@ var Views;
     (function (Controls) {
         var MenuItem = (function () {
             function MenuItem(props) {
-                var _this = this;
                 this.props = props;
                 var self = this;
                 self.control = $("<a/>", {
-                    href: "javascript:void(0)",
+                    href: props.route,
                     id: props.menu + "_link" + props.index,
                     class: "menu-item waves-effect waves-light",
                     title: props.label,
@@ -1071,7 +1158,7 @@ var Views;
                         "data-trigger": "hover"
                     },
                     click: function (evt) {
-                        console.log("this", _this);
+                        //console.log("this", this);
                     }
                 });
                 self.control
@@ -1118,6 +1205,7 @@ var Views;
                 self.aside1.removeClass(AsideLayout.cssToggle);
                 self.aside2.removeClass(AsideLayout.cssToggle);
                 self.elUnderlay.removeClass(AsideLayout.cssToggle);
+                AsideLayout.elementBody.removeClass(AsideLayout.cssRemovingScrolling);
             };
             AsideLayout.prototype.toggle = function (isAlerts) {
                 var self = this;
@@ -1132,6 +1220,7 @@ var Views;
             };
             AsideLayout.prototype.toggleStatic = function (asideToShow, asideToHide, asideUnderlay) {
                 if (!asideToShow.hasClass(AsideLayout.cssToggle)) {
+                    AsideLayout.elementBody.addClass(AsideLayout.cssRemovingScrolling);
                     asideToShow.addClass(AsideLayout.cssToggle);
                     asideUnderlay.addClass(AsideLayout.cssToggle);
                     asideToHide.removeClass(AsideLayout.cssToggle);
@@ -1139,9 +1228,12 @@ var Views;
                 else {
                     asideToShow.removeClass(AsideLayout.cssToggle);
                     asideUnderlay.removeClass(AsideLayout.cssToggle);
+                    AsideLayout.elementBody.removeClass(AsideLayout.cssRemovingScrolling);
                 }
             };
             AsideLayout.cssToggle = "toggle-aside";
+            AsideLayout.elementBody = $("body");
+            AsideLayout.cssRemovingScrolling = "removeScrolling";
             return AsideLayout;
         }());
         Controls.AsideLayout = AsideLayout;
@@ -1389,7 +1481,7 @@ var Views;
                 // ToDo: See Search Top            
                 self.userMenuControl
                     = new Views.Controls.Components.ProfileMenu();
-                self.searchTemp = new Views.PageButtons(self);
+                self.searchTriggers = new Views.Controls.Components.SearchButtons(self);
             };
             MasterLayout.prototype.addNotificationPanels = function () {
                 var self = this;
@@ -1467,55 +1559,6 @@ var Views;
         return Page;
     }(Session.BaseView));
     Views.Page = Page;
-    var SearchContext = (function (_super) {
-        __extends(SearchContext, _super);
-        function SearchContext() {
-            _super.call(this);
-            this.createChildControls();
-        }
-        SearchContext.prototype.databind = function () {
-            var self = this;
-            // self.appContext.payloadSearch.results.filter()
-        };
-        SearchContext.prototype.createChildControls = function () {
-            var self = this;
-            $("#q").focus(function () {
-                $(".search-result-popout").addClass("active");
-                $("body").addClass("search-active");
-            });
-            $(".search-active-background").click(function () {
-                $(".search-result-popout").removeClass("active");
-                $("body").removeClass("search-active");
-            });
-        };
-        return SearchContext;
-    }(Session.BaseView));
-    Views.SearchContext = SearchContext;
-    // ToDo: Re-factor this entire object. Most likely go down a namespace. Class name is wrong. The elements seem to be assosicated to search.
-    var PageButtons = (function () {
-        function PageButtons(ref) {
-            var self = this;
-            self.parent = ref;
-            self.search = $("#search-box");
-            self.searchButton = $("#trigger-search");
-            self.buttonToggle = $("#btn-toggle");
-            self.init();
-        }
-        PageButtons.prototype.init = function () {
-            var self = this;
-            self.buttonToggle.on("click", function (evt) {
-                self.parent.toggle();
-            });
-            self.searchButton.on("click", function (evt) {
-                self.search.addClass("active");
-                $("body").addClass("search-active");
-                $(".search-result-popout").addClass("active");
-                self.parent.header.leftControl.searchControl.triggerEvent();
-            });
-        };
-        return PageButtons;
-    }());
-    Views.PageButtons = PageButtons;
 })(Views || (Views = {}));
 var toggleFullScreen = function () {
     if (screenfull.enabled) {
@@ -1613,7 +1656,6 @@ var Views;
         }
         SideNavBase.prototype.toggle = function () {
             var self = this;
-            console.log(self.sideBarWrapper.hasClass(self.toggleCss));
             if (!self.sideBarWrapper.hasClass(self.toggleCss)) {
                 self.topBar.addClass(self.toggleCss);
                 self.menusWrapper.addClass(self.toggleCss);
@@ -1683,6 +1725,39 @@ var Views;
         return SideNav;
     }(SideNavBase));
     Views.SideNav = SideNav;
+})(Views || (Views = {}));
+var Views;
+(function (Views) {
+    var Controls;
+    (function (Controls) {
+        var Components;
+        (function (Components) {
+            var SearchButtons = (function () {
+                function SearchButtons(ref) {
+                    var self = this;
+                    self.parent = ref;
+                    self.search = $("#search-box");
+                    self.searchButton = $("#trigger-search");
+                    self.buttonToggle = $("#btn-toggle");
+                    self.init();
+                }
+                SearchButtons.prototype.init = function () {
+                    var self = this;
+                    self.buttonToggle.on("click", function (evt) {
+                        self.parent.toggle();
+                    });
+                    self.searchButton.on("click", function (evt) {
+                        self.search.addClass("active");
+                        $("body").addClass("search-active");
+                        $(".search-result-popout").addClass("active");
+                        self.parent.header.leftControl.searchControl.triggerEvent();
+                    });
+                };
+                return SearchButtons;
+            }());
+            Components.SearchButtons = SearchButtons;
+        })(Components = Controls.Components || (Controls.Components = {}));
+    })(Controls = Views.Controls || (Views.Controls = {}));
 })(Views || (Views = {}));
 var Views;
 (function (Views) {

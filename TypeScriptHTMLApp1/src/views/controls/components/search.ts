@@ -52,6 +52,7 @@ namespace Views.Controls.Components {
             const self = this;
             self.grid.populateControl(
                 self.appContext.payloadSearch);
+                console.log("search ready")
             self.elements = new SearchControlElements();
         }
         render() {
@@ -62,21 +63,26 @@ namespace Views.Controls.Components {
             const self = this;
             // Trigger hiding of all other panels or dropdowns.
             self.appContext.dispatchEvent(
-                    new Core.Event(
-                        Models.Events.EVENT_UI_TOGGLE_ASIDE, self));
-                        
+                new Core.Event(
+                    Models.Events.EVENT_UI_TOGGLE_ASIDE, self));
+
             self.appContext.dispatchEvent(
-                    new Core.Event(
-                        Models.Events.EVENT_UI_TOGGLE_DROPDOWN, self));
+                new Core.Event(
+                    Models.Events.EVENT_UI_TOGGLE_DROPDOWN, self));
             //            
-            self.grid.isDeactivated(false);            
-            //
+            self.grid.isDeactivated(false);
+            //            
             self.elements.elementInput.focus();
+            //
             self.elements.elementDropdown.hide();
+            //
             self.elements.elementBadgeCustom.hide();
             //
             self.elements.elementTopNav.toggleClass("search-active");
-            self.searchResults.el.removeClass("m-hide");            
+            //
+            self.searchResults.el.removeClass("m-hide");
+            //
+            SearchControl.toggleScrolling(true);
             //
             self.elements.elementButtonClose.click((evt) => {
                 //
@@ -94,6 +100,8 @@ namespace Views.Controls.Components {
                 self.elements.elementBadgeCustom.show();
                 //
                 self.searchResults.el.addClass("m-hide");
+                //
+                SearchControl.toggleScrolling(false);
             });
         }
         closeEvent() {
@@ -112,11 +120,23 @@ namespace Views.Controls.Components {
             self.elements.elementDropdown.show();
             self.elements.elementBadgeCustom.show();
             //
+            SearchControl.toggleScrolling(false);
         }
         cleanEvent() {
             const self = this;
             self.elements.elementButtonClose.off("click");
+        }        
+        static toggleScrolling(disableScrolling:boolean){
+            if(disableScrolling){
+                SearchControl.elementBody.addClass(
+                    SearchControl.cssRemovingScrolling);
+            }else{
+                SearchControl.elementBody.removeClass(
+                    SearchControl.cssRemovingScrolling);
+            }             
         }
+        static elementBody:JQuery = $("body");
+        static cssRemovingScrolling = "removeScrolling";
     }
     export class SearchControlElements {
         elementBody: JQuery;
@@ -291,20 +311,19 @@ namespace Views.Controls.Components {
             self.resetScroll();
             event.preventDefault();
         }
-        clickHandler(data: any, event: Event, action: number, id: number) {
-            console.log("click", id);
+        clickHandler(data: any, event: Event, action: number, id: number) {            
             switch (action) {
                 case 1:
-                    console.log("load profile");
+                    document.location.href = "/students/" + id + "/timeline"
                     break;
                 case 2:
-                    console.log("load timeline");
+                    document.location.href = "/students/" + id + "/timeline"
                     break;
                 case 3:
-                    console.log("load flags");
+                    document.location.href = "/students/" + id + "/flags"
                     break;
                 case 4:
-                    console.log("load cases");
+                    document.location.href = "/students/" + id + "/cases"
                     break;
             }
         }
@@ -317,8 +336,8 @@ namespace Views.Controls.Components {
         elUl: JQuery;
         elPopout: JQuery;
         elBackground: JQuery;
-        parent:SearchControl;
-        constructor(parent:SearchControl) {
+        parent: SearchControl;
+        constructor(parent: SearchControl) {
             super();
             const self = this;
             self.parent = parent;

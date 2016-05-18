@@ -5,4 +5,8 @@ cd workarea/ts-menu/ts-menu/typescripthtmlapp1
 
 
 //  Start server 
+browser-sync start --server
 ext install JSDocTagComplete
+
+foreman start -f Procfile.dev
+

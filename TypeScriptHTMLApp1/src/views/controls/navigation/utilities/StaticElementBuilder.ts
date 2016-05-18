@@ -25,5 +25,14 @@
             image.setAttribute("class", props.className);           
             return image;
         }
+        static createH5(props: Components.ILogoProps):HTMLHeadingElement {
+             const h5 = document.createElement("h5");
+             h5.setAttribute("title", props.alt);
+             h5.setAttribute("title", props.alt);
+             h5.setAttribute("class", props.className);
+             h5.appendChild(document.createTextNode(props.alt.substr(0, 1)));
+             return h5;
+        }
     }
+    
 }

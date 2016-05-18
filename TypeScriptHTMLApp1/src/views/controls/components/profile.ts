@@ -42,13 +42,14 @@
                         case "PHONE":
                             document.location.href = `${ProfileMenu.LINKS_UPDATE_PHONE}${id}`;
                             break;
-                    }                   
+                    }
                 });
             });
         }
-        static LINKS_UPDATE_PHONE = "profile/edit/phone/";
-        static LINKS_VIEW_PROFILE = "profile/view/";
-        static LINKS_EDIT_PROFILE = "profile/edit/";
+        static LINKS_UPDATE_PHONE = "/user_profile";
+        static LINKS_VIEW_PROFILE = "/user_onboarding/phone_verification";
+        static LINKS_EDIT_PROFILE = "/user_onboarding/basic_info";
+
         render() {
             const self = this;
             const result = `<a href="javascript:void(0)" id="menu0_link0" data-id="${self.appContext.payloadUser.entity.user.id}" data-target="VIEW_PROFILE"

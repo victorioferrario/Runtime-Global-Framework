@@ -6,13 +6,13 @@ namespace Views {
         title: KnockoutObservable<string>;
         layout: Controls.MasterLayout;
 
-        constructor() {
-            super();
+        constructor() {           
+            super(); 
             const self = this;
             if (self.init()) {
                 self.isViewLoaded = ko.observable(false);
                 self.layout = new Controls.MasterLayout();
-            }
+            }            
         }
 
         init() {
@@ -50,70 +50,73 @@ namespace Views {
         // Search
         searchLoaded() {
             const self = this;
-            //            
+            
+                 //            
             self.layout.header.leftControl.searchControl.handlerReady();
             //
             self.layout.main.sideNav.initializeTooltips();
             //
             ko.applyBindings(self);
+       
+           
         }
         isViewLoaded: KnockoutObservable<boolean>;
     }
 
-    export class SearchContext extends Session.BaseView {
+    // export class SearchContext extends Session.BaseView {
 
-        constructor() {
-            super(); this.createChildControls();
-        }
+    //     constructor() {
+    //         super(); this.createChildControls();
+    //     }
 
-        databind() {
-            const self = this;
-            // self.appContext.payloadSearch.results.filter()
-        }
+    //     databind() {
+    //         const self = this;
+    //         // self.appContext.payloadSearch.results.filter()
+    //     }
 
-        createChildControls() {
-            const self = this;
+    //     createChildControls() {
+    //         const self = this;
 
-            $("#q").focus(function () {
-                $(".search-result-popout").addClass("active");
-                $("body").addClass("search-active")
-            });
-            $(".search-active-background").click(function () {
-                $(".search-result-popout").removeClass("active");
-                $("body").removeClass("search-active")
-            });
+    //         $("#q").focus(function () {
+    //             $(".search-result-popout").addClass("active");
+    //             $("body").addClass("search-active")
+    //         });
+    //         $(".search-active-background").click(function () {
+    //             $(".search-result-popout").removeClass("active");
+    //             $("body").removeClass("search-active")
+    //         });
             
-        }
+    //     }
 
-    }
+    // }
 
     // ToDo: Re-factor this entire object. Most likely go down a namespace. Class name is wrong. The elements seem to be assosicated to search.
-    export class PageButtons {
-        search: JQuery;
-        searchButton: JQuery;
-        buttonToggle: JQuery;
-        parent: Views.Controls.MasterLayout;
-        constructor(ref: Views.Controls.MasterLayout) {
-            const self = this;
-            self.parent = ref;
-            self.search = $("#search-box");
-            self.searchButton = $("#trigger-search");
-            self.buttonToggle = $("#btn-toggle");            
-            self.init();
-        }
-        init() {
-            const self = this;
-            self.buttonToggle.on("click", (evt: any) => {
-                self.parent.toggle();
-            });
-            self.searchButton.on("click", (evt: any) => {
-                self.search.addClass("active");
-                $("body").addClass("search-active");
-                $(".search-result-popout").addClass("active");
-                self.parent.header.leftControl.searchControl.triggerEvent();
-            });
-        }
-    }
+    // export class PageButtons {
+    //     search: JQuery;
+    //     searchButton: JQuery;
+    //     buttonToggle: JQuery;
+    //     parent: Views.Controls.MasterLayout;
+    //     constructor(ref: Views.Controls.MasterLayout) {
+    //         const self = this;
+    //         self.parent = ref;
+    //         self.search = $("#search-box");
+    //         self.searchButton = $("#trigger-search");
+    //         self.buttonToggle = $("#btn-toggle");            
+    //         self.init();
+    //     }
+    //     init() {
+    //         const self = this;
+    //         self.buttonToggle.on("click", (evt: any) => {
+    //             self.parent.toggle();
+    //         });
+    //         self.searchButton.on("click", (evt: any) => {
+    //             self.search.addClass("active");
+    //             $("body").addClass("search-active");
+    //             $(".search-result-popout").addClass("active");
+    //             self.parent.header.leftControl.searchControl.triggerEvent();
+    //         });
+    //     }
+    // }
 }
 
 declare var screenfull: any;

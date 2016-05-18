@@ -7,7 +7,9 @@ module.exports = {
                 "libs/css/animate.css",                
                 "libs/vendor/waves.css"                
                 ],
-            scripts: [               
+            scripts: [           
+                "libs/vendors/jquery/jquery-2.2.3.min.js"    ,
+                "libs/vendors/jquery/jquery.ui.min.js"    ,
                 "libs/vendors/jquery/jquery-plugins/jquery-ui-slider-pips.js",
                 "libs/vendors/jquery/jquery-plugins/jquery-select.js",
                 "libs/vendors/jquery/jquery-plugins/jquery-slider.js",
@@ -31,6 +33,9 @@ module.exports = {
                 "styles/loader.css",
                 "styles/refactor.css",
                 "styles/search.css"
+            ],
+            scripts: [   
+                
             ]
         }
     }

@@ -49,6 +49,8 @@
             self.aside1.removeClass(AsideLayout.cssToggle);
             self.aside2.removeClass(AsideLayout.cssToggle);
             self.elUnderlay.removeClass(AsideLayout.cssToggle);
+            AsideLayout.elementBody.removeClass(
+                    AsideLayout.cssRemovingScrolling);
         }
         toggle(isAlerts: boolean) {
             const self = this;
@@ -66,18 +68,25 @@
                         self.elUnderlay);
                     break;
             }
-        }
-        
+        }        
         toggleStatic(asideToShow: JQuery, asideToHide: JQuery, asideUnderlay: JQuery) {
             if (!asideToShow.hasClass(AsideLayout.cssToggle)) {
+                AsideLayout.elementBody.addClass(
+                    AsideLayout.cssRemovingScrolling);
                 asideToShow.addClass(AsideLayout.cssToggle);
                 asideUnderlay.addClass(AsideLayout.cssToggle);
                 asideToHide.removeClass(AsideLayout.cssToggle);
             } else {
                 asideToShow.removeClass(AsideLayout.cssToggle);
                 asideUnderlay.removeClass(AsideLayout.cssToggle);
+                AsideLayout.elementBody.removeClass(
+                    AsideLayout.cssRemovingScrolling);
             }
         }
+        
+        
+        static elementBody:JQuery = $("body");
+        static cssRemovingScrolling = "removeScrolling";
     }
 
     export class AsideButtons extends Session.BaseView {

@@ -102,7 +102,7 @@ div.progress-report-item {
 }
 
 .menu_user__more {
-    position: absolute;
+    position: absolute!important;
     left: 0;
     top: 20px;
     right: 0;
@@ -111,7 +111,7 @@ div.progress-report-item {
 }
 
 .more_info_menu__link {
-    position: absolute;
+    position: absolute!important;
     right: 10px;
     width: 25px;
     top: 10px;
@@ -421,13 +421,32 @@ ul {
     top: 65px;
     bottom: 0;
     right: 0;
-    z-index: 1000;
+    z-index: -1000;
     background:#000000;
     background:rgba(0,0,0,.5);
     opacity: 0;
+    visibility:hidden;
     transition-duration: 300ms;
 }
 
 .dropdown-close-background.open {
         opacity: 1;
+        z-index: 1000;
+        visibility:visible;
+    }
+    body{
+        overflow:auto;
+    }
+    body.removeScrolling {
+        overflow:hidden!important;
+        -webkit-overflow-scrolling: hidden!important;
+    }
+    
+    #alerts_wrapper{
+        overflow:hidden;
+        overflow-y:auto;
+    }
+    #progress_reports{
+        overflow:hidden;
+        overflow-y:auto;
     }

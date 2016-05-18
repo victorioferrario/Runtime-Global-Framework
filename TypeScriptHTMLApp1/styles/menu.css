@@ -214,6 +214,21 @@ a.waves-effect .waves-ripple {
 .toggle-icon > .user-widget > .user-info{
     opacity: 0;
 }
+
+  #topnav .navbar-brand h5.show-on-collapse {
+    color: #2196f3;
+    font-size: 30px;
+    position: absolute;
+    border: 4px solid #014070;
+    border-radius: 50%;
+    width: 40px;
+    text-align: center;;
+    font-family: 'Roboto';
+  }
+  #topnav .navbar-brand h5.show-on-collapse.img-logo-white {
+    opacity: 0;
+  }
+
 @media (max-width: 640px) {
 
     .menu-text {
@@ -244,6 +259,22 @@ a.waves-effect .waves-ripple {
         height: 0!important;
         padding:0!important;
     }
+    #topnav .navbar-brand h5.show-on-collapse.img-logo-white {
+      opacity: 1!important;
+    }
+    #topnav .navbar-brand h5.show-on-collapse {
+      position: absolute;
+      opacity: 0;
+      transition: opacity .3s linear;
+      margin: 16px auto;
+      left: 11px;
+    }
+     #topnav .navbar-brand .img-logo-dark, #topnav .navbar-brand .img-logo-white {
+      opacity: 1!important;
+    }
+    #topnav .navbar-brand .img-dark, #topnav .navbar-brand .img-white {
+      opacity: 0!important;
+    }
 }
 .static-content{
     margin-top: 65px;
@@ -251,6 +282,11 @@ a.waves-effect .waves-ripple {
 
 .navbar-brand.navbar-blue.toggle-icon {
     width: 64px !important;
+}
+.navbar-brand.navbar-blue.toggle-icon h5.show-on-collapse.img-logo-white {
+  opacity: 1 !important;
+  left: 11px;
+  transition-duration: .3s;
 }
 
 .navbar-brand.navbar-blue.toggle-icon > .show-on-collapse {

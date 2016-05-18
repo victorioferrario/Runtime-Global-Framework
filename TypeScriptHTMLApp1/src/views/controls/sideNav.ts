@@ -16,8 +16,7 @@ namespace Views {
             self.sideBarWrapper = $(".static-sidebar-wrapper");
         }
         toggle() {
-            const self = this;
-            console.log(self.sideBarWrapper.hasClass(self.toggleCss))
+            const self = this;            
             if (!self.sideBarWrapper.hasClass(self.toggleCss)) {
                 self.topBar.addClass(self.toggleCss);
                 self.menusWrapper.addClass(self.toggleCss);
@@ -89,8 +88,7 @@ namespace Views {
                         break;
                 }
             }
-        }
-        pageButtons: PageButtons;
+        }       
         userMenuControl: Views.Controls.Components.ProfileMenu;
         render() { }
     }

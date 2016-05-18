@@ -21,12 +21,13 @@ namespace Views.Controls.Components {
 
         el: JQuery;
         lnk: JQuery;
+        
         elSearchContainer: JQuery;
-
-        smallLogo: HTMLImageElement;
+        
         largeLogo: HTMLImageElement;
+        smallLogo: HTMLHeadingElement;
         
-        
+        elementGenerator:Views.Controls.StaticElementBuilder;
         searchControl: Views.Controls.Components.SearchControl;        
         
         constructor(props: IBrandControlProps) {
@@ -41,7 +42,8 @@ namespace Views.Controls.Components {
             
             self.searchControl = new Views.Controls.Components.SearchControl(self);
 
-            self.smallLogo = elementGenerator.createImage(props.small);
+            self.smallLogo = elementGenerator.createH5(props.small);
+            
             self.largeLogo = elementGenerator.createImage(props.large);
 
             self.lnk.append(self.smallLogo);

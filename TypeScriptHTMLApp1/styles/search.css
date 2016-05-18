@@ -227,6 +227,7 @@ body.search-active-background {
     background: rgba(0, 0, 0, 0);
     z-index: -1199;
     opacity: 0;
+    visibility: hidden;
     transition-duration: 200ms;
 }
 
@@ -238,7 +239,9 @@ body.search-active .search-active-background {
     bottom: 0;
     background: #000;
     opacity: .5;
+    visibility: visible;
     z-index: 1197;
+    transition-duration: 300ms;
 }
 
 #topnav.navbar-blue {
@@ -252,6 +255,18 @@ body.search-active .search-active-background {
     top: 55px;
     bottom: 0;
     overflow: hidden!important;
+    visibility: hidden;
+    z-index: -1000!important;
+    top: 46px;
+}
+body.search-active .search-active--wrapper {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 55px;
+    bottom: 0;
+    overflow: hidden!important;
+    visibility: visible;
     z-index: 20001!important;
     top: 46px;
 }
