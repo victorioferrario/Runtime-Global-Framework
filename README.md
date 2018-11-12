@@ -1,4 +1,4 @@
-# ts-menu
+# highly performant application framework
 
 The application in typescript generates the entire global ui per render in the client portal. The application that this runs in was built in 
 ruby on rails.  
